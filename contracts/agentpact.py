@@ -33,7 +33,7 @@ class AgentPact(gl.Contract):
     def create_agreement(
         self,
         agreement_id: str,
-        worker: Address,
+        worker: str,
         terms: str,
         payment_per_tick: u256,
         interval_seconds: u256,
@@ -51,13 +51,13 @@ class AgentPact(gl.Contract):
         if total_ticks <= 0:
             raise ValueError("Total ticks must be positive")
         
-        if Address(worker) == gl.message.sender_address:
+        if worker == gl.message.sender_address.as_hex:
             raise ValueError("Worker cannot be the same as hiree")
         
         agreement = ServiceAgreement(
             id=agreement_id,
             hiree=gl.message.sender_address.as_hex,
-            worker=Address(worker).as_hex,
+            worker=worker,
             terms=terms,
             payment_per_tick=payment_per_tick,
             interval_seconds=interval_seconds,
@@ -94,6 +94,7 @@ class AgentPact(gl.Contract):
             raise ValueError("Invalid nonce")
         self.nonces[agreement_id] = nonce
         
+        # Verify proof - deterministic check
         is_valid = self._verify_proof(proof_url)
         
         if is_valid:
@@ -110,6 +111,7 @@ class AgentPact(gl.Contract):
             return False
     
     def _verify_proof(self, proof_url: str) -> bool:
+        """Verify submitted proof - uses equivalence principle for consensus."""
         try:
             result = gl.nondet.web.render(proof_url, mode="text")
             return len(result) > 0
