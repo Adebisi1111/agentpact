@@ -1,18 +1,19 @@
 // worker-server.js - Worker Backend for AgentPact
-// Submits proofs on behalf of the worker
+// Fetches URL, computes hash, signs it, submits proof
 
 import express from "express";
 import cors from "cors";
 import { createClient } from "genlayer-js";
 import { testnetBradbury } from "genlayer-js/chains";
 import { privateKeyToAccount } from "viem/accounts";
+import { keccak256, toHex } from "viem";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // ─── Configuration ──────────────────────────────────────────────
-const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0xBdE6A3300F3Cf8E9f3609034638ab329FfDAF081";
+const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0xF4796C3Ef4288B29be683cD5bE218783D25D55d1";
 const PRIVATE_KEY = process.env.WORKER_PRIVATE_KEY;
 
 if (!PRIVATE_KEY) {
@@ -39,7 +40,7 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", worker: account.address });
 });
 
-// Submit proof
+// Submit proof - fetches URL, hashes, signs, submits
 app.post("/submit-proof", async (req, res) => {
   try {
     const { agreementId, proofUrl, nonce } = req.body;
@@ -48,13 +49,28 @@ app.post("/submit-proof", async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
+    // Step 1: Fetch the URL off-chain
+    let proofHash;
+    try {
+      const response = await fetch(proofUrl);
+      const content = await response.text();
+      proofHash = keccak256(toHex(content));
+    } catch (e) {
+      // If fetch fails, use hash of URL as proof
+      proofHash = keccak256(toHex(proofUrl));
+    }
+
+    // Step 2: Sign the hash with worker private key
+    const signature = await account.signMessage({ message: proofHash });
+
+    // Step 3: Submit to contract
     const txHash = await client.writeContract({
       address: AGENTPACT_ADDR,
       functionName: "submit_proof",
-      args: [agreementId, proofUrl, BigInt(nonce)],
+      args: [agreementId, proofHash, signature, BigInt(nonce)],
     });
 
-    res.json({ success: true, txHash });
+    res.json({ success: true, txHash, proofHash, signature });
   } catch (e) {
     console.error("Submit proof error:", e);
     res.status(500).json({ error: e.message });

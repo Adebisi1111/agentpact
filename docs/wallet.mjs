@@ -12,7 +12,7 @@ export async function createAgreement(agreementId, worker, terms, paymentPerTick
   return res.json();
 }
 
-// Submit proof via worker backend
+// Submit proof via worker backend (fetches URL, hashes, signs, submits)
 export async function submitProof(agreementId, proofUrl, nonce) {
   const res = await fetch(`${WORKER_API}/submit-proof`, {
     method: "POST",
