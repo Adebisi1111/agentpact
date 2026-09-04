@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 // ─── Configuration ──────────────────────────────────────────────
-const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0x9468Da6d0274A2f315B4b5cb48a92cfaD0AA1C7a";
+const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0xBdE6A3300F3Cf8E9f3609034638ab329FfDAF081";
 const PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY;
 const RPC_URL = process.env.GENLAYER_RPC || "https://rpc-bradbury.genlayer.com";
 
