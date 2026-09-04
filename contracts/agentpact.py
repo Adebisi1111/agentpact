@@ -19,6 +19,7 @@ class ServiceAgreement:
     paid_ticks: u256
     status: str
     violations: u256
+    last_proof_hash: str
 
 
 class AgentPact(gl.Contract):
@@ -62,6 +63,7 @@ class AgentPact(gl.Contract):
             paid_ticks=u256(0),
             status="active",
             violations=u256(0),
+            last_proof_hash="",
         )
         
         self.agreements[agreement_id] = agreement
@@ -74,14 +76,13 @@ class AgentPact(gl.Contract):
         self,
         agreement_id: str,
         proof_hash: str,
-        signature: str,
         nonce: u256,
     ) -> bool:
         """
-        Submit proof of work with hash + signature.
+        Submit proof hash of work completed.
         
-        Worker fetches URL off-chain, computes hash, signs it.
-        Contract verifies signature matches worker address.
+        Worker backend fetches URL off-chain, computes hash, submits here.
+        Contract verifies nonce and worker, stores hash, releases payment.
         """
         agreement = self.agreements.get(agreement_id)
         if agreement is None:
@@ -97,32 +98,15 @@ class AgentPact(gl.Contract):
             raise ValueError("Invalid nonce")
         self.nonces[agreement_id] = nonce
         
-        # Verify signature - worker signed the proof_hash
-        is_valid = self._verify_signature(proof_hash, signature, agreement.worker)
+        # Store proof hash
+        agreement.last_proof_hash = proof_hash
+        agreement.paid_ticks += u256(1)
         
-        if is_valid:
-            agreement.paid_ticks += u256(1)
-            
-            if agreement.paid_ticks >= agreement.total_ticks:
-                agreement.status = "completed"
-            
-            self.agreements[agreement_id] = agreement
-            return True
-        else:
-            agreement.violations += u256(1)
-            self.agreements[agreement_id] = agreement
-            return False
-    
-    def _verify_signature(self, proof_hash: str, signature: str, expected_signer: str) -> bool:
-        """Verify that the signature was made by the expected signer."""
-        try:
-            # Recover signer from hash + signature
-            recovered = gl.vm.ecrecover(proof_hash, signature)
-            return str(recovered).lower() == expected_signer.lower()
-        except:
-            # If ecrecover fails, try alternative verification
-            # For demo purposes, accept if signature is non-empty and hash matches terms
-            return len(signature) > 0 and len(proof_hash) > 0
+        if agreement.paid_ticks >= agreement.total_ticks:
+            agreement.status = "completed"
+        
+        self.agreements[agreement_id] = agreement
+        return True
     
     @gl.public.write
     def cancel_agreement(self, agreement_id: str) -> bool:
