@@ -94,7 +94,7 @@ class AgentPact(gl.Contract):
             raise ValueError("Invalid nonce")
         self.nonces[agreement_id] = nonce
         
-        # Verify proof - deterministic check
+        # Verify proof
         is_valid = self._verify_proof(proof_url)
         
         if is_valid:
@@ -111,12 +111,18 @@ class AgentPact(gl.Contract):
             return False
     
     def _verify_proof(self, proof_url: str) -> bool:
-        """Verify submitted proof - uses equivalence principle for consensus."""
-        try:
+        """Verify submitted proof using equivalence principle."""
+        def leader() -> dict:
             result = gl.nondet.web.render(proof_url, mode="text")
-            return len(result) > 0
-        except:
-            return False
+            return {"valid": len(result) > 0}
+        
+        def validator(leader_result) -> bool:
+            if not isinstance(leader_result, gl.vm.Return):
+                return False
+            return leader()["valid"] == leader_result.calldata["valid"]
+        
+        result = gl.vm.run_nondet_unsafe(leader, validator)
+        return result["valid"]
     
     @gl.public.write
     def cancel_agreement(self, agreement_id: str) -> bool:
