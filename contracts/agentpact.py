@@ -1,9 +1,5 @@
 # { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
 
-"""
-AgentPact - Continuously Verifiable Service Agreements for AI Agents
-"""
-
 from genlayer import *
 from dataclasses import dataclass
 from typing import Optional
@@ -51,13 +47,13 @@ class AgentPact(gl.Contract):
         if total_ticks <= 0:
             raise ValueError("Total ticks must be positive")
         
-        if worker == gl.message.sender_address.as_hex:
+        if worker == str(gl.message.sender_address):
             raise ValueError("Worker cannot be the same as hiree")
         
         agreement = ServiceAgreement(
             id=agreement_id,
-            hiree=gl.message.sender_address.as_hex,
-            worker=worker,
+            hiree=str(gl.message.sender_address),
+            worker=str(worker),
             terms=terms,
             payment_per_tick=payment_per_tick,
             interval_seconds=interval_seconds,
@@ -87,7 +83,7 @@ class AgentPact(gl.Contract):
         if agreement.status != "active":
             raise ValueError("Agreement is not active")
         
-        if gl.message.sender_address.as_hex != agreement.worker:
+        if str(gl.message.sender_address) != agreement.worker:
             raise ValueError("Only worker can submit proof")
         
         if nonce <= self.nonces[agreement_id]:
@@ -111,10 +107,10 @@ class AgentPact(gl.Contract):
             return False
     
     def _verify_proof(self, proof_url: str) -> bool:
-        """Verify submitted proof using equivalence principle."""
+        """Verify proof using equivalence principle."""
         def leader() -> dict:
-            result = gl.nondet.web.render(proof_url, mode="text")
-            return {"valid": len(result) > 0}
+            result = gl.nondet.web.get(proof_url)
+            return {"valid": result.status_code >= 200 and result.status_code < 300}
         
         def validator(leader_result) -> bool:
             if not isinstance(leader_result, gl.vm.Return):
@@ -130,7 +126,7 @@ class AgentPact(gl.Contract):
         if agreement is None:
             raise ValueError("Agreement not found")
         
-        if gl.message.sender_address.as_hex != agreement.hiree:
+        if str(gl.message.sender_address) != agreement.hiree:
             raise ValueError("Only hiree can cancel")
         
         if agreement.status != "active":
