@@ -129,7 +129,6 @@ def test_submit_proof_success(direct_vm, direct_deploy, direct_alice, direct_bob
     result = contract.submit_proof(
         agreement_id="SA-001",
         proof_hash="0xabc123",
-        signature="0xdef456",
         nonce=1,
     )
 

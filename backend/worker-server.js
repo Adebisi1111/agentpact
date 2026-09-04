@@ -12,7 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0xd7CD6482fDDF0ABa02B96485b8EC10f1574A2B8B";
+const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0xc99aDf7F652184b00087Ad7f36C994b2854f3294";
 const PRIVATE_KEY = process.env.WORKER_PRIVATE_KEY;
 
 if (!PRIVATE_KEY) {
