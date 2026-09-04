@@ -1,5 +1,5 @@
 // app.js - UI interactions for AgentPact
-import { createAgreement, submitProof, cancelAgreement, getAgreement, getNonce } from "./wallet.mjs";
+import { createAgreement, submitProof, cancelAgreement, getAgreement } from "./wallet.mjs";
 
 function showStatus(id, type, msg) {
   const el = document.getElementById(id);

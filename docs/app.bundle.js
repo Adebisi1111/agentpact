@@ -1,7 +1,8 @@
 // docs/wallet.mjs
-var API = "https://agentpact-backend.onrender.com";
+var HIREE_API = "https://agentpact-backend.onrender.com";
+var WORKER_API = "https://agentpact-worker-backend.onrender.com";
 async function createAgreement(agreementId, worker, terms, paymentPerTick, intervalSeconds, totalPayments) {
-  const res = await fetch(`${API}/create-agreement`, {
+  const res = await fetch(`${HIREE_API}/create-agreement`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ agreementId, worker, terms, paymentPerTick, intervalSeconds, totalPayments })
@@ -9,7 +10,7 @@ async function createAgreement(agreementId, worker, terms, paymentPerTick, inter
   return res.json();
 }
 async function submitProof(agreementId, proofUrl, nonce) {
-  const res = await fetch(`${API}/submit-proof`, {
+  const res = await fetch(`${WORKER_API}/submit-proof`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ agreementId, proofUrl, nonce })
@@ -17,7 +18,7 @@ async function submitProof(agreementId, proofUrl, nonce) {
   return res.json();
 }
 async function cancelAgreement(agreementId) {
-  const res = await fetch(`${API}/cancel`, {
+  const res = await fetch(`${HIREE_API}/cancel`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ agreementId })
@@ -25,7 +26,7 @@ async function cancelAgreement(agreementId) {
   return res.json();
 }
 async function getAgreement(agreementId) {
-  const res = await fetch(`${API}/agreement/${agreementId}`);
+  const res = await fetch(`${HIREE_API}/agreement/${agreementId}`);
   return res.json();
 }
 
