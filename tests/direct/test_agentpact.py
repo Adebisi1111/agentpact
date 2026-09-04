@@ -10,7 +10,7 @@ def test_create_agreement(direct_vm, direct_deploy, direct_alice, direct_bob):
     direct_vm.sender = direct_alice
     aid = contract.create_agreement(
         agreement_id="SA-001",
-        worker=direct_bob,
+        worker=str(direct_bob),
         terms="https://httpbin.org/status/200",
         payment_per_tick=100,
         interval_seconds=300,
@@ -39,7 +39,7 @@ def test_create_agreement_duplicate_id(direct_vm, direct_deploy, direct_alice, d
     direct_vm.sender = direct_alice
     contract.create_agreement(
         agreement_id="SA-001",
-        worker=direct_bob,
+        worker=str(direct_bob),
         terms="https://httpbin.org/status/200",
         payment_per_tick=100,
         interval_seconds=300,
@@ -49,7 +49,7 @@ def test_create_agreement_duplicate_id(direct_vm, direct_deploy, direct_alice, d
     with direct_vm.expect_revert("Agreement ID already exists"):
         contract.create_agreement(
             agreement_id="SA-001",
-            worker=direct_bob,
+            worker=str(direct_bob),
             terms="https://httpbin.org/status/200",
             payment_per_tick=100,
             interval_seconds=300,
@@ -66,7 +66,7 @@ def test_create_agreement_invalid_params(direct_vm, direct_deploy, direct_alice,
     with direct_vm.expect_revert("Payment per tick must be positive"):
         contract.create_agreement(
             agreement_id="SA-001",
-            worker=direct_bob,
+            worker=str(direct_bob),
             terms="https://httpbin.org/status/200",
             payment_per_tick=0,
             interval_seconds=300,
@@ -76,7 +76,7 @@ def test_create_agreement_invalid_params(direct_vm, direct_deploy, direct_alice,
     with direct_vm.expect_revert("Interval must be positive"):
         contract.create_agreement(
             agreement_id="SA-002",
-            worker=direct_bob,
+            worker=str(direct_bob),
             terms="https://httpbin.org/status/200",
             payment_per_tick=100,
             interval_seconds=0,
@@ -86,7 +86,7 @@ def test_create_agreement_invalid_params(direct_vm, direct_deploy, direct_alice,
     with direct_vm.expect_revert("Total ticks must be positive"):
         contract.create_agreement(
             agreement_id="SA-003",
-            worker=direct_bob,
+            worker=str(direct_bob),
             terms="https://httpbin.org/status/200",
             payment_per_tick=100,
             interval_seconds=300,
@@ -103,7 +103,7 @@ def test_create_agreement_same_hiree_worker(direct_vm, direct_deploy, direct_ali
     with direct_vm.expect_revert("Worker cannot be the same as hiree"):
         contract.create_agreement(
             agreement_id="SA-001",
-            worker=direct_alice,
+            worker=str(direct_alice),
             terms="https://httpbin.org/status/200",
             payment_per_tick=100,
             interval_seconds=300,
@@ -118,19 +118,18 @@ def test_submit_proof_success(direct_vm, direct_deploy, direct_alice, direct_bob
     direct_vm.sender = direct_alice
     contract.create_agreement(
         agreement_id="SA-001",
-        worker=direct_bob,
+        worker=str(direct_bob),
         terms="https://httpbin.org/status/200",
         payment_per_tick=100,
         interval_seconds=300,
         total_ticks=10,
     )
 
-    direct_vm.mock_web(r".*httpbin\.org.*", {"status": 200, "body": "OK"})
-
     direct_vm.sender = direct_bob
     result = contract.submit_proof(
         agreement_id="SA-001",
-        proof_url="https://httpbin.org/status/200",
+        proof_hash="0xabc123",
+        signature="0xdef456",
         nonce=1,
     )
 
@@ -147,7 +146,7 @@ def test_submit_proof_wrong_worker(direct_vm, direct_deploy, direct_alice, direc
     direct_vm.sender = direct_alice
     contract.create_agreement(
         agreement_id="SA-001",
-        worker=direct_bob,
+        worker=str(direct_bob),
         terms="https://httpbin.org/status/200",
         payment_per_tick=100,
         interval_seconds=300,
@@ -158,7 +157,8 @@ def test_submit_proof_wrong_worker(direct_vm, direct_deploy, direct_alice, direc
     with direct_vm.expect_revert("Only worker can submit proof"):
         contract.submit_proof(
             agreement_id="SA-001",
-            proof_url="https://httpbin.org/status/200",
+            proof_hash="0xabc123",
+            signature="0xdef456",
             nonce=1,
         )
 
@@ -170,19 +170,18 @@ def test_submit_proof_replay_protection(direct_vm, direct_deploy, direct_alice, 
     direct_vm.sender = direct_alice
     contract.create_agreement(
         agreement_id="SA-001",
-        worker=direct_bob,
+        worker=str(direct_bob),
         terms="https://httpbin.org/status/200",
         payment_per_tick=100,
         interval_seconds=300,
         total_ticks=10,
     )
 
-    direct_vm.mock_web(r".*httpbin\.org.*", {"status": 200, "body": "OK"})
-
     direct_vm.sender = direct_bob
     contract.submit_proof(
         agreement_id="SA-001",
-        proof_url="https://httpbin.org/status/200",
+        proof_hash="0xabc123",
+        signature="0xdef456",
         nonce=1,
     )
 
@@ -190,7 +189,8 @@ def test_submit_proof_replay_protection(direct_vm, direct_deploy, direct_alice, 
     with direct_vm.expect_revert("Invalid nonce"):
         contract.submit_proof(
             agreement_id="SA-001",
-            proof_url="https://httpbin.org/status/200",
+            proof_hash="0xabc123",
+            signature="0xdef456",
             nonce=1,
         )
 
@@ -203,7 +203,8 @@ def test_submit_proof_invalid_agreement(direct_vm, direct_deploy, direct_alice):
     with direct_vm.expect_revert("Agreement not found"):
         contract.submit_proof(
             agreement_id="NONEXISTENT",
-            proof_url="https://httpbin.org/status/200",
+            proof_hash="0xabc123",
+            signature="0xdef456",
             nonce=1,
         )
 
@@ -215,19 +216,18 @@ def test_agreement_completion(direct_vm, direct_deploy, direct_alice, direct_bob
     direct_vm.sender = direct_alice
     contract.create_agreement(
         agreement_id="SA-001",
-        worker=direct_bob,
+        worker=str(direct_bob),
         terms="https://httpbin.org/status/200",
         payment_per_tick=100,
         interval_seconds=300,
         total_ticks=1,
     )
 
-    direct_vm.mock_web(r".*httpbin\.org.*", {"status": 200, "body": "OK"})
-
     direct_vm.sender = direct_bob
     contract.submit_proof(
         agreement_id="SA-001",
-        proof_url="https://httpbin.org/status/200",
+        proof_hash="0xabc123",
+        signature="0xdef456",
         nonce=1,
     )
 
@@ -243,7 +243,7 @@ def test_cancel_agreement(direct_vm, direct_deploy, direct_alice, direct_bob):
     direct_vm.sender = direct_alice
     contract.create_agreement(
         agreement_id="SA-001",
-        worker=direct_bob,
+        worker=str(direct_bob),
         terms="https://httpbin.org/status/200",
         payment_per_tick=100,
         interval_seconds=300,
@@ -265,7 +265,7 @@ def test_cancel_agreement_not_hiree(direct_vm, direct_deploy, direct_alice, dire
     direct_vm.sender = direct_alice
     contract.create_agreement(
         agreement_id="SA-001",
-        worker=direct_bob,
+        worker=str(direct_bob),
         terms="https://httpbin.org/status/200",
         payment_per_tick=100,
         interval_seconds=300,
@@ -284,7 +284,7 @@ def test_get_nonce(direct_vm, direct_deploy, direct_alice, direct_bob):
     direct_vm.sender = direct_alice
     contract.create_agreement(
         agreement_id="SA-001",
-        worker=direct_bob,
+        worker=str(direct_bob),
         terms="https://httpbin.org/status/200",
         payment_per_tick=100,
         interval_seconds=300,
@@ -293,11 +293,11 @@ def test_get_nonce(direct_vm, direct_deploy, direct_alice, direct_bob):
 
     assert contract.get_nonce("SA-001") == 0
 
-    direct_vm.mock_web(r".*httpbin\.org.*", {"status": 200, "body": "OK"})
     direct_vm.sender = direct_bob
     contract.submit_proof(
         agreement_id="SA-001",
-        proof_url="https://httpbin.org/status/200",
+        proof_hash="0xabc123",
+        signature="0xdef456",
         nonce=1,
     )
 
@@ -311,7 +311,7 @@ def test_submit_proof_inactive_agreement(direct_vm, direct_deploy, direct_alice,
     direct_vm.sender = direct_alice
     contract.create_agreement(
         agreement_id="SA-001",
-        worker=direct_bob,
+        worker=str(direct_bob),
         terms="https://httpbin.org/status/200",
         payment_per_tick=100,
         interval_seconds=300,
@@ -323,6 +323,7 @@ def test_submit_proof_inactive_agreement(direct_vm, direct_deploy, direct_alice,
     with direct_vm.expect_revert("Agreement is not active"):
         contract.submit_proof(
             agreement_id="SA-001",
-            proof_url="https://httpbin.org/status/200",
+            proof_hash="0xabc123",
+            signature="0xdef456",
             nonce=1,
         )
