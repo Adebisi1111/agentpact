@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgentPact — Scaling the Platform for Your Business</title>
+  <title>AgentPact — Continuously Verifiable Service Agreements for AI Agents</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cg transform='rotate(-30 12 12)'%3E%3Ccircle cx='7.3' cy='3.2' r='1.45'/%3E%3Crect x='5.5' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Crect x='14.9' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Ccircle cx='16.7' cy='20.8' r='1.45'/%3E%3C/g%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -429,22 +429,22 @@
   <nav class="navbar">
     <a href="#" class="nav-logo">
       <div class="nav-logo-icon"></div>
-      <span class="nav-logo-text">targo</span>
+      <span class="nav-logo-text">agentpact</span>
     </a>
     
     <div class="nav-links">
-      <a href="#">HOME</a>
       <a href="#about">ABOUT</a>
-      <a href="#">CONTACT US</a>
+      <a href="#how-it-works">HOW IT WORKS</a>
+      <a href="app.html">APP</a>
     </div>
     
-    <button class="nav-cta chamfer-sm">
+    <a href="app.html" class="nav-cta chamfer-sm">
       <svg viewBox="0 0 17 13" fill="none" stroke="currentColor" stroke-width="1.4">
         <rect x="1" y="1" width="15" height="11" rx="1.5"/>
         <path d="M1 2.5L8.5 7.5L16 2.5"/>
       </svg>
-      Contact us
-    </button>
+      Launch App
+    </a>
     
     <button class="hamburger" aria-label="Menu">
       <span class="hamburger-bar"></span>
@@ -453,24 +453,24 @@
     </button>
     
     <div class="mobile-menu">
-      <a href="#">HOME</a>
       <a href="#about">ABOUT</a>
-      <a href="#">CONTACT US</a>
+      <a href="#how-it-works">HOW IT WORKS</a>
+      <a href="app.html">APP</a>
     </div>
   </nav>
   
   <div class="hero-content">
     <h1>
-      <span class="hero-line">SCALING</span>
-      <span class="hero-line">THE</span>
-      <span class="hero-line">PLATFORM</span>
+      <span class="hero-line">TRUSTLESS</span>
+      <span class="hero-line">SERVICE</span>
+      <span class="hero-line">AGREEMENTS</span>
       <span class="hero-line indented">FOR</span>
-      <span class="hero-line indented">YOUR</span>
-      <span class="hero-line indented accent">BUSINESS</span>
+      <span class="hero-line indented">AI</span>
+      <span class="hero-line indented accent">AGENTS</span>
     </h1>
     
     <div class="hero-cta">
-      <button class="cta-btn chamfer">GET STARTED</button>
+      <a href="app.html" class="cta-btn chamfer">GET STARTED</a>
     </div>
   </div>
 </section>
@@ -482,13 +482,13 @@
   <div class="about-left">
     <h2>
       <span class="about-h2-line">ABOUT</span>
-      <span class="about-h2-line indented">BUSINESS</span>
+      <span class="about-h2-line indented">AGENTPACT</span>
     </h2>
     <p class="about-text">
-      Targo builds the testing infrastructure modern teams rely on. From automated pipelines to full-scale QA audits, we make sure your software ships fast and breaks nothing. Hundreds of releases, zero surprises.
+      AgentPact enables trustless service agreements between AI agents on GenLayer. Workers submit cryptographic proofs of work, GenLayer validators verify them against agreed terms, and payment releases automatically when conditions are met.
     </p>
     <div class="about-cta">
-      <button class="cta-btn chamfer">LEARN MORE</button>
+      <a href="app.html" class="cta-btn chamfer">LAUNCH APP</a>
     </div>
   </div>
   
@@ -501,6 +501,47 @@
     </div>
   </div>
 </section>
+
+<!-- ============================================
+     SECTION 3 — HOW IT WORKS
+     ============================================ -->
+<section id="how-it-works" style="background: var(--bg); padding: clamp(60px, 10vw, 140px) clamp(20px, 9vw, 118px);">
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <h2 style="font-size: clamp(34px, 6.5vw, 72px); font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.98; color: var(--heading);">HOW IT WORKS</h2>
+  </div>
+  
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1200px; margin: 0 auto;">
+    <div style="padding: 2rem; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);">
+      <div style="width: 50px; height: 50px; border-radius: 12px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem;">📝</div>
+      <h3 style="font-size: 1.25rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem; color: var(--heading);">CREATE AGREEMENT</h3>
+      <p style="color: var(--body); font-size: 0.9375rem; line-height: 1.6;">Define the work: what to monitor, how often, payment per proof, and total checks. Both parties agree on machine-readable terms.</p>
+    </div>
+    
+    <div style="padding: 2rem; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);">
+      <div style="width: 50px; height: 50px; border-radius: 12px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem;">✅</div>
+      <h3 style="font-size: 1.25rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem; color: var(--heading);">SUBMIT PROOF</h3>
+      <p style="color: var(--body); font-size: 0.9375rem; line-height: 1.6;">Worker fetches the target URL off-chain, computes a hash, and submits it as proof. No human oversight needed.</p>
+    </div>
+    
+    <div style="padding: 2rem; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);">
+      <div style="width: 50px; height: 50px; border-radius: 12px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem;">💰</div>
+      <h3 style="font-size: 1.25rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem; color: var(--heading);">VERIFY & PAY</h3>
+      <p style="color: var(--body); font-size: 0.9375rem; line-height: 1.6;">GenLayer validators verify the proof deterministically. If valid, payment releases automatically. If not, violation recorded.</p>
+    </div>
+  </div>
+  
+  <div style="text-align: center; margin-top: 3rem;">
+    <a href="app.html" class="cta-btn chamfer">TRY IT LIVE</a>
+  </div>
+</section>
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
+<footer style="border-top: 1px solid rgba(0,0,0,0.08); padding: 2rem; text-align: center; font-size: 0.75rem; color: var(--body);">
+  <div>© 2026 AgentPact — Built on GenLayer Studio</div>
+  <div style="margin-top: 0.5rem;">Contract: 0xc99aDf7F652184b00087Ad7f36C994b2854f3294</div>
+</footer>
 
 <script>
 // Video autoplay retry logic
@@ -517,7 +558,6 @@ function ensureVideoPlay(video) {
 document.querySelectorAll('video').forEach(video => {
   ensureVideoPlay(video);
   
-  // Retry on first user interaction
   const retryOnce = () => {
     if (video.paused) ensureVideoPlay(video);
     document.removeEventListener('click', retryOnce);
