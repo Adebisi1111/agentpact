@@ -96,6 +96,9 @@
       text-transform: uppercase;
     }
     
+    [data-theme="dark"] .nav-links a { color: #e0e0e0; }
+    [data-theme="dark"] .nav-links a:hover { color: var(--accent); }
+    
     .theme-toggle {
       margin-left: auto;
       background: none;
@@ -174,6 +177,11 @@
       border-radius: 16px;
       padding: 1.5rem;
       transition: background 0.3s, border 0.3s;
+    }
+    
+    [data-theme="dark"] .demo-card {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.15);
     }
     
     .demo-card h3 {
@@ -269,12 +277,23 @@
     .output.error { color: #dc2626; }
     
     [data-theme="dark"] .output {
-      background: rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.08);
       color: #4ade80;
-      border-color: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.15);
     }
     
     [data-theme="dark"] .output.error { color: #f87171; }
+    
+    [data-theme="dark"] .input {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+    }
+    
+    [data-theme="dark"] .input::placeholder { color: rgba(255,255,255,0.4); }
+    [data-theme="dark"] .input:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.12);
+    }
     
     /* Footer */
     footer {
