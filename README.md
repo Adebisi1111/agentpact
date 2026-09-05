@@ -1,69 +1,70 @@
-# AgentPact — Continuously Verifiable Service Agreements for AI Agents
+# AgentPact
 
-## Overview
+**Continuously verifiable service agreements for AI agents.**
 
-AgentPact enables trustless service agreements between AI agents on GenLayer. Workers submit cryptographic proofs of work, GenLayer validators verify them against agreed terms, and payment releases automatically when conditions are met.
+When one agent hires another, the agreement shouldn't just define the job. It should define how the work will be verified and what happens if the agent fails to deliver.
 
 ## How It Works
 
-1. **Hiree creates an agreement** — defines worker, terms (URL to monitor), payment per check, interval, and total payments
-2. **Worker submits proof** — sends URL + nonce to the contract
-3. **GenLayer validators verify** — fetch the URL via `gl.nondet.web.get` and confirm it returns a valid response
-4. **Payment releases automatically** — if verification passes, worker gets paid
-5. **Repeat** until all checks are done or agreement is cancelled
+The agreement is machine-readable and includes:
+- What needs to be done (URL to monitor)
+- How often it needs to be done (interval in seconds)
+- Uptime requirements (e.g., 99%)
+- Response time requirements (e.g., 500ms)
+- What counts as valid proof (HTTP 200 + response time)
+- How payment is released (per successful check)
+- What happens when requirements aren't met (penalties + suspension)
 
-## Architecture
+The worker submits signed proof as it goes. GenLayer verifies that proof against the agreed conditions.
 
-```
-Frontend (GitHub Pages)
-    ↓
-Hiree Backend (Render) — creates and cancels agreements
-    ↓
-GenLayer Consensus Main Contract
-    ↓
-AgentPact Smart Contract (Bradbury Testnet)
-    ↑
-Worker Backend (Render) — submits proofs
-```
+**If requirements are met** → next payment releases automatically.
+**If they aren't** → payment stops, penalties applied, and agreement suspended after 3 consecutive failures.
 
-## Contract Address
+Performance is checked while the work is happening — not after disputes.
 
-**AgentPact**: `0x69Ba51EAC7ED6e104B0c26662eeEdEAaEFd82F8B`
+## Key Features
 
-**Explorer**: https://explorer-bradbury.genlayer.com/address/0x69Ba51EAC7ED6e104B0c26662eeEdEAaEFd82F8B
+- **HTTP Status Verification** — Contract checks if the target URL returns 200
+- **Response Time Tracking** — Measures how long the worker takes to respond
+- **Consecutive Failure Detection** — Suspends agreement after 3 failed checks
+- **Automated Penalties** — Payment stops automatically when suspended
+- **ETH Escrow** — Hiree deposits funds upfront, released as work is verified
+- **Refund on Cancellation** — Unused ticks refunded minus penalties
+- **Signed Proofs** — Worker signs each proof with private key
+- **Automated Scheduler** — Worker backend checks and submits proofs automatically
+- **On-Chain Transparency** — All proofs, violations, and status stored on GenLayer
 
-## API Endpoints
+## Live
 
-### Hiree Backend
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/health` | Health check |
-| POST | `/create-agreement` | Create new agreement |
-| POST | `/cancel` | Cancel agreement |
-| GET | `/agreement/:id` | Read agreement |
-| GET | `/nonce/:id` | Read nonce |
+- **Landing:** https://adebisi1111.github.io/agentpact/
+- **App:** https://adebisi1111.github.io/agentpact/app.html
+- **Contract:** `0xd88Dd9138eC5EFec0A1826Fba756938966Ad45e5` (GenLayer Studio)
 
-### Worker Backend
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/health` | Health check |
-| POST | `/submit-proof` | Submit proof of work |
-| GET | `/agreement/:id` | Read agreement |
-| GET | `/nonce/:id` | Read nonce |
+## Who It's For
 
-## Testing
+- **Developers** building agentic workflows where one agent depends on another
+- **Companies** running autonomous agents that delegate recurring tasks
+- **Agent developers** offering specialized services who want automatic payment
 
-```bash
-# Run direct-mode tests
-pytest tests/direct/ -v
-```
+## Why Now?
 
-## Built With
+Agents are starting to take actions, spend money, run continuously, and hand work off to other agents.
+
+That creates a trust problem. If one agent depends on another, it needs to know:
+- What they agreed to
+- Whether the work is actually being done
+- What happens when it isn't
+
+People already use contracts, SLAs, monitoring, and penalties. Agents need a way to do the same thing — without requiring a human to supervise every step.
+
+AgentPact is the layer that lets agents have ongoing service relationships where performance can be verified and payment can follow actual delivery.
+
+## Tech Stack
 
 - **GenLayer** — AI-native blockchain for intelligent contracts
 - **Python** — Smart contract development
 - **Node.js/Express** — Backend relay servers
-- **HTML/CSS/JS** — Frontend UI
+- **Quantico** — Typography
 
 ## License
 
