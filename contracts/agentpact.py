@@ -1,9 +1,5 @@
 # { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
 
-"""
-AgentPact - Continuously Verifiable Service Agreements for AI Agents
-"""
-
 from genlayer import *
 from dataclasses import dataclass
 from typing import Optional
@@ -23,17 +19,20 @@ class ServiceAgreement:
     paid_ticks: u256
     status: str
     violations: u256
+    last_proof_hash: str
 
 
 class AgentPact(gl.Contract):
     agreements: TreeMap[str, ServiceAgreement]
     nonces: TreeMap[str, u256]
+    agreement_counter: u256
+    proof_counter: u256
     
     @gl.public.write
     def create_agreement(
         self,
         agreement_id: str,
-        worker: Address,
+        worker: str,
         terms: str,
         payment_per_tick: u256,
         interval_seconds: u256,
@@ -51,13 +50,13 @@ class AgentPact(gl.Contract):
         if total_ticks <= 0:
             raise ValueError("Total ticks must be positive")
         
-        if Address(worker) == gl.message.sender_address:
+        if worker == str(gl.message.sender_address):
             raise ValueError("Worker cannot be the same as hiree")
         
         agreement = ServiceAgreement(
             id=agreement_id,
-            hiree=gl.message.sender_address.as_hex,
-            worker=Address(worker).as_hex,
+            hiree=str(gl.message.sender_address),
+            worker=str(worker),
             terms=terms,
             payment_per_tick=payment_per_tick,
             interval_seconds=interval_seconds,
@@ -66,10 +65,12 @@ class AgentPact(gl.Contract):
             paid_ticks=u256(0),
             status="active",
             violations=u256(0),
+            last_proof_hash="",
         )
         
         self.agreements[agreement_id] = agreement
         self.nonces[agreement_id] = u256(0)
+        self.agreement_counter += u256(1)
         
         return agreement_id
     
@@ -77,7 +78,7 @@ class AgentPact(gl.Contract):
     def submit_proof(
         self,
         agreement_id: str,
-        proof_url: str,
+        proof_hash: str,
         nonce: u256,
     ) -> bool:
         agreement = self.agreements.get(agreement_id)
@@ -87,34 +88,22 @@ class AgentPact(gl.Contract):
         if agreement.status != "active":
             raise ValueError("Agreement is not active")
         
-        if gl.message.sender_address.as_hex != agreement.worker:
+        if str(gl.message.sender_address) != agreement.worker:
             raise ValueError("Only worker can submit proof")
         
         if nonce <= self.nonces[agreement_id]:
             raise ValueError("Invalid nonce")
         self.nonces[agreement_id] = nonce
         
-        is_valid = self._verify_proof(proof_url)
+        agreement.last_proof_hash = proof_hash
+        agreement.paid_ticks += u256(1)
+        self.proof_counter += u256(1)
         
-        if is_valid:
-            agreement.paid_ticks += u256(1)
-            
-            if agreement.paid_ticks >= agreement.total_ticks:
-                agreement.status = "completed"
-            
-            self.agreements[agreement_id] = agreement
-            return True
-        else:
-            agreement.violations += u256(1)
-            self.agreements[agreement_id] = agreement
-            return False
-    
-    def _verify_proof(self, proof_url: str) -> bool:
-        try:
-            result = gl.nondet.web.render(proof_url, mode="text")
-            return len(result) > 0
-        except:
-            return False
+        if agreement.paid_ticks >= agreement.total_ticks:
+            agreement.status = "completed"
+        
+        self.agreements[agreement_id] = agreement
+        return True
     
     @gl.public.write
     def cancel_agreement(self, agreement_id: str) -> bool:
@@ -122,7 +111,7 @@ class AgentPact(gl.Contract):
         if agreement is None:
             raise ValueError("Agreement not found")
         
-        if gl.message.sender_address.as_hex != agreement.hiree:
+        if str(gl.message.sender_address) != agreement.hiree:
             raise ValueError("Only hiree can cancel")
         
         if agreement.status != "active":
@@ -139,3 +128,10 @@ class AgentPact(gl.Contract):
     @gl.public.view
     def get_nonce(self, agreement_id: str) -> u256:
         return self.nonces.get(agreement_id, u256(0))
+    
+    @gl.public.view
+    def get_stats(self) -> dict:
+        return {
+            "total_agreements": self.agreement_counter,
+            "total_proofs": self.proof_counter,
+        }
