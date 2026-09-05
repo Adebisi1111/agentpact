@@ -23,6 +23,15 @@
       --dark: #1a1c1e;
     }
     
+    [data-theme="dark"] {
+      --bg: #0a0a0a;
+      --bg-alt: #111111;
+      --heading: #ffffff;
+      --nav: #a0a0a0;
+      --body: #888888;
+      --dark: #0a0a0a;
+    }
+    
     body {
       font-family: 'Quantico', 'Arial Narrow', sans-serif;
       background: var(--bg);
@@ -162,6 +171,24 @@
       cursor: pointer;
       padding: 8px;
     }
+    
+    .theme-toggle {
+      margin-left: auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      color: var(--nav);
+      transition: color 0.2s;
+    }
+    
+    .theme-toggle:hover { color: var(--accent); }
+    
+    .theme-icon-light { width: 20px; height: 20px; display: block; }
+    .theme-icon-dark { width: 20px; height: 20px; display: none; }
+    
+    [data-theme="dark"] .theme-icon-light { display: none; }
+    [data-theme="dark"] .theme-icon-dark { display: block; }
     
     .hamburger-bar {
       display: block;
@@ -419,6 +446,16 @@
       <a href="app.html">APP</a>
     </div>
     
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+      <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+      <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+    
     <a href="app.html" class="nav-cta chamfer-sm">
       <svg viewBox="0 0 17 13" fill="none" stroke="currentColor" stroke-width="1.4">
         <rect x="1" y="1" width="15" height="11" rx="1.5"/>
@@ -552,6 +589,19 @@ document.querySelectorAll('video').forEach(video => {
 document.querySelector('.hamburger').addEventListener('click', () => {
   document.querySelector('.mobile-menu').classList.toggle('open');
 });
+
+// Theme toggle
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+}
+
+// Restore saved theme
+const saved = localStorage.getItem('theme');
+if (saved) document.documentElement.setAttribute('data-theme', saved);
 </script>
 
 </body>
