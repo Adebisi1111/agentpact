@@ -20,11 +20,19 @@ class ServiceAgreement:
     status: str
     violations: u256
     last_proof_hash: str
+    last_check_status: str
+    last_response_time: u256
+    consecutive_failures: u256
+    uptime_required: u256
+    response_time_required: u256
+    penalty_rate: u256
 
 
 class AgentPact(gl.Contract):
     agreements: TreeMap[str, ServiceAgreement]
     nonces: TreeMap[str, u256]
+    agreement_counter: u256
+    proof_counter: u256
     
     @gl.public.write
     def create_agreement(
@@ -35,6 +43,9 @@ class AgentPact(gl.Contract):
         payment_per_tick: u256,
         interval_seconds: u256,
         total_ticks: u256,
+        uptime_required: u256,
+        response_time_required: u256,
+        penalty_rate: u256,
     ) -> str:
         if self.agreements.get(agreement_id) is not None:
             raise ValueError("Agreement ID already exists")
@@ -64,10 +75,17 @@ class AgentPact(gl.Contract):
             status="active",
             violations=u256(0),
             last_proof_hash="",
+            last_check_status="none",
+            last_response_time=u256(0),
+            consecutive_failures=u256(0),
+            uptime_required=uptime_required,
+            response_time_required=response_time_required,
+            penalty_rate=penalty_rate,
         )
         
         self.agreements[agreement_id] = agreement
         self.nonces[agreement_id] = u256(0)
+        self.agreement_counter += u256(1)
         
         return agreement_id
     
@@ -76,14 +94,11 @@ class AgentPact(gl.Contract):
         self,
         agreement_id: str,
         proof_hash: str,
+        status_code: u256,
+        response_time: u256,
         nonce: u256,
+        signature: str,
     ) -> bool:
-        """
-        Submit proof hash of work completed.
-        
-        Worker backend fetches URL off-chain, computes hash, submits here.
-        Contract verifies nonce and worker, stores hash, releases payment.
-        """
         agreement = self.agreements.get(agreement_id)
         if agreement is None:
             raise ValueError("Agreement not found")
@@ -98,12 +113,26 @@ class AgentPact(gl.Contract):
             raise ValueError("Invalid nonce")
         self.nonces[agreement_id] = nonce
         
-        # Store proof hash
         agreement.last_proof_hash = proof_hash
-        agreement.paid_ticks += u256(1)
+        agreement.last_response_time = response_time
         
-        if agreement.paid_ticks >= agreement.total_ticks:
-            agreement.status = "completed"
+        is_valid = status_code == u256(200) and response_time <= agreement.response_time_required
+        
+        if is_valid:
+            agreement.last_check_status = "success"
+            agreement.paid_ticks += u256(1)
+            agreement.consecutive_failures = u256(0)
+            self.proof_counter += u256(1)
+            
+            if agreement.paid_ticks >= agreement.total_ticks:
+                agreement.status = "completed"
+        else:
+            agreement.last_check_status = "failed"
+            agreement.violations += u256(1)
+            agreement.consecutive_failures += u256(1)
+            
+            if agreement.consecutive_failures >= u256(3):
+                agreement.status = "suspended"
         
         self.agreements[agreement_id] = agreement
         return True
@@ -131,3 +160,23 @@ class AgentPact(gl.Contract):
     @gl.public.view
     def get_nonce(self, agreement_id: str) -> u256:
         return self.nonces.get(agreement_id, u256(0))
+    
+    @gl.public.view
+    def get_stats(self) -> dict:
+        return {
+            "total_agreements": self.agreement_counter,
+            "total_proofs": self.proof_counter,
+        }
+    
+    @gl.public.view
+    def get_uptime_percentage(self, agreement_id: str) -> u256:
+        agreement = self.agreements.get(agreement_id)
+        if agreement is None:
+            return u256(0)
+        
+        total_checks = agreement.paid_ticks + agreement.violations
+        if total_checks == u256(0):
+            return u256(100)
+        
+        uptime = (agreement.paid_ticks * u256(100)) / total_checks
+        return uptime
