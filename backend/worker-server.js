@@ -1,5 +1,5 @@
 // worker-server.js - Worker Backend for AgentPact
-// Fetches URL, checks status, measures response time, submits proof
+// Fetches URL, checks status, measures response time, signs proof, submits
 
 import express from "express";
 import cors from "cors";
@@ -12,7 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0x1F793fA0c19c320f39756b3450F10d65B8024E6b";
+const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0xd073E5A88c0c1f3586BEC4c2d0f076E05c404908";
 const PRIVATE_KEY = process.env.WORKER_PRIVATE_KEY;
 
 if (!PRIVATE_KEY) {
@@ -55,13 +55,17 @@ app.post("/submit-proof", async (req, res) => {
       responseTime = 0;
     }
 
+    // Sign the proof with worker private key
+    const message = `proof:${agreementId}:${proofHash}:${nonce}`;
+    const signature = await account.signMessage({ message });
+
     const txHash = await client.writeContract({
       address: AGENTPACT_ADDR,
       functionName: "submit_proof",
-      args: [agreementId, proofHash, BigInt(statusCode), BigInt(responseTime), BigInt(nonce)],
+      args: [agreementId, proofHash, BigInt(statusCode), BigInt(responseTime), BigInt(nonce), signature],
     });
 
-    res.json({ success: true, txHash, proofHash, statusCode, responseTime });
+    res.json({ success: true, txHash, proofHash, statusCode, responseTime, signature });
   } catch (e) {
     console.error("Submit proof error:", e);
     res.status(500).json({ error: e.message });
@@ -80,6 +84,16 @@ app.get("/agreement/:id", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+// Automated scheduler - runs every 60 seconds
+async function checkAgreements() {
+  console.log("Running automated check...");
+  // In production: fetch all active agreements, check deadlines, submit proofs
+  // For now, this is a placeholder for the cron job
+}
+
+// Run scheduler every 60 seconds
+setInterval(checkAgreements, 60000);
 
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => console.log(`Worker server running on port ${PORT}`));
