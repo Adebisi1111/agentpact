@@ -27,7 +27,7 @@
     
     [data-theme="dark"] {
       --bg: #0a0a0a;
-      --bg-alt: #111111;
+      --bg-alt: #141414;
       --heading: #ffffff;
       --nav: #a0a0a0;
       --body: #888888;
@@ -64,6 +64,10 @@
       background: var(--bg);
       border-bottom: 1px solid rgba(0,0,0,0.08);
       transition: background 0.3s;
+    }
+    
+    [data-theme="dark"] .navbar {
+      border-bottom-color: rgba(255,255,255,0.08);
     }
     
     .nav-logo {
@@ -160,6 +164,26 @@
       padding: clamp(40px, 6vw, 80px) clamp(20px, 4vw, 48px);
     }
     
+    .app-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .app-header h1 {
+      font-size: clamp(34px, 6.5vw, 72px);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
+      line-height: 0.98;
+      color: var(--heading);
+    }
+    
+    .app-header p {
+      color: var(--body);
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+    
     .app-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -212,6 +236,17 @@
       outline: none;
       border-color: var(--accent);
       background: rgba(255,255,255,0.08);
+    }
+    
+    [data-theme="dark"] .input {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+    }
+    
+    [data-theme="dark"] .input::placeholder { color: rgba(255,255,255,0.4); }
+    [data-theme="dark"] .input:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.12);
     }
     
     .input-row {
@@ -284,17 +319,6 @@
     
     [data-theme="dark"] .output.error { color: #f87171; }
     
-    [data-theme="dark"] .input {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.2);
-    }
-    
-    [data-theme="dark"] .input::placeholder { color: rgba(255,255,255,0.4); }
-    [data-theme="dark"] .input:focus {
-      border-color: var(--accent);
-      background: rgba(255,255,255,0.12);
-    }
-    
     /* Footer */
     footer {
       border-top: 1px solid rgba(0,0,0,0.08);
@@ -302,7 +326,19 @@
       text-align: center;
       font-size: 0.75rem;
       color: var(--body);
+      transition: border-color 0.3s;
     }
+    
+    [data-theme="dark"] footer {
+      border-top-color: rgba(255,255,255,0.08);
+    }
+    
+    footer a {
+      color: var(--body);
+      text-decoration: none;
+    }
+    
+    footer a:hover { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -316,7 +352,7 @@
   <div class="nav-links">
     <a href="index.html#about">ABOUT</a>
     <a href="index.html#how-it-works">HOW IT WORKS</a>
-    <a href="app.html">APP</a>
+    <a href="index.html#why">WHY</a>
   </div>
   
   <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
@@ -338,14 +374,14 @@
   <div class="mobile-menu">
     <a href="index.html#about">ABOUT</a>
     <a href="index.html#how-it-works">HOW IT WORKS</a>
-    <a href="app.html">APP</a>
+    <a href="index.html#why">WHY</a>
   </div>
 </nav>
 
 <section class="app-section">
-  <div style="text-align: center; margin-bottom: 3rem;">
-    <h1 style="font-size: clamp(34px, 6.5vw, 72px); font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.98; color: var(--heading);">AGENTPACT APP</h1>
-    <p style="color: var(--body); font-size: 1rem; margin-top: 1rem;">Create agreements, submit proofs, and verify — all on GenLayer Studio</p>
+  <div class="app-header">
+    <h1>AGENTPACT APP</h1>
+    <p>Create agreements, submit proofs, and verify — all on GenLayer Studio</p>
   </div>
   
   <div class="app-grid">
@@ -382,8 +418,9 @@
 </section>
 
 <footer>
+  <div style="margin-bottom:0.5rem"><a href="https://github.com/Adebisi1111/agentpact" target="_blank">GitHub</a> · <a href="index.html">Home</a> · <a href="index.html#about">About</a></div>
   <div>© 2026 AgentPact — Built on GenLayer Studio</div>
-  <div style="margin-top: 0.5rem;">Contract: 0xc99aDf7F652184b00087Ad7f36C994b2854f3294</div>
+  <div style="margin-top:0.5rem;opacity:0.7">Contract: 0xc99aDf7F652184b00087Ad7f36C994b2854f3294</div>
 </footer>
 
 <script>
