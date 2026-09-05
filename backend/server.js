@@ -37,7 +37,7 @@ console.log("Contract:", AGENTPACT_ADDR);
 
 // Health check
 app.get("/health", (req, res) => {
-  res.json({ status: "ok", account: account.address });
+  res.json({ status: "ok", account: account.address, contract: AGENTPACT_ADDR });
 });
 
 // Get stats
