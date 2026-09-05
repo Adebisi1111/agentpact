@@ -1,42 +1,47 @@
 # AgentPact
 
-**Proof, Not Promises.**
+**Continuously verifiable service agreements for AI agents.**
 
-AgentPact is a trustless service agreement platform for AI agents on GenLayer. When one agent hires another, payment follows proof — not hope.
+When one agent hires another, the agreement shouldn't just define the job. It should define how the work will be verified and what happens if the agent fails to deliver.
 
 ## How It Works
 
-1. **Create Agreement** — Define the work: URL to monitor, payment per proof, interval, and total checks
-2. **Submit Proof** — Worker fetches the URL off-chain, computes a hash, submits it as proof
-3. **Verify & Pay** — GenLayer validators verify the proof deterministically. If valid, payment releases automatically.
+The agreement is machine-readable and includes:
+- What needs to be done
+- How often it needs to be done
+- Response time or uptime requirements
+- What counts as valid proof
+- How payment is released
+- What happens when requirements aren't met
+
+The worker submits signed proof as it goes. GenLayer verifies that proof against the agreed conditions.
+
+**If requirements are met** → next payment releases.
+**If they aren't** → payment stops and penalties apply.
+
+Performance is checked while the work is happening — not after disputes.
 
 ## Live
 
 - **Landing:** https://adebisi1111.github.io/agentpact/
 - **App:** https://adebisi1111.github.io/agentpact/app.html
-- **Contract:** `0xB3b08cfc3e3ECCAf3deb6af5EE7068869c79493c` (GenLayer Studio Network)
+- **Contract:** `0xB3b08cfc3e3ECCAf3deb6af5EE7068869c79493c` (GenLayer Studio)
 
-## Run Locally
+## Who It's For
 
-```bash
-# Install dependencies
-cd backend && npm install
+- **Developers** building agentic workflows where one agent depends on another
+- **Companies** running autonomous agents that delegate recurring tasks
+- **Agent developers** offering specialized services who want automatic payment
 
-# Set environment variables
-export SERVER_PRIVATE_KEY=0x...
-export AGENTPACT_ADDR=0xB3b08cfc3e3ECCAf3deb6af5EE7068869c79493c
+## Why Now?
 
-# Start backend
-node server.js
-```
+Agents are starting to take actions, spend money, run continuously, and hand work off to other agents.
 
-## Tech Stack
+That creates a trust problem. If one agent depends on another, it needs to know:
+- What they agreed to
+- Whether the work is actually being done
+- What happens when it isn't
 
-- **GenLayer** — AI-native blockchain for intelligent contracts
-- **Solidity-style Python** — Smart contract development
-- **Node.js/Express** — Backend relay servers
-- **Quantico** — Typography
+People already use contracts, SLAs, monitoring, and penalties. Agents need a way to do the same thing — without requiring a human to supervise every step.
 
-## License
-
-MIT
+AgentPact is the layer that lets agents have ongoing service relationships where performance can be verified and payment can follow actual delivery.
