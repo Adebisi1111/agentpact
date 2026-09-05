@@ -7,239 +7,364 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cg transform='rotate(-30 12 12)'%3E%3Ccircle cx='7.3' cy='3.2' r='1.45'/%3E%3Crect x='5.5' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Crect x='14.9' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Ccircle cx='16.7' cy='20.8' r='1.45'/%3E%3C/g%3E%3C/svg%3E">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    html,body{background:#000;color:#fff}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;line-height:1.5;overflow-x:hidden}
-    header{border-bottom:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(12px);background:rgba(0,0,0,0.8);position:sticky;top:0;z-index:50}
+    html{scroll-behavior:smooth}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#000;color:#fff;line-height:1.6;overflow-x:hidden}
+    
+    /* Header */
+    header{border-bottom:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(20px);background:rgba(0,0,0,0.8);position:sticky;top:0;z-index:100}
     .header-inner{max-width:1200px;margin:0 auto;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}
-    .logo{display:flex;align-items:center;gap:0.75rem}
-    .logo-icon{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#06b6d4,#3b82f6);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;box-shadow:0 4px 12px rgba(6,182,212,0.3)}
-    .logo h1{font-size:1.2rem;font-weight:700}
-    .logo span{font-size:0.7rem;color:rgba(255,255,255,0.5)}
-    .btn{padding:0.5rem 1rem;border-radius:8px;font-weight:500;font-size:0.875rem;cursor:pointer;transition:all 0.2s;border:none;display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none}
-    .btn-primary{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
-    .btn-primary:hover{background:rgba(255,255,255,0.2)}
-    .btn-gradient{background:linear-gradient(135deg,#06b6d4,#3b82f6);color:#fff;box-shadow:0 4px 12px rgba(6,182,212,0.3)}
-    .btn-gradient:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(6,182,212,0.4)}
+    .logo{display:flex;align-items:center;gap:0.75rem;text-decoration:none;color:#fff}
+    .logo-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#06b6d4,#3b82f6);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem}
+    .logo-text{font-size:1.1rem;font-weight:700;letter-spacing:-0.02em}
+    .logo-text span{font-weight:400;color:rgba(255,255,255,0.5)}
+    .nav{display:flex;gap:2rem;align-items:center}
+    .nav a{color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.875rem;font-weight:500;transition:color 0.2s}
+    .nav a:hover{color:#fff}
+    .btn{padding:0.625rem 1.25rem;border-radius:8px;font-weight:600;font-size:0.875rem;cursor:pointer;transition:all 0.2s;border:none;display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none}
+    .btn-primary{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.15)}
+    .btn-primary:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3)}
+    .btn-gradient{background:linear-gradient(135deg,#06b6d4,#3b82f6);color:#fff;box-shadow:0 4px 16px rgba(6,182,212,0.25)}
+    .btn-gradient:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(6,182,212,0.35)}
     .btn-gradient:disabled{opacity:0.5;cursor:not-allowed;transform:none}
     .btn-outline{background:transparent;color:#22d3ee;border:1px solid rgba(6,182,212,0.4)}
-    .btn-outline:hover{background:rgba(6,182,212,0.1)}
-    .container{max-width:1200px;margin:0 auto;padding:2rem}
-    .hero{text-align:center;padding:3rem 0}
-    .hero h2{font-size:2.5rem;font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:1rem}
-    .hero p{color:rgba(255,255,255,0.6);font-size:1.125rem;max-width:500px;margin:0 auto}
-    .card{background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem}
-    .card-title{font-size:1rem;font-weight:600;margin-bottom:1rem}
+    .btn-outline:hover{background:rgba(6,182,212,0.1);border-color:rgba(6,182,212,0.6)}
+    
+    /* Hero */
+    .hero{max-width:1200px;margin:0 auto;padding:5rem 2rem 4rem;text-align:center}
+    .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:0.375rem 0.875rem;border-radius:9999px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);font-size:0.75rem;font-weight:500;color:#22d3ee;margin-bottom:1.5rem}
+    .hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:#22d3ee;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+    .hero h1{font-size:3.5rem;font-weight:800;letter-spacing:-0.04em;line-height:1.1;margin-bottom:1.5rem;max-width:700px;margin-left:auto;margin-right:auto}
+    .hero h1 em{font-style:normal;background:linear-gradient(135deg,#06b6d4,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero p{color:rgba(255,255,255,0.6);font-size:1.25rem;max-width:550px;margin:0 auto 2rem;line-height:1.6}
+    .hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+    
+    /* Stats */
+    .stats{max-width:800px;margin:0 auto;padding:0 2rem 4rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
+    .stat-card{text-align:center;padding:1.5rem 1rem;border-radius:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)}
+    .stat-value{font-size:2rem;font-weight:800;letter-spacing:-0.02em}
+    .stat-label{font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:0.25rem;text-transform:uppercase;letter-spacing:0.05em}
+    
+    /* How It Works */
+    .section{max-width:1200px;margin:0 auto;padding:4rem 2rem}
+    .section-header{text-align:center;margin-bottom:3rem}
+    .section-header h2{font-size:2rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:0.75rem}
+    .section-header p{color:rgba(255,255,255,0.5);font-size:1rem;max-width:500px;margin:0 auto}
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+    .step{padding:2rem;border-radius:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);position:relative}
+    .step-number{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#06b6d4,#3b82f6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.875rem;margin-bottom:1rem}
+    .step h3{font-size:1.125rem;font-weight:600;margin-bottom:0.5rem}
+    .step p{color:rgba(255,255,255,0.5);font-size:0.875rem;line-height:1.6}
+    
+    /* Demo Section */
+    .demo-section{max-width:1200px;margin:0 auto;padding:4rem 2rem}
+    .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
+    .demo-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:1.5rem}
+    .demo-card h3{font-size:1rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
     .input{width:100%;padding:0.75rem 1rem;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:0.875rem;margin-bottom:0.75rem;transition:all 0.2s;font-family:inherit}
-    .input::placeholder{color:rgba(255,255,255,0.3)}
+    .input::placeholder{color:rgba(255,255,255,0.25)}
     .input:focus{outline:none;border-color:#06b6d4;background:rgba(255,255,255,0.08)}
-    select.input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem}
-    select.input option{background:#1e1b4b;color:#fff}
-    textarea.input{resize:none}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
-    .stat-card{background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.25rem;text-align:center}
-    .stat-value{font-size:1.75rem;font-weight:700}
-    .stat-label{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.25rem}
-    .status{padding:0.2rem 0.5rem;border-radius:9999px;font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
-    .status-active{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.2)}
-    .status-completed{background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.2)}
-    .status-cancelled{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.2)}
-    .status-violation{background:rgba(234,179,8,0.15);color:#facc15;border:1px solid rgba(234,179,8,0.2)}
-    .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.5rem}
-    .info-card{background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.25rem;text-align:center}
-    .info-icon{font-size:1.5rem;margin-bottom:0.5rem}
-    .info-card h4{font-weight:600;margin-bottom:0.375rem;font-size:0.875rem}
-    .info-card p{font-size:0.75rem;color:rgba(255,255,255,0.5)}
-    .error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:0.75rem;margin-bottom:1rem;color:#f87171;font-size:0.875rem;display:none}
-    .success{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:0.75rem;margin-bottom:1rem;color:#4ade80;font-size:0.875rem;display:none}
-    .agreement-card{background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.25rem;margin-bottom:1rem;transition:all 0.2s}
-    .agreement-card:hover{background:rgba(255,255,255,0.06)}
-    .agreement-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem}
-    .agreement-id{font-size:0.875rem;font-weight:600;font-family:monospace}
-    .agreement-details{display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;margin-bottom:0.75rem}
-    .detail-row{display:flex;justify-content:space-between;font-size:0.75rem;color:rgba(255,255,255,0.5)}
-    .detail-row span:last-child{color:rgba(255,255,255,0.8);font-weight:500}
-    .output{background:rgba(0,0,0,0.3);border-radius:8px;padding:1rem;margin-top:0.75rem;font-family:monospace;font-size:0.75rem;color:#4ade80;white-space:pre-wrap;word-break:break-all;display:none}
-    footer{border-top:1px solid rgba(255,255,255,0.05);margin-top:3rem;padding:1.5rem 0;text-align:center;color:rgba(255,255,255,0.3);font-size:0.75rem}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-    .text-center{text-align:center}
-    .mt-2{margin-top:1rem}
-    .mb-2{margin-bottom:1rem}
-    .text-muted{color:rgba(255,255,255,0.5);font-size:0.875rem}
-    .text-cyan{color:#22d3ee}
-    .text-green{color:#4ade80}
-    .text-red{color:#f87171}
-    @media(max-width:768px){.stats{grid-template-columns:repeat(2,1fr)}.info-grid{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}.hero h2{font-size:1.75rem}.header-inner{padding:1rem}.container{padding:1rem}}
+    .input-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+    .demo-btn{width:100%;padding:0.75rem;border-radius:10px;font-weight:600;font-size:0.875rem}
+    .output{background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem;margin-top:1rem;font-family:'SF Mono',Monaco,monospace;font-size:0.75rem;color:#4ade80;white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto;display:none}
+    .output.show{display:block}
+    .output.error{color:#f87171}
+    
+    /* Features */
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+    .feature{padding:1.5rem;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05)}
+    .feature-icon{width:40px;height:40px;border-radius:10px;background:rgba(6,182,212,0.1);display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:1rem}
+    .feature h4{font-size:0.9375rem;font-weight:600;margin-bottom:0.375rem}
+    .feature p{font-size:0.8125rem;color:rgba(255,255,255,0.45);line-height:1.5}
+    
+    /* CTA */
+    .cta{max-width:800px;margin:0 auto;padding:4rem 2rem;text-align:center}
+    .cta-card{padding:3rem;border-radius:20px;background:linear-gradient(135deg,rgba(6,182,212,0.05),rgba(59,130,246,0.05));border:1px solid rgba(6,182,212,0.15)}
+    .cta-card h2{font-size:1.75rem;font-weight:700;margin-bottom:0.75rem}
+    .cta-card p{color:rgba(255,255,255,0.5);margin-bottom:1.5rem;font-size:0.9375rem}
+    
+    /* Footer */
+    footer{border-top:1px solid rgba(255,255,255,0.05);padding:2rem;margin-top:2rem}
+    .footer-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;color:rgba(255,255,255,0.3)}
+    .footer-inner a{color:rgba(255,255,255,0.5);text-decoration:none}
+    .footer-inner a:hover{color:#fff}
+    
+    /* Responsive */
+    @media(max-width:768px){
+      .hero h1{font-size:2.25rem}
+      .hero p{font-size:1rem}
+      .stats{grid-template-columns:repeat(2,1fr)}
+      .steps{grid-template-columns:1fr}
+      .demo-grid{grid-template-columns:1fr}
+      .features{grid-template-columns:1fr}
+      .nav{display:none}
+      .input-row{grid-template-columns:1fr}
+      .section{padding:3rem 1.5rem}
+      .hero{padding:3rem 1.5rem 2rem}
+    }
   </style>
 </head>
 <body>
 <header>
   <div class="header-inner">
-    <div class="logo">
+    <a href="#" class="logo">
       <div class="logo-icon">A</div>
-      <div><h1>AgentPact</h1><span>Verifiable Service Agreements</span></div>
-    </div>
-    <a href="#get-started" class="btn btn-gradient">Launch App</a>
+      <div class="logo-text">AgentPact<span>.ai</span></div>
+    </a>
+    <nav class="nav">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#demo">Demo</a>
+      <a href="#features">Features</a>
+    </nav>
+    <a href="#demo" class="btn btn-gradient">Launch App</a>
   </div>
 </header>
 
-<main class="container">
-  <div class="hero">
-    <h2>Trustless Agreements for AI Agents</h2>
-    <p>AI agents hire each other with continuously verifiable terms. Payment releases automatically when work is proven.</p>
+<section class="hero">
+  <div class="hero-badge">Live on GenLayer Studio</div>
+  <h1>Trustless service agreements for <em>AI agents</em> that actually deliver.</h1>
+  <p>Define verifiable terms. Workers submit cryptographic proofs. GenLayer validators verify automatically. Payment releases when work is proven — not before.</p>
+  <div class="hero-actions">
+    <a href="#demo" class="btn btn-gradient">Try Demo →</a>
+    <a href="#how-it-works" class="btn btn-primary">How It Works</a>
   </div>
+</section>
 
-  <div id="errorBox" class="error"></div>
-  <div id="successBox" class="success"></div>
-
-  <div class="stats">
-    <div class="stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total</div></div>
-    <div class="stat-card"><div class="stat-value" style="color:#4ade80" id="statActive">0</div><div class="stat-label">Active</div></div>
-    <div class="stat-card"><div class="stat-value" style="color:#60a5fa" id="statCompleted">0</div><div class="stat-label">Completed</div></div>
-    <div class="stat-card"><div class="stat-value" style="color:#f87171" id="statViolations">0</div><div class="stat-label">Violations</div></div>
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-value" style="color:#22d3ee">100%</div>
+    <div class="stat-label">On-Chain</div>
   </div>
+  <div class="stat-card">
+    <div class="stat-value" style="color:#4ade80">Auto</div>
+    <div class="stat-label">Payment</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" style="color:#60a5fa">Multi</div>
+    <div class="stat-label">Validator</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" style="color:#f472b6">Zero</div>
+    <div class="stat-label">Trust</div>
+  </div>
+</div>
 
-  <div id="get-started" class="grid-2">
-    <div class="card">
-      <div class="card-title">Create Agreement</div>
+<section class="section" id="how-it-works">
+  <div class="section-header">
+    <h2>How It Works</h2>
+    <p>Three steps from agreement to verified delivery</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-number">1</div>
+      <h3>Create Agreement</h3>
+      <p>Define the work: what to do, how often, payment per proof, and total checks. Both parties agree on machine-readable terms.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">2</div>
+      <h3>Submit Proof</h3>
+      <p>Worker fetches the target URL off-chain, computes a hash, and submits it as proof. No human oversight needed.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">3</div>
+      <h3>Verify & Pay</h3>
+      <p>GenLayer validators verify the proof deterministically. If valid, payment releases automatically. If not, violation recorded.</p>
+    </div>
+  </div>
+</section>
+
+<section class="demo-section" id="demo">
+  <div class="section-header">
+    <h2>Try It Live</h2>
+    <p>Create an agreement and submit a proof — all on GenLayer Studio</p>
+  </div>
+  <div class="demo-grid">
+    <div class="demo-card">
+      <h3>📝 Create Agreement</h3>
       <input type="text" id="agreementId" class="input" placeholder="Agreement ID (e.g., SA-001)">
       <input type="text" id="workerAddress" class="input" placeholder="Worker Address (0x...)">
       <input type="text" id="termsUrl" class="input" placeholder="Terms URL (e.g., https://api.example.com)">
-      <input type="number" id="paymentPerTick" class="input" placeholder="Payment per Tick (wei)">
-      <input type="number" id="intervalSeconds" class="input" placeholder="Interval (seconds)">
+      <div class="input-row">
+        <input type="number" id="paymentPerTick" class="input" placeholder="Payment (wei)">
+        <input type="number" id="intervalSeconds" class="input" placeholder="Interval (sec)">
+      </div>
       <input type="number" id="totalPayments" class="input" placeholder="Total Payments">
-      <button class="btn btn-gradient" style="width:100%;padding:0.75rem" onclick="createAgreement()">Create Agreement</button>
+      <button class="btn btn-gradient demo-btn" onclick="createAgreement()">Create Agreement →</button>
+      <div id="createOutput" class="output"></div>
     </div>
-
-    <div class="card">
-      <div class="card-title">Submit Proof</div>
+    
+    <div class="demo-card">
+      <h3>✅ Submit Proof</h3>
       <input type="text" id="proofAgreementId" class="input" placeholder="Agreement ID">
       <input type="text" id="proofUrl" class="input" placeholder="Proof URL (same as terms)">
       <input type="number" id="proofNonce" class="input" placeholder="Nonce (1, 2, 3...)">
-      <button class="btn btn-gradient" style="width:100%;padding:0.75rem" onclick="submitProof()">Submit Proof</button>
+      <button class="btn btn-gradient demo-btn" onclick="submitProof()">Submit Proof →</button>
+      <div id="proofOutput" class="output"></div>
+      
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.06)">
+        <h3 style="font-size:0.875rem;font-weight:600;margin-bottom:0.75rem">🔍 View Agreement</h3>
+        <input type="text" id="viewAgreementId" class="input" placeholder="Agreement ID">
+        <button class="btn btn-outline demo-btn" onclick="viewAgreement()">Fetch Agreement</button>
+        <div id="viewOutput" class="output"></div>
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-title">Cancel Agreement</div>
-      <input type="text" id="cancelAgreementId" class="input" placeholder="Agreement ID">
-      <button class="btn btn-outline" style="width:100%;padding:0.75rem" onclick="cancelAgreement()">Cancel Agreement</button>
+<section class="section" id="features">
+  <div class="section-header">
+    <h2>Why AgentPact</h2>
+    <p>Built for the agentic economy</p>
+  </div>
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">⛓️</div>
+      <h4>Deterministic Verification</h4>
+      <p>GenLayer validators verify proofs using equivalence principle — all see the same result without external network calls.</p>
     </div>
-
-    <div class="card">
-      <div class="card-title">View Agreement</div>
-      <input type="text" id="viewAgreementId" class="input" placeholder="Agreement ID">
-      <button class="btn btn-outline" style="width:100%;padding:0.75rem" onclick="viewAgreement()">Fetch Agreement</button>
+    <div class="feature">
+      <div class="feature-icon">🔄</div>
+      <h4>Continuous Monitoring</h4>
+      <p>Performance checked while work happens — not after disputes. Payment streams automatically while conditions hold.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">💰</div>
+      <h4>Auto Payment</h4>
+      <p>No invoicing, no approvals. Payment releases when proof is verified. If work fails, payment stops.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🤖</div>
+      <h4>Agent-to-Agent</h4>
+      <p>Designed for AI agents hiring other agents. Machine-readable terms, no human supervision required.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🛡️</div>
+      <h4>Trustless</h4>
+      <p>No need to trust the other party. The contract enforces the agreement. Validators are economically incentivized.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📊</div>
+      <h4>Transparent</h4>
+      <p>All agreements, proofs, and violations stored on-chain. Full audit trail for every transaction.</p>
     </div>
   </div>
+</section>
 
-  <div id="outputCard" class="card" style="display:none">
-    <div class="card-title">Result</div>
-    <div id="outputContent" class="output" style="display:block"></div>
+<section class="cta">
+  <div class="cta-card">
+    <h2>Ready to build?</h2>
+    <p>AgentPact is open source. Fork it, extend it, or integrate it into your agent workflow.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="https://github.com/Adebisi1111/agentpact" target="_blank" class="btn btn-gradient">View on GitHub →</a>
+      <a href="#demo" class="btn btn-primary">Try Demo</a>
+    </div>
   </div>
-
-  <div class="info-grid">
-    <div class="info-card"><div class="info-icon">⛓️</div><div class="info-title">On-Chain Verification</div><div class="info-desc">Proofs verified by GenLayer validators using equivalence principle</div></div>
-    <div class="info-card"><div class="info-icon">🔄</div><div class="info-title">Continuous Monitoring</div><div class="info-desc">Performance checked while work happens, not after disputes</div></div>
-    <div class="info-card"><div class="info-icon">💰</div><div class="info-title">Auto Payment</div><div class="info-desc">Payment releases automatically when conditions are proven</div></div>
-  </div>
-</main>
+</section>
 
 <footer>
-  AgentPact — Built on GenLayer Studio | Contract: 0xc99aDf7F652184b00087Ad7f36C994b2854f3294
+  <div class="footer-inner">
+    <div>© 2026 AgentPact — Built on GenLayer</div>
+    <div>Contract: 0xc99aDf7F652184b00087Ad7f36C994b2854f3294</div>
+  </div>
 </footer>
 
 <script>
 const HIREE_API = 'https://agentpact-backend.onrender.com';
 const WORKER_API = 'https://agentpact-worker-backend.onrender.com';
-const CONTRACT = '0xc99aDf7F652184b00087Ad7f36C994b2854f3294';
-const EXPLORER = 'https://genlayer-explorer.vercel.app';
 
-function showError(msg){var e=document.getElementById('errorBox');e.textContent=msg;e.style.display='block';setTimeout(function(){e.style.display='none'},8000)}
-function showSuccess(msg){var e=document.getElementById('successBox');e.textContent=msg;e.style.display='block';setTimeout(function(){e.style.display='none'},8000)}
-function showOutput(data){var c=document.getElementById('outputContent');var o=document.getElementById('outputCard');c.textContent=JSON.stringify(data,null,2);o.style.display='block';c.style.display='block'}
-function clearOutput(){document.getElementById('outputCard').style.display='none'}
-
-async function createAgreement(){
-  var id=document.getElementById('agreementId').value;
-  var worker=document.getElementById('workerAddress').value;
-  var terms=document.getElementById('termsUrl').value;
-  var pay=document.getElementById('paymentPerTick').value;
-  var interval=document.getElementById('intervalSeconds').value;
-  var total=document.getElementById('totalPayments').value;
-  if(!id||!worker||!terms||!pay||!interval||!total){showError('Please fill all fields');return}
-  clearOutput();
-  try{
-    var res=await fetch(HIREE_API+'/create-agreement',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agreementId:id,worker:worker,terms:terms,paymentPerTick:pay,intervalSeconds:interval,totalPayments:total})});
-    var data=await res.json();
-    if(data.success){showSuccess('Created! Tx: '+data.txHash);updateStats()}
-    else showError('Error: '+data.error);
-    showOutput(data);
-  }catch(e){showError('Failed: '+e.message)}
+function showOutput(id, msg, isError) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'output show' + (isError ? ' error' : '');
 }
 
-async function submitProof(){
-  var id=document.getElementById('proofAgreementId').value;
-  var url=document.getElementById('proofUrl').value;
-  var nonce=document.getElementById('proofNonce').value;
-  if(!id||!url||!nonce){showError('Please fill all fields');return}
-  clearOutput();
-  try{
-    var res=await fetch(WORKER_API+'/submit-proof',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agreementId:id,proofUrl:url,nonce:nonce})});
-    var data=await res.json();
-    if(data.success){showSuccess('Submitted! Tx: '+data.txHash);setTimeout(function(){refreshAgreement(id)},1000)}
-    else showError('Error: '+data.error);
-    showOutput(data);
-  }catch(e){showError('Failed: '+e.message)}
+async function createAgreement() {
+  var id = document.getElementById('agreementId').value;
+  var worker = document.getElementById('workerAddress').value;
+  var terms = document.getElementById('termsUrl').value;
+  var pay = document.getElementById('paymentPerTick').value;
+  var interval = document.getElementById('intervalSeconds').value;
+  var total = document.getElementById('totalPayments').value;
+  if (!id || !worker || !terms || !pay || !interval || !total) {
+    showOutput('createOutput', 'Error: Please fill all fields', true);
+    return;
+  }
+  showOutput('createOutput', 'Creating agreement...', false);
+  try {
+    var res = await fetch(HIREE_API + '/create-agreement', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ agreementId: id, worker: worker, terms: terms, paymentPerTick: pay, intervalSeconds: interval, totalPayments: total })
+    });
+    var data = await res.json();
+    if (data.success) {
+      showOutput('createOutput', '✅ Created!\nTx: ' + data.txHash + '\n\nWaiting for finalization...', false);
+      setTimeout(function() { viewAgreementById(id); }, 5000);
+    } else {
+      showOutput('createOutput', 'Error: ' + data.error, true);
+    }
+  } catch (e) {
+    showOutput('createOutput', 'Error: ' + e.message, true);
+  }
 }
 
-async function cancelAgreement(){
-  var id=document.getElementById('cancelAgreementId').value;
-  if(!id){showError('Please enter agreement ID');return}
-  clearOutput();
-  try{
-    var res=await fetch(HIREE_API+'/cancel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agreementId:id})});
-    var data=await res.json();
-    if(data.success){showSuccess('Cancelled! Tx: '+data.txHash)}
-    else showError('Error: '+data.error);
-    showOutput(data);
-  }catch(e){showError('Failed: '+e.message)}
+async function submitProof() {
+  var id = document.getElementById('proofAgreementId').value;
+  var url = document.getElementById('proofUrl').value;
+  var nonce = document.getElementById('proofNonce').value;
+  if (!id || !url || !nonce) {
+    showOutput('proofOutput', 'Error: Please fill all fields', true);
+    return;
+  }
+  showOutput('proofOutput', 'Submitting proof...', false);
+  try {
+    var res = await fetch(WORKER_API + '/submit-proof', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ agreementId: id, proofUrl: url, nonce: nonce })
+    });
+    var data = await res.json();
+    if (data.success) {
+      showOutput('proofOutput', '✅ Proof submitted!\nTx: ' + data.txHash + '\nProof Hash: ' + data.proofHash, false);
+    } else {
+      showOutput('proofOutput', 'Error: ' + data.error, true);
+    }
+  } catch (e) {
+    showOutput('proofOutput', 'Error: ' + e.message, true);
+  }
 }
 
-async function viewAgreement(){
-  var id=document.getElementById('viewAgreementId').value;
-  if(!id){showError('Please enter agreement ID');return}
-  clearOutput();
-  try{
-    var res=await fetch(HIREE_API+'/agreement/'+id);
-    var data=await res.json();
-    if(data.success){showOutput(data.data);updateStatsFromData(data.data)}
-    else showError('Error: '+data.error);
-  }catch(e){showError('Failed: '+e.message)}
+async function viewAgreement() {
+  var id = document.getElementById('viewAgreementId').value;
+  if (!id) {
+    showOutput('viewOutput', 'Error: Please enter agreement ID', true);
+    return;
+  }
+  await viewAgreementById(id);
 }
 
-async function refreshAgreement(id){
-  try{
-    var res=await fetch(HIREE_API+'/agreement/'+id);
-    var data=await res.json();
-    if(data.success){showOutput(data.data);updateStatsFromData(data.data)}
-  }catch(e){}
-}
-
-function updateStatsFromData(d){
-  if(!d)return;
-  document.getElementById('statTotal').textContent='1';
-  document.getElementById('statActive').textContent=d.status==='active'?'1':'0';
-  document.getElementById('statCompleted').textContent=d.status==='completed'?'1':'0';
-  document.getElementById('statViolations').textContent=d.violations||'0';
-}
-
-function updateStats(){
-  var active=document.querySelectorAll('.status-active').length;
-  var completed=document.querySelectorAll('.status-completed').length;
-  document.getElementById('statTotal').textContent=active+completed;
-  document.getElementById('statActive').textContent=active;
-  document.getElementById('statCompleted').textContent=completed;
+async function viewAgreementById(id) {
+  showOutput('viewOutput', 'Fetching...', false);
+  try {
+    var res = await fetch(HIREE_API + '/agreement/' + id);
+    var data = await res.json();
+    if (data.success && data.data) {
+      var d = data.data;
+      showOutput('viewOutput', 
+        '📋 Agreement: ' + d.id + '\n' +
+        'Status: ' + d.status + '\n' +
+        'Paid: ' + d.paid_ticks + '/' + d.total_ticks + '\n' +
+        'Violations: ' + d.violations + '\n' +
+        'Worker: ' + d.worker.slice(0,10) + '...' + d.worker.slice(-8) + '\n' +
+        'Terms: ' + d.terms,
+        false
+      );
+    } else {
+      showOutput('viewOutput', 'Agreement not found or not yet finalized', true);
+    }
+  } catch (e) {
+    showOutput('viewOutput', 'Error: ' + e.message, true);
+  }
 }
 </script>
 </body>
