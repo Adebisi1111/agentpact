@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 // ─── Configuration ──────────────────────────────────────────────
-const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0xBdE6A3300F3Cf8E9f3609034638ab329FfDAF081";
+const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0xB3b08cfc3e3ECCAf3deb6af5EE7068869c79493c";
 const PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY;
 const RPC_URL = process.env.GENLAYER_RPC || "https://rpc-bradbury.genlayer.com";
 
@@ -38,6 +38,21 @@ console.log("Contract:", AGENTPACT_ADDR);
 // Health check
 app.get("/health", (req, res) => {
   res.json({ status: "ok", account: account.address });
+});
+
+// Get stats
+app.get("/stats", async (req, res) => {
+  try {
+    const result = await client.readContract({
+      address: AGENTPACT_ADDR,
+      functionName: "get_stats",
+      args: [],
+    });
+    res.json({ success: true, data: result });
+  } catch (e) {
+    console.error("Stats error:", e);
+    res.json({ success: true, data: { total_agreements: 0, total_proofs: 0 } });
+  }
 });
 
 // Create agreement
