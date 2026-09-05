@@ -3,138 +3,535 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgentPact — Service Agreements for AI Agents</title>
+  <title>AgentPact — Scaling the Platform for Your Business</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cg transform='rotate(-30 12 12)'%3E%3Ccircle cx='7.3' cy='3.2' r='1.45'/%3E%3Crect x='5.5' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Crect x='14.9' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Ccircle cx='16.7' cy='20.8' r='1.45'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);min-height:100vh;color:#fff;line-height:1.5}
-    header{border-bottom:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(12px);background:rgba(255,255,255,0.05);position:sticky;top:0;z-index:50}
-    .header-inner{max-width:1200px;margin:0 auto;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}
-    .logo{display:flex;align-items:center;gap:0.75rem}
-    .logo-icon{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;box-shadow:0 4px 12px rgba(59,130,246,0.3)}
-    .logo h1{font-size:1.2rem;font-weight:700}
-    .logo span{font-size:0.7rem;color:rgba(255,255,255,0.5)}
-    .btn{padding:0.5rem 1rem;border-radius:8px;font-weight:500;font-size:0.875rem;cursor:pointer;transition:all 0.2s;border:none;display:inline-flex;align-items:center;gap:0.5rem}
-    .btn-primary{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
-    .btn-primary:hover{background:rgba(255,255,255,0.2)}
-    .btn-gradient{background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,0.3)}
-    .btn-gradient:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(59,130,246,0.4)}
-    .btn-gradient:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-    .btn-outline{background:transparent;color:#67e8f9;border:1px solid rgba(59,130,246,0.4)}
-    .btn-outline:hover{background:rgba(59,130,246,0.1)}
-    .container{max-width:1200px;margin:0 auto;padding:2rem}
-    .hero{text-align:center;padding:3rem 0}
-    .hero h2{font-size:2.5rem;font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:1rem}
-    .hero p{color:rgba(255,255,255,0.6);font-size:1.125rem;max-width:600px;margin:0 auto}
-    .card{background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem}
-    .card-title{font-size:1rem;font-weight:600;margin-bottom:1rem}
-    .input{width:100%;padding:0.75rem 1rem;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:0.875rem;margin-bottom:0.75rem;transition:all 0.2s;font-family:inherit}
-    .input::placeholder{color:rgba(255,255,255,0.3)}
-    .input:focus{outline:none;border-color:#3b82f6;background:rgba(255,255,255,0.08)}
-    select.input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem}
-    select.input option{background:#1e1b4b;color:#fff}
-    textarea.input{resize:none}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
-    .stat-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.25rem;text-align:center}
-    .stat-value{font-size:1.75rem;font-weight:700}
-    .stat-label{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.25rem}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-    .form-row .grp{margin-bottom:0.75rem}
-    .grp{margin-bottom:0.75rem}
-    .grp label{display:block;font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:0.375rem;font-weight:500}
-    .status{margin-top:14px;padding:14px;border-radius:10px;font-size:0.85rem;display:none;font-weight:500}
-    .status.show{display:flex;align-items:center;gap:10px}
-    .status.ok{background:rgba(34,197,94,.1);border:1px solid #00c853;color:#00c853}
-    .status.err{background:rgba(239,68,68,.1);border:1px solid #ff5252;color:#ff5252}
-    .status.warn{background:rgba(255,145,0,.1);border:1px solid #ff9100;color:#ff9100}
-    .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.5rem}
-    .info-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.25rem;text-align:center}
-    .info-icon{font-size:1.5rem;margin-bottom:0.5rem}
-    .info-card h4{font-weight:600;margin-bottom:0.375rem;font-size:0.875rem}
-    .info-card p{font-size:0.75rem;color:rgba(255,255,255,0.5)}
-    .error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:0.75rem;margin-bottom:1rem;color:#f87171;font-size:0.875rem;display:none}
-    footer{border-top:1px solid rgba(255,255,255,0.05);margin-top:3rem;padding:1.5rem 0;text-align:center;color:rgba(255,255,255,0.3);font-size:0.75rem}
-    @media(max-width:768px){.stats{grid-template-columns:repeat(2,1fr)}.info-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.hero h2{font-size:1.75rem}.header-inner{padding:1rem}.container{padding:1rem}}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --accent: #15BCDF;
+      --accent-hover: #3fd0ef;
+      --accent-border: #0fa3c2;
+      --bg: #F2F1F0;
+      --bg-alt: #F7F6F8;
+      --heading: #2b3033;
+      --nav: #3a3a3a;
+      --body: #6b6f72;
+      --dark: #1a1c1e;
+    }
+    
+    body {
+      font-family: 'Quantico', 'Arial Narrow', sans-serif;
+      background: var(--bg);
+      color: var(--body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    
+    a { color: var(--nav); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: #000; }
+    
+    /* Utility */
+    .chamfer { clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); }
+    .chamfer-sm { clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); }
+    
+    /* ============================================
+       SECTION 1 — HERO
+       ============================================ */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      background: var(--bg);
+      overflow: hidden;
+    }
+    
+    .hero-video {
+      position: absolute;
+      pointer-events: none;
+      object-fit: contain;
+      height: auto;
+      z-index: 0;
+    }
+    
+    @media (min-width: 701px) {
+      .hero-video {
+        top: 0;
+        right: -20%;
+        width: 99%;
+      }
+    }
+    
+    @media (max-width: 700px) {
+      .hero-video {
+        top: 0;
+        left: -12%;
+        width: 119%;
+      }
+    }
+    
+    .hero-scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    @media (min-width: 701px) {
+      .hero-scrim {
+        background: linear-gradient(90deg, #F2F1F0 0%, #F2F1F0 55%, rgba(242,241,240,0.85) 78%, rgba(242,241,240,0) 100%);
+      }
+    }
+    
+    /* Navbar */
+    .navbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: clamp(20px, 5vw, 56px);
+      padding: clamp(20px, 3vw, 38px) clamp(20px, 4vw, 48px) 0;
+    }
+    
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    
+    .nav-logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .nav-logo-icon::after {
+      content: '';
+      width: 20px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      transform: rotate(-25deg);
+    }
+    
+    .nav-logo-text {
+      font-size: clamp(22px, 5vw, 30px);
+      font-weight: 400;
+      color: #111;
+      letter-spacing: -0.5px;
+      text-transform: lowercase;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 34px;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      font-weight: 700;
+      font-size: clamp(12px, 2.4vw, 15px);
+      letter-spacing: 0.06em;
+      color: var(--nav);
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+    
+    .nav-cta {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: clamp(12px, 2.4vw, 15px);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 14px 26px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .nav-cta:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+    
+    .nav-cta svg {
+      width: 17px;
+      height: 13px;
+    }
+    
+    .hamburger {
+      display: none;
+      margin-left: auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+    
+    .hamburger-bar {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #fff;
+      margin: 5px 0;
+    }
+    
+    .mobile-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--dark);
+      padding: 20px;
+      flex-direction: column;
+      gap: 18px;
+      z-index: 100;
+    }
+    
+    .mobile-menu.open {
+      display: flex;
+    }
+    
+    .mobile-menu a {
+      color: #fff;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 14px;
+    }
+    
+    @media (max-width: 700px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: block; }
+    }
+    
+    /* Headline */
+    .hero-content {
+      position: relative;
+      z-index: 5;
+    }
+    
+    .hero h1 {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
+      line-height: 0.98;
+      color: var(--heading);
+    }
+    
+    .hero-line {
+      display: block;
+    }
+    
+    .hero-line.indented {
+      text-indent: min(238px, 28vw);
+    }
+    
+    .hero-line.accent {
+      color: var(--accent);
+    }
+    
+    @media (min-width: 701px) {
+      .hero-content {
+        padding: min(clamp(40px, 9vw, 120px), 9vh) 20px min(clamp(24px, 4vw, 44px), 5vh) clamp(20px, 9vw, 118px);
+      }
+      
+      .hero h1 {
+        font-size: min(clamp(34px, 7.6vw, 80px), 9.2vh);
+      }
+    }
+    
+    @media (max-width: 700px) {
+      .hero-content {
+        margin-top: 360px;
+        padding: 0 20px 28px 20px;
+      }
+      
+      .hero h1 {
+        font-size: clamp(34px, 10vw, 56px);
+      }
+      
+      .hero-line.indented {
+        text-indent: 0;
+      }
+    }
+    
+    /* CTA Button */
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--accent);
+      border: 1px solid var(--accent-border);
+      color: var(--dark);
+      font-family: inherit;
+      font-weight: 700;
+      font-size: clamp(13px, 2.2vw, 16px);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 18px 34px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 0 1px rgba(21, 188, 223, 0.35), 0 10px 30px -12px rgba(15, 163, 194, 0.6);
+    }
+    
+    .cta-btn:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 0 0 1px rgba(63, 208, 239, 0.5), 0 14px 36px -10px rgba(15, 163, 194, 0.8);
+    }
+    
+    .cta-btn::after {
+      content: '';
+      width: 22px;
+      height: 1px;
+      background: var(--dark);
+    }
+    
+    .hero-cta {
+      display: inline-block;
+    }
+    
+    @media (min-width: 701px) {
+      .hero-cta {
+        padding-left: calc(clamp(20px, 9vw, 118px) + min(238px, 28vw));
+        padding-bottom: min(clamp(36px, 6vw, 80px), 7vh);
+      }
+    }
+    
+    @media (max-width: 700px) {
+      .hero-cta {
+        margin-top: 24px;
+      }
+    }
+    
+    /* ============================================
+       SECTION 2 — ABOUT
+       ============================================ */
+    .about {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 40px;
+      background: linear-gradient(180deg, #F2F1F0 0%, #F7F6F8 18%, #F7F6F8 100%);
+      padding: clamp(60px, 10vw, 140px) 0 clamp(30px, 5vw, 70px) clamp(20px, 9vw, 118px);
+    }
+    
+    .about-left {
+      flex: 1 1 420px;
+      min-width: 300px;
+    }
+    
+    .about-right {
+      flex: 1 1 360px;
+      min-width: 280px;
+      display: flex;
+      justify-content: flex-end;
+      position: relative;
+    }
+    
+    .about h2 {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
+      line-height: 0.98;
+      color: var(--heading);
+      font-size: clamp(34px, 6.5vw, 72px);
+    }
+    
+    .about-h2-line {
+      display: block;
+    }
+    
+    .about-h2-line.indented {
+      text-indent: min(160px, 18vw);
+      color: var(--accent);
+    }
+    
+    .about-text {
+      max-width: 520px;
+      margin: 32px 0 0 min(160px, 18vw);
+      font-size: clamp(14px, 1.6vw, 17px);
+      line-height: 1.7;
+      color: var(--body);
+    }
+    
+    .about-cta {
+      margin: 36px 0 0 min(160px, 18vw);
+    }
+    
+    .about-video-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 644px;
+    }
+    
+    .about-video {
+      width: 100%;
+      max-width: 644px;
+      height: auto;
+      display: block;
+    }
+    
+    .about-video-overlay {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      max-width: 644px;
+      height: 100%;
+      background: var(--accent);
+      mix-blend-mode: hue;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    @media (max-width: 700px) {
+      .about {
+        padding: 60px 20px 40px 20px;
+      }
+      
+      .about-text, .about-cta {
+        margin-left: 0;
+      }
+      
+      .about-h2-line.indented {
+        text-indent: 0;
+      }
+    }
   </style>
 </head>
 <body>
-<header>
-  <div class="header-inner">
-    <div class="logo">
-      <div class="logo-icon">A</div>
-      <div><h1>AgentPact</h1><span>Service Agreements for AI Agents</span></div>
+
+<!-- ============================================
+     SECTION 1 — HERO
+     ============================================ -->
+<section class="hero">
+  <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="">
+    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260823_050407_500d0339-ab28-41c1-9688-132a74a3b5aa.mp4" type="video/mp4">
+  </video>
+  
+  <div class="hero-scrim"></div>
+  
+  <nav class="navbar">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon"></div>
+      <span class="nav-logo-text">targo</span>
+    </a>
+    
+    <div class="nav-links">
+      <a href="#">HOME</a>
+      <a href="#about">ABOUT</a>
+      <a href="#">CONTACT US</a>
     </div>
-    <div style="display:flex;gap:0.5rem;align-items:center">
-      <span class="badge" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:rgba(59,130,246,.1);color:#67e8f9;font-size:0.75rem;font-weight:600">● Live on Bradbury</span>
+    
+    <button class="nav-cta chamfer-sm">
+      <svg viewBox="0 0 17 13" fill="none" stroke="currentColor" stroke-width="1.4">
+        <rect x="1" y="1" width="15" height="11" rx="1.5"/>
+        <path d="M1 2.5L8.5 7.5L16 2.5"/>
+      </svg>
+      Contact us
+    </button>
+    
+    <button class="hamburger" aria-label="Menu">
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+    </button>
+    
+    <div class="mobile-menu">
+      <a href="#">HOME</a>
+      <a href="#about">ABOUT</a>
+      <a href="#">CONTACT US</a>
     </div>
-  </div>
-</header>
-
-<main class="container">
-  <div class="hero">
-    <h2>Trustless Service Agreements</h2>
-    <p>AI agents hire each other with continuously verifiable terms. Payment releases automatically when work is proven.</p>
-  </div>
-
-  <div id="errorBox" class="error"></div>
-
-  <div class="stats">
-    <div class="stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total Agreements</div></div>
-    <div class="stat-card"><div class="stat-value" style="color:#4ade80" id="statActive">0</div><div class="stat-label">Active</div></div>
-    <div class="stat-card"><div class="stat-value" style="color:#67e8f9" id="statCompleted">0</div><div class="stat-label">Completed</div></div>
-    <div class="stat-card"><div class="stat-value" style="color:#f87171" id="statViolations">0</div><div class="stat-label">Violations</div></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Create Agreement</div>
-    <div class="form-row">
-      <div class="grp"><label>Agreement ID</label><input type="text" id="agreementId" class="input" placeholder="SA-001" value="SA-001"></div>
-      <div class="grp"><label>Worker Address</label><input type="text" id="worker" class="input" placeholder="0x..." value=""></div>
-    </div>
-    <div class="grp"><label>Terms URL (API to monitor)</label><input type="text" id="terms" class="input" placeholder="https://api.example.com/health" value="https://httpbin.org/status/200"></div>
-    <div class="form-row">
-      <div class="grp"><label>Payment Per Tick (wei)</label><input type="number" id="paymentPerTick" class="input" placeholder="1000000000000000000" value="1000000000000000000"></div>
-      <div class="grp"><label>Interval (seconds)</label><input type="number" id="intervalSeconds" class="input" placeholder="300" value="300"></div>
-    </div>
-    <div class="grp"><label>Total Payments</label><input type="number" id="totalPayments" class="input" placeholder="48" value="48"></div>
-    <button class="btn btn-gradient" style="width:100%;padding:0.75rem" id="createBtn">Create Agreement →</button>
-    <div id="createStatus" class="status"></div>
-  </div>
-
-  <div class="form-row">
-    <div class="card">
-      <div class="card-title">Submit Proof</div>
-      <div class="grp"><label>Agreement ID</label><input type="text" id="submitAgreementId" class="input" placeholder="SA-001" value="SA-001"></div>
-      <div class="grp"><label>Proof URL</label><input type="text" id="proofUrl" class="input" placeholder="https://..." value="https://httpbin.org/status/200"></div>
-      <div class="grp"><label>Nonce</label><input type="number" id="nonce" class="input" placeholder="1" value="1"></div>
-      <button class="btn btn-gradient" style="width:100%;padding:0.75rem" id="submitBtn">Submit Proof →</button>
-      <div id="submitStatus" class="status"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Cancel Agreement</div>
-      <div class="grp"><label>Agreement ID</label><input type="text" id="cancelAgreementId" class="input" placeholder="SA-001" value="SA-001"></div>
-      <button class="btn btn-outline" style="width:100%;padding:0.75rem" id="cancelBtn">Cancel Agreement →</button>
-      <div id="cancelStatus" class="status"></div>
+  </nav>
+  
+  <div class="hero-content">
+    <h1>
+      <span class="hero-line">SCALING</span>
+      <span class="hero-line">THE</span>
+      <span class="hero-line">PLATFORM</span>
+      <span class="hero-line indented">FOR</span>
+      <span class="hero-line indented">YOUR</span>
+      <span class="hero-line indented accent">BUSINESS</span>
+    </h1>
+    
+    <div class="hero-cta">
+      <button class="cta-btn chamfer">GET STARTED</button>
     </div>
   </div>
+</section>
 
-  <div class="card">
-    <div class="card-title">View Agreement</div>
-    <div class="grp"><label>Agreement ID</label><input type="text" id="readId" class="input" placeholder="SA-001" value="SA-001"></div>
-    <button class="btn btn-outline" style="width:100%;padding:0.75rem" id="readBtn">Fetch Agreement</button>
-    <pre id="out" style="margin-top:1rem;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:1rem;font-size:0.8rem;color:rgba(255,255,255,0.7);min-height:100px;overflow-x:auto;display:none">—</pre>
-    <div id="readStatus" class="status"></div>
+<!-- ============================================
+     SECTION 2 — ABOUT
+     ============================================ -->
+<section class="about" id="about">
+  <div class="about-left">
+    <h2>
+      <span class="about-h2-line">ABOUT</span>
+      <span class="about-h2-line indented">BUSINESS</span>
+    </h2>
+    <p class="about-text">
+      Targo builds the testing infrastructure modern teams rely on. From automated pipelines to full-scale QA audits, we make sure your software ships fast and breaks nothing. Hundreds of releases, zero surprises.
+    </p>
+    <div class="about-cta">
+      <button class="cta-btn chamfer">LEARN MORE</button>
+    </div>
   </div>
-
-  <div class="info-grid">
-    <div class="info-card"><div class="info-icon">🔍</div><h4>Continuous Verification</h4><p>Proofs verified on-chain while work is happening</p></div>
-    <div class="info-card"><div class="info-icon">🤝</div><h4>Consensus Mechanism</h4><p>GenLayer validators independently verify proofs</p></div>
-    <div class="info-card"><div class="info-icon">⛓️</div><h4>Auto Payment</h4><p>Payment releases automatically when conditions are met</p></div>
+  
+  <div class="about-right">
+    <div class="about-video-wrap">
+      <video class="about-video" autoplay muted loop playsinline preload="auto" poster="">
+        <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260823_063501_2e2c8971-de1e-473a-8611-a0c9ae7ee186.mp4" type="video/mp4">
+      </video>
+      <div class="about-video-overlay"></div>
+    </div>
   </div>
-</main>
+</section>
 
-<footer>AgentPact — Built on GenLayer | Contract: 0x9468Da6d0274A2f315B4b5cb48a92cfaD0AA1C7a</footer>
+<script>
+// Video autoplay retry logic
+function ensureVideoPlay(video) {
+  video.muted = true;
+  const playPromise = video.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(() => {
+      setTimeout(() => ensureVideoPlay(video), 1000);
+    });
+  }
+}
 
-<script type="module" src="app.bundle.js"></script>
+document.querySelectorAll('video').forEach(video => {
+  ensureVideoPlay(video);
+  
+  // Retry on first user interaction
+  const retryOnce = () => {
+    if (video.paused) ensureVideoPlay(video);
+    document.removeEventListener('click', retryOnce);
+    document.removeEventListener('touchstart', retryOnce);
+  };
+  document.addEventListener('click', retryOnce);
+  document.addEventListener('touchstart', retryOnce);
+});
+
+// Hamburger menu
+document.querySelector('.hamburger').addEventListener('click', () => {
+  document.querySelector('.mobile-menu').classList.toggle('open');
+});
+</script>
+
 </body>
 </html>
