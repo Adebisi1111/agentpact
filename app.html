@@ -100,30 +100,6 @@
       text-transform: uppercase;
     }
     
-    .nav-cta {
-      margin-left: auto;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--accent);
-      border: 1px solid var(--accent-border);
-      color: var(--dark);
-      font-family: inherit;
-      font-weight: 700;
-      font-size: clamp(12px, 2.4vw, 15px);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      padding: 14px 26px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 0 0 1px rgba(21, 188, 223, 0.35), 0 10px 30px -12px rgba(15, 163, 194, 0.6);
-    }
-    
-    .nav-cta:hover {
-      background: var(--accent-hover);
-      box-shadow: 0 0 0 1px rgba(63, 208, 239, 0.5), 0 14px 36px -10px rgba(15, 163, 194, 0.8);
-    }
-    
     .hamburger {
       display: none;
       margin-left: auto;
@@ -166,7 +142,7 @@
     }
     
     @media (max-width: 700px) {
-      .nav-links, .nav-cta { display: none; }
+      .nav-links { display: none; }
       .hamburger { display: block; }
     }
     
@@ -314,7 +290,6 @@
     <a href="app.html">APP</a>
   </div>
   
-  <a href="app.html" class="nav-cta chamfer">Launch App</a>
   
   <button class="hamburger" aria-label="Menu">
     <span class="hamburger-bar"></span>
