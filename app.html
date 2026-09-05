@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentPact — App</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cg transform='rotate(-30 12 12)'%3E%3Ccircle cx='7.3' cy='3.2' r='1.45'/%3E%3Crect x='5.5' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Crect x='14.9' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Ccircle cx='16.7' cy='20.8' r='1.45'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --accent: #15BCDF;
+      --accent-hover: #3fd0ef;
+      --accent-border: #0fa3c2;
+      --bg: #F2F1F0;
+      --bg-alt: #F7F6F8;
+      --heading: #2b3033;
+      --nav: #3a3a3a;
+      --body: #6b6f72;
+      --dark: #1a1c1e;
+      --card-bg: rgba(255,255,255,0.03);
+      --card-border: rgba(255,255,255,0.06);
+    }
+    
+    [data-theme="dark"] {
+      --bg: #0a0a0a;
+      --bg-alt: #111111;
+      --heading: #ffffff;
+      --nav: #a0a0a0;
+      --body: #888888;
+      --dark: #0a0a0a;
+      --card-bg: rgba(255,255,255,0.05);
+      --card-border: rgba(255,255,255,0.1);
+    }
+    
+    body {
+      font-family: 'Quantico', 'Arial Narrow', sans-serif;
+      background: var(--bg);
+      color: var(--body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+    
+    a { color: var(--nav); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--accent); }
+    
+    .chamfer { clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); }
+    
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: clamp(20px, 5vw, 56px);
+      padding: clamp(20px, 3vw, 38px) clamp(20px, 4vw, 48px);
+      background: var(--bg);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      transition: background 0.3s;
+    }
+    
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    
+    .nav-logo-text {
+      font-size: clamp(22px, 5vw, 30px);
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: -0.5px;
+      text-transform: lowercase;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 34px;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      font-weight: 700;
+      font-size: clamp(12px, 2.4vw, 15px);
+      letter-spacing: 0.06em;
+      color: var(--nav);
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+    
+    .theme-toggle {
+      margin-left: auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      color: var(--nav);
+      transition: color 0.2s;
+    }
+    
+    .theme-toggle:hover { color: var(--accent); }
+    .theme-icon-light { width: 20px; height: 20px; display: block; }
+    .theme-icon-dark { width: 20px; height: 20px; display: none; }
+    [data-theme="dark"] .theme-icon-light { display: none; }
+    [data-theme="dark"] .theme-icon-dark { display: block; }
+    
+    .hamburger {
+      display: none;
+      margin-left: auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+    
+    .hamburger-bar {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--heading);
+      margin: 5px 0;
+    }
+    
+    .mobile-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--dark);
+      padding: 20px;
+      flex-direction: column;
+      gap: 18px;
+      z-index: 100;
+    }
+    
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: #fff; font-weight: 700; text-transform: uppercase; font-size: 14px; }
+    
+    @media (max-width: 700px) {
+      .nav-links { display: none; }
+      .hamburger { display: block; }
+    }
+    
+    /* App Section */
+    .app-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: clamp(40px, 6vw, 80px) clamp(20px, 4vw, 48px);
+    }
+    
+    .app-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    
+    @media (max-width: 700px) {
+      .app-grid { grid-template-columns: 1fr; }
+    }
+    
+    .demo-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: background 0.3s, border 0.3s;
+    }
+    
+    .demo-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--heading);
+    }
+    
+    .input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--heading);
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    
+    .input::placeholder { color: rgba(43, 48, 51, 0.3); }
+    .input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.08);
+    }
+    
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    
+    @media (max-width: 500px) {
+      .input-row { grid-template-columns: 1fr; }
+    }
+    
+    .demo-btn {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid var(--accent-border);
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 0 1px rgba(21, 188, 223, 0.35), 0 10px 30px -12px rgba(15, 163, 194, 0.6);
+    }
+    
+    .demo-btn:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 0 0 1px rgba(63, 208, 239, 0.5), 0 14px 36px -10px rgba(15, 163, 194, 0.8);
+    }
+    
+    .demo-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    .demo-btn-outline {
+      background: transparent;
+      color: var(--accent);
+      box-shadow: none;
+    }
+    
+    .demo-btn-outline:hover {
+      background: rgba(21, 188, 223, 0.1);
+      box-shadow: none;
+    }
+    
+    .output {
+      background: rgba(0,0,0,0.05);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.75rem;
+      color: #1a1c1e;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+    
+    .output.show { display: block; }
+    .output.error { color: #dc2626; }
+    
+    [data-theme="dark"] .output {
+      background: rgba(255,255,255,0.05);
+      color: #4ade80;
+      border-color: rgba(255,255,255,0.1);
+    }
+    
+    [data-theme="dark"] .output.error { color: #f87171; }
+    
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(0,0,0,0.08);
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--body);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="logo.svg" alt="AgentPact" style="width:38px;height:38px;border-radius:8px">
+    <span class="nav-logo-text">agentpact<span style="font-weight:400;color:rgba(255,255,255,0.5)">.ai</span></span>
+  </a>
+  
+  <div class="nav-links">
+    <a href="index.html#about">ABOUT</a>
+    <a href="index.html#how-it-works">HOW IT WORKS</a>
+    <a href="app.html">APP</a>
+  </div>
+  
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+    <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="5"/>
+      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+    </svg>
+    <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+  
+  <button class="hamburger" aria-label="Menu">
+    <span class="hamburger-bar"></span>
+    <span class="hamburger-bar"></span>
+    <span class="hamburger-bar"></span>
+  </button>
+  
+  <div class="mobile-menu">
+    <a href="index.html#about">ABOUT</a>
+    <a href="index.html#how-it-works">HOW IT WORKS</a>
+    <a href="app.html">APP</a>
+  </div>
+</nav>
+
+<section class="app-section">
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <h1 style="font-size: clamp(34px, 6.5vw, 72px); font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.98; color: var(--heading);">AGENTPACT APP</h1>
+    <p style="color: var(--body); font-size: 1rem; margin-top: 1rem;">Create agreements, submit proofs, and verify — all on GenLayer Studio</p>
+  </div>
+  
+  <div class="app-grid">
+    <div class="demo-card">
+      <h3>📝 Create Agreement</h3>
+      <input type="text" id="agreementId" class="input" placeholder="Agreement ID (e.g., SA-001)">
+      <input type="text" id="workerAddress" class="input" placeholder="Worker Address (0x...)">
+      <input type="text" id="termsUrl" class="input" placeholder="Terms URL (e.g., https://api.example.com)">
+      <div class="input-row">
+        <input type="number" id="paymentPerTick" class="input" placeholder="Payment (wei)">
+        <input type="number" id="intervalSeconds" class="input" placeholder="Interval (sec)">
+      </div>
+      <input type="number" id="totalPayments" class="input" placeholder="Total Payments">
+      <button class="demo-btn" onclick="createAgreement()">Create Agreement →</button>
+      <div id="createOutput" class="output"></div>
+    </div>
+    
+    <div class="demo-card">
+      <h3>✅ Submit Proof</h3>
+      <input type="text" id="proofAgreementId" class="input" placeholder="Agreement ID">
+      <input type="text" id="proofUrl" class="input" placeholder="Proof URL (same as terms)">
+      <input type="number" id="proofNonce" class="input" placeholder="Nonce (1, 2, 3...)">
+      <button class="demo-btn" onclick="submitProof()">Submit Proof →</button>
+      <div id="proofOutput" class="output"></div>
+      
+      <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.06);">
+        <h3 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem;">🔍 View Agreement</h3>
+        <input type="text" id="viewAgreementId" class="input" placeholder="Agreement ID">
+        <button class="demo-btn demo-btn-outline" onclick="viewAgreement()">Fetch Agreement</button>
+        <div id="viewOutput" class="output"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 AgentPact — Built on GenLayer Studio</div>
+  <div style="margin-top: 0.5rem;">Contract: 0xc99aDf7F652184b00087Ad7f36C994b2854f3294</div>
+</footer>
+
+<script>
+const HIREE_API = 'https://agentpact-backend.onrender.com';
+const WORKER_API = 'https://agentpact-worker-backend.onrender.com';
+
+function showOutput(id, msg, isError) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'output show' + (isError ? ' error' : '');
+}
+
+async function createAgreement() {
+  var id = document.getElementById('agreementId').value;
+  var worker = document.getElementById('workerAddress').value;
+  var terms = document.getElementById('termsUrl').value;
+  var pay = document.getElementById('paymentPerTick').value;
+  var interval = document.getElementById('intervalSeconds').value;
+  var total = document.getElementById('totalPayments').value;
+  if (!id || !worker || !terms || !pay || !interval || !total) {
+    showOutput('createOutput', 'Error: Please fill all fields', true);
+    return;
+  }
+  showOutput('createOutput', 'Creating agreement...', false);
+  try {
+    var res = await fetch(HIREE_API + '/create-agreement', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ agreementId: id, worker: worker, terms: terms, paymentPerTick: pay, intervalSeconds: interval, totalPayments: total })
+    });
+    var data = await res.json();
+    if (data.success) {
+      showOutput('createOutput', '✅ Created!\nTx: ' + data.txHash + '\n\nWaiting for finalization...', false);
+      setTimeout(function() { viewAgreementById(id); }, 5000);
+    } else {
+      showOutput('createOutput', 'Error: ' + data.error, true);
+    }
+  } catch (e) {
+    showOutput('createOutput', 'Error: ' + e.message, true);
+  }
+}
+
+async function submitProof() {
+  var id = document.getElementById('proofAgreementId').value;
+  var url = document.getElementById('proofUrl').value;
+  var nonce = document.getElementById('proofNonce').value;
+  if (!id || !url || !nonce) {
+    showOutput('proofOutput', 'Error: Please fill all fields', true);
+    return;
+  }
+  showOutput('proofOutput', 'Submitting proof...', false);
+  try {
+    var res = await fetch(WORKER_API + '/submit-proof', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ agreementId: id, proofUrl: url, nonce: nonce })
+    });
+    var data = await res.json();
+    if (data.success) {
+      showOutput('proofOutput', '✅ Proof submitted!\nTx: ' + data.txHash + '\nProof Hash: ' + data.proofHash, false);
+    } else {
+      showOutput('proofOutput', 'Error: ' + data.error, true);
+    }
+  } catch (e) {
+    showOutput('proofOutput', 'Error: ' + e.message, true);
+  }
+}
+
+async function viewAgreement() {
+  var id = document.getElementById('viewAgreementId').value;
+  if (!id) {
+    showOutput('viewOutput', 'Error: Please enter agreement ID', true);
+    return;
+  }
+  await viewAgreementById(id);
+}
+
+async function viewAgreementById(id) {
+  showOutput('viewOutput', 'Fetching...', false);
+  try {
+    var res = await fetch(HIREE_API + '/agreement/' + id);
+    var data = await res.json();
+    if (data.success && data.data) {
+      var d = data.data;
+      showOutput('viewOutput', 
+        '📋 Agreement: ' + d.id + '\n' +
+        'Status: ' + d.status + '\n' +
+        'Paid: ' + d.paid_ticks + '/' + d.total_ticks + '\n' +
+        'Violations: ' + d.violations + '\n' +
+        'Worker: ' + d.worker.slice(0,10) + '...' + d.worker.slice(-8) + '\n' +
+        'Terms: ' + d.terms,
+        false
+      );
+    } else {
+      showOutput('viewOutput', 'Agreement not found or not yet finalized', true);
+    }
+  } catch (e) {
+    showOutput('viewOutput', 'Error: ' + e.message, true);
+  }
+}
+
+// Hamburger menu
+document.querySelector('.hamburger').addEventListener('click', () => {
+  document.querySelector('.mobile-menu').classList.toggle('open');
+});
+
+// Theme toggle
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+}
+
+const saved = localStorage.getItem('theme');
+if (saved) document.documentElement.setAttribute('data-theme', saved);
+</script>
+
+</body>
+</html>
