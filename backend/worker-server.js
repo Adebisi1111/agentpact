@@ -1,5 +1,5 @@
 // worker-server.js - Worker Backend for AgentPact
-// Fetches URL, checks status, measures response time, submits proof
+// Fetches URL, checks status, measures response time, signs proof, submits
 
 import express from "express";
 import cors from "cors";
@@ -12,7 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0xC5282a80598EBD5874F46941cb6F757efd5D030D";
+const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0xd88Dd9138eC5EFec0A1826Fba756938966Ad45e5";
 const PRIVATE_KEY = process.env.WORKER_PRIVATE_KEY;
 
 if (!PRIVATE_KEY) {
@@ -55,13 +55,17 @@ app.post("/submit-proof", async (req, res) => {
       responseTime = 0;
     }
 
+    // Sign the proof with worker private key
+    const message = `proof:${agreementId}:${proofHash}:${nonce}`;
+    const signature = await account.signMessage({ message });
+
     const txHash = await client.writeContract({
       address: AGENTPACT_ADDR,
       functionName: "submit_proof",
-      args: [agreementId, proofHash, BigInt(statusCode), BigInt(responseTime), BigInt(nonce)],
+      args: [agreementId, proofHash, BigInt(statusCode), BigInt(responseTime), BigInt(nonce), signature],
     });
 
-    res.json({ success: true, txHash, proofHash, statusCode, responseTime });
+    res.json({ success: true, txHash, proofHash, statusCode, responseTime, signature });
   } catch (e) {
     console.error("Submit proof error:", e);
     res.status(500).json({ error: e.message });
@@ -84,12 +88,83 @@ app.get("/agreement/:id", async (req, res) => {
 // Automated scheduler - runs every 60 seconds
 async function checkAgreements() {
   console.log("Running automated check...");
-  // In production: fetch all active agreements, check deadlines, submit proofs
-  // For now, this is a placeholder for the cron job
+  
+  try {
+    // Get all active agreements (in production, this would query a database)
+    // For now, we'll check a list of known agreement IDs
+    const agreementIds = global.activeAgreements || [];
+    
+    for (const agreementId of agreementIds) {
+      try {
+        const result = await client.readContract({
+          address: AGENTPACT_ADDR,
+          functionName: "get_agreement",
+          args: [agreementId],
+        });
+        
+        if (!result || result.status !== "active") continue;
+        
+        // Check if due
+        const isDue = await client.readContract({
+          address: AGENTPACT_ADDR,
+          functionName: "is_due",
+          args: [agreementId],
+        });
+        
+        if (!isDue) continue;
+        
+        console.log(`Agreement ${agreementId} is due, submitting proof...`);
+        
+        // Fetch URL and submit proof
+        const startTime = Date.now();
+        const response = await fetch(result.terms);
+        const endTime = Date.now();
+        const responseTime = endTime - startTime;
+        const statusCode = response.status;
+        const content = await response.text();
+        const proofHash = keccak256(toHex(content));
+        
+        // Get current nonce
+        const nonceResult = await client.readContract({
+          address: AGENTPACT_ADDR,
+          functionName: "get_nonce",
+          args: [agreementId],
+        });
+        const nonce = Number(nonceResult) + 1;
+        
+        // Sign proof
+        const message = `proof:${agreementId}:${proofHash}:${nonce}`;
+        const signature = await account.signMessage({ message });
+        
+        // Submit proof
+        const txHash = await client.writeContract({
+          address: AGENTPACT_ADDR,
+          functionName: "submit_proof",
+          args: [agreementId, proofHash, BigInt(statusCode), BigInt(responseTime), BigInt(nonce), signature],
+        });
+        
+        console.log(`Proof submitted for ${agreementId}: ${txHash}`);
+      } catch (e) {
+        console.error(`Error checking agreement ${agreementId}:`, e.message);
+      }
+    }
+  } catch (e) {
+    console.error("Scheduler error:", e);
+  }
 }
 
 // Run scheduler every 60 seconds
 setInterval(checkAgreements, 60000);
+
+// Track active agreements
+app.post("/track-agreement", (req, res) => {
+  const { agreementId } = req.body;
+  if (!global.activeAgreements) global.activeAgreements = [];
+  if (!global.activeAgreements.includes(agreementId)) {
+    global.activeAgreements.push(agreementId);
+  }
+  res.json({ success: true, tracking: global.activeAgreements });
+});
 
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => console.log(`Worker server running on port ${PORT}`));

@@ -394,7 +394,14 @@
         <input type="number" id="paymentPerTick" class="input" placeholder="Payment (wei)">
         <input type="number" id="intervalSeconds" class="input" placeholder="Interval (sec)">
       </div>
-      <input type="number" id="totalPayments" class="input" placeholder="Total Payments">
+      <div class="input-row">
+        <input type="number" id="totalPayments" class="input" placeholder="Total Payments">
+        <input type="number" id="uptimeRequired" class="input" placeholder="Uptime Required (%)">
+      </div>
+      <div class="input-row">
+        <input type="number" id="responseTimeRequired" class="input" placeholder="Max Response Time (ms)">
+        <input type="number" id="penaltyRate" class="input" placeholder="Penalty Rate (%)">
+      </div>
       <button class="demo-btn" onclick="createAgreement()">Create Agreement →</button>
       <div id="createOutput" class="output"></div>
     </div>
@@ -440,7 +447,10 @@ async function createAgreement() {
   var pay = document.getElementById('paymentPerTick').value;
   var interval = document.getElementById('intervalSeconds').value;
   var total = document.getElementById('totalPayments').value;
-  if (!id || !worker || !terms || !pay || !interval || !total) {
+  var uptime = document.getElementById('uptimeRequired').value;
+  var responseTime = document.getElementById('responseTimeRequired').value;
+  var penalty = document.getElementById('penaltyRate').value;
+  if (!id || !worker || !terms || !pay || !interval || !total || !uptime || !responseTime || !penalty) {
     showOutput('createOutput', 'Error: Please fill all fields', true);
     return;
   }
@@ -449,7 +459,7 @@ async function createAgreement() {
     var res = await fetch(HIREE_API + '/create-agreement', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ agreementId: id, worker: worker, terms: terms, paymentPerTick: pay, intervalSeconds: interval, totalPayments: total })
+      body: JSON.stringify({ agreementId: id, worker: worker, terms: terms, paymentPerTick: pay, intervalSeconds: interval, totalPayments: total, uptimeRequired: uptime, responseTimeRequired: responseTime, penaltyRate: penalty })
     });
     var data = await res.json();
     if (data.success) {

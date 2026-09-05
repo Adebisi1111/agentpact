@@ -66,10 +66,8 @@ class AgentPact(gl.Contract):
         if worker == str(gl.message.sender_address):
             raise ValueError("Worker cannot be the same as hiree")
         
-        # Calculate total escrow needed
         total_escrow = payment_per_tick * total_ticks
         
-        # Check if hiree sent enough ETH for escrow
         if gl.message.value < total_escrow:
             raise ValueError(f"Insufficient escrow. Need {total_escrow}, got {gl.message.value}")
         
@@ -80,7 +78,7 @@ class AgentPact(gl.Contract):
             terms=terms,
             payment_per_tick=payment_per_tick,
             interval_seconds=interval_seconds,
-            next_deadline=u256(0),
+            next_deadline=u256(gl.message.timestamp) + interval_seconds,
             total_ticks=total_ticks,
             paid_ticks=u256(0),
             status="active",
@@ -128,13 +126,14 @@ class AgentPact(gl.Contract):
             raise ValueError("Invalid nonce")
         self.nonces[agreement_id] = nonce
         
+        # Verify signature
+        expected_message = f"proof:{agreement_id}:{proof_hash}:{nonce}"
+        if not self._verify_signature(agreement.worker, expected_message, signature):
+            raise ValueError("Invalid signature")
+        
         agreement.last_proof_hash = proof_hash
         agreement.last_response_time = response_time
         
-        # Verify signature (simplified - in production use ecrecover)
-        expected_message = f"proof:{agreement_id}:{proof_hash}:{nonce}"
-        
-        # Check if proof meets requirements
         is_valid = status_code == u256(200) and response_time <= agreement.response_time_required
         
         if is_valid:
@@ -143,26 +142,30 @@ class AgentPact(gl.Contract):
             agreement.consecutive_failures = u256(0)
             self.proof_counter += u256(1)
             
-            # Transfer payment to worker
             payment_amount = agreement.payment_per_tick
             agreement.total_paid_out += payment_amount
             
-            # Send ETH to worker
             worker_addr = Address(agreement.worker)
             gl.transaction(worker_addr, value=payment_amount)
             
-            # Check if uptime requirement is still met
+            # Update next deadline
+            agreement.next_deadline = u256(gl.message.timestamp) + agreement.interval_seconds
+            
+            # Check uptime enforcement
             total_checks = agreement.paid_ticks + agreement.violations
             current_uptime = (agreement.paid_ticks * u256(100)) / total_checks
             
             if current_uptime < agreement.uptime_required:
                 agreement.status = "suspended"
+                remaining_ticks = agreement.total_ticks - agreement.paid_ticks
+                refund = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
+                if refund > u256(0):
+                    hiree_addr = Address(agreement.hiree)
+                    gl.transaction(hiree_addr, value=refund)
+                    agreement.total_refunded += refund
             
-            # Check if all ticks paid
             if agreement.paid_ticks >= agreement.total_ticks:
                 agreement.status = "completed"
-                
-                # Refund excess escrow
                 excess = agreement.total_deposited - agreement.total_paid_out - agreement.total_penalties
                 if excess > u256(0):
                     hiree_addr = Address(agreement.hiree)
@@ -177,22 +180,21 @@ class AgentPact(gl.Contract):
             penalty = (agreement.payment_per_tick * agreement.penalty_rate) / u256(100)
             agreement.total_penalties += penalty
             
-            # Refund penalty to hiree
             if penalty > u256(0):
                 hiree_addr = Address(agreement.hiree)
                 gl.transaction(hiree_addr, value=penalty)
             
-            # Suspend after 3 consecutive failures
             if agreement.consecutive_failures >= u256(3):
                 agreement.status = "suspended"
-                
-                # Refund remaining escrow to hiree
                 remaining_ticks = agreement.total_ticks - agreement.paid_ticks
                 refund = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
                 if refund > u256(0):
                     hiree_addr = Address(agreement.hiree)
                     gl.transaction(hiree_addr, value=refund)
                     agreement.total_refunded += refund
+            
+            # Update next deadline even on failure
+            agreement.next_deadline = u256(gl.message.timestamp) + agreement.interval_seconds
         
         self.agreements[agreement_id] = agreement
         return True
@@ -209,14 +211,12 @@ class AgentPact(gl.Contract):
         if agreement.status != "active":
             raise ValueError("Can only cancel active agreements")
         
-        # Calculate refund: unused ticks minus penalties
         remaining_ticks = agreement.total_ticks - agreement.paid_ticks
         refund_amount = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
         
         agreement.status = "cancelled"
         agreement.total_refunded += refund_amount
         
-        # Refund to hiree
         if refund_amount > u256(0):
             hiree_addr = Address(agreement.hiree)
             gl.transaction(hiree_addr, value=refund_amount)
@@ -253,5 +253,19 @@ class AgentPact(gl.Contract):
         return uptime
     
     @gl.public.view
-    def get_contract_balance(self) -> u256:
-        return gl.contract_balance
+    def is_due(self, agreement_id: str) -> bool:
+        agreement = self.agreements.get(agreement_id)
+        if agreement is None:
+            return False
+        if agreement.status != "active":
+            return False
+        return u256(gl.message.timestamp) >= agreement.next_deadline
+    
+    def _verify_signature(self, address: str, message: str, signature: str) -> bool:
+        # Simplified verification - in production use ecrecover
+        # For hackathon MVP, we verify the signature format
+        if not signature.startswith("0x"):
+            return False
+        if len(signature) < 10:
+            return False
+        return True
