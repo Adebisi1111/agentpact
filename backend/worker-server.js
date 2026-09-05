@@ -4,7 +4,7 @@
 import express from "express";
 import cors from "cors";
 import { createClient } from "genlayer-js";
-import { testnetBradbury } from "genlayer-js/chains";
+import { studionet } from "genlayer-js/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import { keccak256, toHex } from "viem";
 
@@ -21,7 +21,7 @@ if (!PRIVATE_KEY) {
 }
 
 const account = privateKeyToAccount(PRIVATE_KEY);
-const client = createClient({ chain: testnetBradbury, account });
+const client = createClient({ chain: studionet, account });
 
 console.log("Worker Backend - Address:", account.address);
 
