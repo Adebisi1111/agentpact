@@ -20,6 +20,9 @@ class ServiceAgreement:
     status: str
     violations: u256
     last_proof_hash: str
+    last_check_status: str
+    last_response_time: u256
+    consecutive_failures: u256
 
 
 class AgentPact(gl.Contract):
@@ -66,6 +69,9 @@ class AgentPact(gl.Contract):
             status="active",
             violations=u256(0),
             last_proof_hash="",
+            last_check_status="none",
+            last_response_time=u256(0),
+            consecutive_failures=u256(0),
         )
         
         self.agreements[agreement_id] = agreement
@@ -79,6 +85,8 @@ class AgentPact(gl.Contract):
         self,
         agreement_id: str,
         proof_hash: str,
+        status_code: u256,
+        response_time: u256,
         nonce: u256,
     ) -> bool:
         agreement = self.agreements.get(agreement_id)
@@ -96,8 +104,20 @@ class AgentPact(gl.Contract):
         self.nonces[agreement_id] = nonce
         
         agreement.last_proof_hash = proof_hash
-        agreement.paid_ticks += u256(1)
-        self.proof_counter += u256(1)
+        agreement.last_response_time = response_time
+        
+        if status_code == u256(200):
+            agreement.last_check_status = "success"
+            agreement.paid_ticks += u256(1)
+            agreement.consecutive_failures = u256(0)
+            self.proof_counter += u256(1)
+        else:
+            agreement.last_check_status = "failed"
+            agreement.violations += u256(1)
+            agreement.consecutive_failures += u256(1)
+            
+            if agreement.consecutive_failures >= u256(3):
+                agreement.status = "suspended"
         
         if agreement.paid_ticks >= agreement.total_ticks:
             agreement.status = "completed"
