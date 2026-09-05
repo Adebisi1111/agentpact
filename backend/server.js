@@ -58,16 +58,16 @@ app.get("/stats", async (req, res) => {
 // Create agreement
 app.post("/create-agreement", async (req, res) => {
   try {
-    const { agreementId, worker, terms, paymentPerTick, intervalSeconds, totalPayments } = req.body;
+    const { agreementId, worker, terms, paymentPerTick, intervalSeconds, totalPayments, uptimeRequired, responseTimeRequired, penaltyRate } = req.body;
 
-    if (!agreementId || !worker || !terms || !paymentPerTick || !intervalSeconds || !totalPayments) {
+    if (!agreementId || !worker || !terms || !paymentPerTick || !intervalSeconds || !totalPayments || !uptimeRequired || !responseTimeRequired || !penaltyRate) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     const txHash = await client.writeContract({
       address: AGENTPACT_ADDR,
       functionName: "create_agreement",
-      args: [agreementId, worker, terms, BigInt(paymentPerTick), BigInt(intervalSeconds), BigInt(totalPayments)],
+      args: [agreementId, worker, terms, BigInt(paymentPerTick), BigInt(intervalSeconds), BigInt(totalPayments), BigInt(uptimeRequired), BigInt(responseTimeRequired), BigInt(penaltyRate)],
     });
 
     res.json({ success: true, txHash });
