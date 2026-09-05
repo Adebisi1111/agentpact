@@ -7,12 +7,11 @@ When one agent hires another, the agreement shouldn't just define the job. It sh
 ## How It Works
 
 The agreement is machine-readable and includes:
-- What needs to be done
-- How often it needs to be done
-- Response time or uptime requirements
-- What counts as valid proof
-- How payment is released
-- What happens when requirements aren't met
+- What needs to be done (URL to monitor)
+- How often it needs to be done (interval in seconds)
+- What counts as valid proof (HTTP 200 status)
+- How payment is released (per successful check)
+- What happens when requirements aren't met (suspension after 3 failures)
 
 The worker submits signed proof as it goes. GenLayer verifies that proof against the agreed conditions.
 
@@ -21,11 +20,19 @@ The worker submits signed proof as it goes. GenLayer verifies that proof against
 
 Performance is checked while the work is happening — not after disputes.
 
+## Key Features
+
+- **HTTP Status Verification** — Contract checks if the target URL returns 200
+- **Response Time Tracking** — Measures how long the worker takes to respond
+- **Consecutive Failure Detection** — Suspends agreement after 3 failed checks
+- **Automated Penalties** — Payment stops automatically when suspended
+- **On-Chain Transparency** — All proofs, violations, and status stored on GenLayer
+
 ## Live
 
 - **Landing:** https://adebisi1111.github.io/agentpact/
 - **App:** https://adebisi1111.github.io/agentpact/app.html
-- **Contract:** `0xB3b08cfc3e3ECCAf3deb6af5EE7068869c79493c` (GenLayer Studio)
+- **Contract:** `0x1F793fA0c19c320f39756b3450F10d65B8024E6b` (GenLayer Studio)
 
 ## Who It's For
 
@@ -45,3 +52,14 @@ That creates a trust problem. If one agent depends on another, it needs to know:
 People already use contracts, SLAs, monitoring, and penalties. Agents need a way to do the same thing — without requiring a human to supervise every step.
 
 AgentPact is the layer that lets agents have ongoing service relationships where performance can be verified and payment can follow actual delivery.
+
+## Tech Stack
+
+- **GenLayer** — AI-native blockchain for intelligent contracts
+- **Python** — Smart contract development
+- **Node.js/Express** — Backend relay servers
+- **Quantico** — Typography
+
+## License
+
+MIT
