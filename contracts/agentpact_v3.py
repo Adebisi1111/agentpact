@@ -1,6 +1,7 @@
 # { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
 
 from genlayer import *
+from genlayer.py.types import Address
 from dataclasses import dataclass
 from typing import Optional
 
@@ -38,7 +39,7 @@ class AgentPact(gl.Contract):
     agreement_counter: u256
     proof_counter: u256
     
-    @gl.public.write
+    @gl.public.write.payable
     def create_agreement(
         self,
         agreement_id: str,
@@ -73,7 +74,7 @@ class AgentPact(gl.Contract):
         
         agreement = ServiceAgreement(
             id=agreement_id,
-            hiree=str(gl.message.sender_address),
+            hiree=gl.message.sender_address.as_hex,
             worker=Address(worker).as_hex,
             terms=terms,
             payment_per_tick=payment_per_tick,
@@ -119,7 +120,7 @@ class AgentPact(gl.Contract):
         if agreement.status != "active":
             raise ValueError("Agreement is not active")
         
-        if gl.message.sender_address.as_hex != agreement.worker:
+        if str(gl.message.sender_address) != agreement.worker:
             raise ValueError("Only worker can submit proof")
         
         if nonce <= self.nonces[agreement_id]:
