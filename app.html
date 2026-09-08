@@ -104,6 +104,7 @@
     .wallet-btn:hover { background: var(--accent-hover); }
     .wallet-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .wallet-btn.connected { background: #10b981; border-color: #059669; }
+    .wallet-btn.disconnected { background: #ef4444; border-color: #dc2626; }
     
     @media (max-width: 700px) {
       .nav-links { display: none; }
@@ -466,9 +467,10 @@ async function connectWallet() {
     client = createClient({ chain: chains.testnetBradbury, account });
     
     // Update UI
-    btn.textContent = account.slice(0, 6) + '...' + account.slice(-4);
+    btn.textContent = account.slice(0, 6) + '...' + account.slice(-4) + ' • Disconnect';
     btn.classList.add('connected');
     btn.disabled = false;
+    btn.onclick = disconnectWallet;
     
     document.getElementById('walletStatus').style.display = 'flex';
     document.getElementById('walletAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
@@ -483,6 +485,21 @@ async function connectWallet() {
     btn.disabled = false;
     btn.textContent = 'Connect Wallet';
   }
+}
+
+function disconnectWallet() {
+  account = null;
+  client = null;
+  
+  const btn = document.getElementById('walletBtn');
+  btn.textContent = 'Connect Wallet';
+  btn.onclick = connectWallet;
+  btn.classList.remove('disconnected');
+  
+  document.getElementById('walletStatus').style.display = 'none';
+  document.getElementById('infoBox').innerHTML = '<strong>Welcome to AgentPact.</strong> Connect your wallet (MetaMask or Rabby) to GenLayer Bradbury Testnet to create service agreements, submit proofs, and track performance. Make sure you have test GEN for gas and escrow.';
+  
+  setFormEnabled(false);
 }
 
 async function withRetry(fn, maxAttempts = 5) {
