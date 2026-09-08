@@ -66,91 +66,51 @@
       transition: background 0.3s;
     }
     
-    [data-theme="dark"] .navbar {
-      border-bottom-color: rgba(255,255,255,0.08);
-    }
+    [data-theme="dark"] .navbar { border-bottom-color: rgba(255,255,255,0.08); }
     
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo-text { font-size: clamp(22px, 5vw, 30px); font-weight: 700; color: var(--heading); letter-spacing: -0.5px; text-transform: lowercase; }
     
-    .nav-logo-text {
-      font-size: clamp(22px, 5vw, 30px);
-      font-weight: 700;
-      color: var(--heading);
-      letter-spacing: -0.5px;
-      text-transform: lowercase;
-    }
-    
-    .nav-links {
-      display: flex;
-      gap: 34px;
-      align-items: center;
-    }
-    
-    .nav-links a {
-      font-weight: 700;
-      font-size: clamp(12px, 2.4vw, 15px);
-      letter-spacing: 0.06em;
-      color: var(--nav);
-      white-space: nowrap;
-      text-transform: uppercase;
-    }
-    
+    .nav-links { display: flex; gap: 34px; align-items: center; }
+    .nav-links a { font-weight: 700; font-size: clamp(12px, 2.4vw, 15px); letter-spacing: 0.06em; color: var(--nav); white-space: nowrap; text-transform: uppercase; }
     [data-theme="dark"] .nav-links a { color: #e0e0e0; }
     [data-theme="dark"] .nav-links a:hover { color: var(--accent); }
     
-    .theme-toggle {
-      margin-left: auto;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 8px;
-      color: var(--nav);
-      transition: color 0.2s;
-    }
-    
+    .theme-toggle { margin-left: auto; background: none; border: none; cursor: pointer; padding: 8px; color: var(--nav); transition: color 0.2s; }
     .theme-toggle:hover { color: var(--accent); }
     .theme-icon-light { width: 20px; height: 20px; display: block; }
     .theme-icon-dark { width: 20px; height: 20px; display: none; }
     [data-theme="dark"] .theme-icon-light { display: none; }
     [data-theme="dark"] .theme-icon-dark { display: block; }
     
-    .hamburger {
-      display: none;
-      margin-left: auto;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 8px;
-    }
+    .hamburger { display: none; margin-left: auto; background: none; border: none; cursor: pointer; padding: 8px; }
+    .hamburger-bar { display: block; width: 22px; height: 2px; background: var(--heading); margin: 5px 0; }
     
-    .hamburger-bar {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: var(--heading);
-      margin: 5px 0;
-    }
-    
-    .mobile-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: var(--dark);
-      padding: 20px;
-      flex-direction: column;
-      gap: 18px;
-      z-index: 100;
-    }
-    
+    .mobile-menu { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--dark); padding: 20px; flex-direction: column; gap: 18px; z-index: 100; }
     .mobile-menu.open { display: flex; }
     .mobile-menu a { color: #fff; font-weight: 700; text-transform: uppercase; font-size: 14px; }
+    
+    .wallet-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      border: 1px solid var(--accent-border);
+      color: #fff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: clamp(12px, 2.4vw, 15px);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 14px 26px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 0 1px rgba(21, 188, 223, 0.35), 0 10px 30px -12px rgba(15, 163, 194, 0.6);
+    }
+    
+    .wallet-btn:hover { background: var(--accent-hover); }
+    .wallet-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .wallet-btn.connected { background: #10b981; border-color: #059669; }
     
     @media (max-width: 700px) {
       .nav-links { display: none; }
@@ -164,24 +124,39 @@
       padding: clamp(40px, 6vw, 80px) clamp(20px, 4vw, 48px);
     }
     
-    .app-header {
-      text-align: center;
-      margin-bottom: 3rem;
+    .app-header { text-align: center; margin-bottom: 3rem; }
+    .app-header h1 { font-size: clamp(34px, 6.5vw, 72px); font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.98; color: var(--heading); }
+    .app-header p { color: var(--body); font-size: 1rem; margin-top: 1rem; }
+    
+    .wallet-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
     }
     
-    .app-header h1 {
-      font-size: clamp(34px, 6.5vw, 72px);
+    .wallet-address {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.875rem;
+      color: var(--heading);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+    }
+    
+    .network-badge {
+      font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.01em;
-      line-height: 0.98;
-      color: var(--heading);
-    }
-    
-    .app-header p {
-      color: var(--body);
-      font-size: 1rem;
-      margin-top: 1rem;
+      letter-spacing: 0.06em;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
     }
     
     .app-grid {
@@ -203,20 +178,9 @@
       transition: background 0.3s, border 0.3s;
     }
     
-    [data-theme="dark"] .demo-card {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.15);
-    }
+    [data-theme="dark"] .demo-card { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
     
-    .demo-card h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--heading);
-    }
+    .demo-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--heading); }
     
     .input {
       width: 100%;
@@ -232,32 +196,13 @@
     }
     
     .input::placeholder { color: rgba(43, 48, 51, 0.3); }
-    .input:focus {
-      outline: none;
-      border-color: var(--accent);
-      background: rgba(255,255,255,0.08);
-    }
-    
-    [data-theme="dark"] .input {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.2);
-    }
-    
+    .input:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.08); }
+    [data-theme="dark"] .input { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
     [data-theme="dark"] .input::placeholder { color: rgba(255,255,255,0.4); }
-    [data-theme="dark"] .input:focus {
-      border-color: var(--accent);
-      background: rgba(255,255,255,0.12);
-    }
+    [data-theme="dark"] .input:focus { border-color: var(--accent); background: rgba(255,255,255,0.12); }
     
-    .input-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-    }
-    
-    @media (max-width: 500px) {
-      .input-row { grid-template-columns: 1fr; }
-    }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    @media (max-width: 500px) { .input-row { grid-template-columns: 1fr; } }
     
     .demo-btn {
       width: 100%;
@@ -274,11 +219,7 @@
       box-shadow: 0 0 0 1px rgba(21, 188, 223, 0.35), 0 10px 30px -12px rgba(15, 163, 194, 0.6);
     }
     
-    .demo-btn:hover {
-      background: var(--accent-hover);
-      box-shadow: 0 0 0 1px rgba(63, 208, 239, 0.5), 0 14px 36px -10px rgba(15, 163, 194, 0.8);
-    }
-    
+    .demo-btn:hover { background: var(--accent-hover); }
     .demo-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     
     .demo-btn-outline {
@@ -287,10 +228,7 @@
       box-shadow: none;
     }
     
-    .demo-btn-outline:hover {
-      background: rgba(21, 188, 223, 0.1);
-      box-shadow: none;
-    }
+    .demo-btn-outline:hover { background: rgba(21, 188, 223, 0.1); box-shadow: none; }
     
     .output {
       background: rgba(0,0,0,0.05);
@@ -310,34 +248,25 @@
     
     .output.show { display: block; }
     .output.error { color: #dc2626; }
-    
-    [data-theme="dark"] .output {
-      background: rgba(255,255,255,0.08);
-      color: #4ade80;
-      border-color: rgba(255,255,255,0.15);
-    }
-    
+    [data-theme="dark"] .output { background: rgba(255,255,255,0.08); color: #4ade80; border-color: rgba(255,255,255,0.15); }
     [data-theme="dark"] .output.error { color: #f87171; }
     
+    .info-box {
+      background: rgba(21, 188, 223, 0.05);
+      border: 1px solid rgba(21, 188, 223, 0.2);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+      color: var(--body);
+    }
+    
+    .info-box strong { color: var(--accent); }
+    
     /* Footer */
-    footer {
-      border-top: 1px solid rgba(0,0,0,0.08);
-      padding: 2rem;
-      text-align: center;
-      font-size: 0.75rem;
-      color: var(--body);
-      transition: border-color 0.3s;
-    }
-    
-    [data-theme="dark"] footer {
-      border-top-color: rgba(255,255,255,0.08);
-    }
-    
-    footer a {
-      color: var(--body);
-      text-decoration: none;
-    }
-    
+    footer { border-top: 1px solid rgba(0,0,0,0.08); padding: 2rem; text-align: center; font-size: 0.75rem; color: var(--body); transition: border-color 0.3s; }
+    [data-theme="dark"] footer { border-top-color: rgba(255,255,255,0.08); }
+    footer a { color: var(--body); text-decoration: none; }
     footer a:hover { color: var(--accent); }
   </style>
 </head>
@@ -365,6 +294,8 @@
     </svg>
   </button>
   
+  <button id="walletBtn" class="wallet-btn chamfer-sm" onclick="connectWallet()">Connect Wallet</button>
+  
   <button class="hamburger" aria-label="Menu">
     <span class="hamburger-bar"></span>
     <span class="hamburger-bar"></span>
@@ -381,7 +312,16 @@
 <section class="app-section">
   <div class="app-header">
     <h1>AGENTPACT APP</h1>
-    <p>Create agreements, submit proofs, and verify — all on GenLayer Studio</p>
+    <p>Create agreements, submit proofs, and verify — all on GenLayer Bradbury</p>
+    
+    <div class="wallet-status" id="walletStatus" style="display:none;">
+      <span class="wallet-address" id="walletAddress"></span>
+      <span class="network-badge">GenLayer Bradbury</span>
+    </div>
+  </div>
+  
+  <div class="info-box" id="infoBox">
+    <strong>Welcome to AgentPact.</strong> Connect your wallet (MetaMask or Rabby) to GenLayer Bradbury Testnet to create service agreements, submit proofs, and track performance. Make sure you have test GEN for gas and escrow.
   </div>
   
   <div class="app-grid">
@@ -391,26 +331,38 @@
       <input type="text" id="workerAddress" class="input" placeholder="Worker Address (0x...)">
       <input type="text" id="termsUrl" class="input" placeholder="Terms URL (e.g., https://api.example.com)">
       <div class="input-row">
-        <input type="number" id="paymentPerTick" class="input" placeholder="Payment (wei)">
+        <input type="number" id="paymentPerTick" class="input" placeholder="Payment per tick (wei)">
         <input type="number" id="intervalSeconds" class="input" placeholder="Interval (sec)">
       </div>
-      <input type="number" id="totalPayments" class="input" placeholder="Total Payments">
-      <button class="demo-btn" onclick="createAgreement()">Create Agreement →</button>
+      <div class="input-row">
+        <input type="number" id="totalTicks" class="input" placeholder="Total ticks">
+        <input type="number" id="uptimeRequired" class="input" placeholder="Uptime required (%)">
+      </div>
+      <div class="input-row">
+        <input type="number" id="responseTimeRequired" class="input" placeholder="Max response time (ms)">
+        <input type="number" id="penaltyRate" class="input" placeholder="Penalty rate (%)">
+      </div>
+      <button class="demo-btn" id="createBtn" onclick="createAgreement()" disabled>Connect Wallet First</button>
       <div id="createOutput" class="output"></div>
     </div>
     
     <div class="demo-card">
       <h3>✅ Submit Proof</h3>
       <input type="text" id="proofAgreementId" class="input" placeholder="Agreement ID">
-      <input type="text" id="proofUrl" class="input" placeholder="Proof URL (same as terms)">
+      <input type="text" id="proofHash" class="input" placeholder="Proof hash (0x...)">
+      <div class="input-row">
+        <input type="number" id="statusCode" class="input" placeholder="Status code (200)">
+        <input type="number" id="responseTime" class="input" placeholder="Response time (ms)">
+      </div>
       <input type="number" id="proofNonce" class="input" placeholder="Nonce (1, 2, 3...)">
-      <button class="demo-btn" onclick="submitProof()">Submit Proof →</button>
+      <input type="text" id="signature" class="input" placeholder="Signature (0x...)">
+      <button class="demo-btn" id="proofBtn" onclick="submitProof()" disabled>Connect Wallet First</button>
       <div id="proofOutput" class="output"></div>
       
       <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.06);">
         <h3 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem;">🔍 View Agreement</h3>
         <input type="text" id="viewAgreementId" class="input" placeholder="Agreement ID">
-        <button class="demo-btn demo-btn-outline" onclick="viewAgreement()">Fetch Agreement</button>
+        <button class="demo-btn demo-btn-outline" id="viewBtn" onclick="viewAgreement()" disabled>Connect Wallet First</button>
         <div id="viewOutput" class="output"></div>
       </div>
     </div>
@@ -419,125 +371,238 @@
 
 <footer>
   <div style="margin-bottom:0.5rem"><a href="https://github.com/Adebisi1111/agentpact" target="_blank">GitHub</a> · <a href="index.html">Home</a> · <a href="index.html#about">About</a></div>
-  <div>© 2026 AgentPact — Built on GenLayer Studio</div>
-  <div style="margin-top:0.5rem;opacity:0.7">Contract: 0x1F793fA0c19c320f39756b3450F10d65B8024E6b</div>
+  <div>© 2026 AgentPact — Built on GenLayer</div>
+  <div style="margin-top:0.5rem;opacity:0.7">Contract: 0x3318A9B8a152E3b3c0375d805F1F62DA8414733e</div>
 </footer>
 
-<script>
-const HIREE_API = 'https://agentpact-backend.onrender.com';
-const WORKER_API = 'https://agentpact-worker-backend.onrender.com';
+<script type="module">
+import { createClient, chains } from 'https://cdn.jsdelivr.net/npm/genlayer-js@latest/+esm';
+
+const CONTRACT = '0x3318A9B8a152E3b3c0375d805F1F62DA8414733e';
+const BRADBURY_CHAIN_ID = '0x107D';
+
+let client = null;
+let account = null;
+
+// Expose to window for onclick handlers
+window.connectWallet = connectWallet;
+window.createAgreement = createAgreement;
+window.submitProof = submitProof;
+window.viewAgreement = viewAgreement;
 
 function showOutput(id, msg, isError) {
-  var el = document.getElementById(id);
+  const el = document.getElementById(id);
   el.textContent = msg;
   el.className = 'output show' + (isError ? ' error' : '');
 }
 
+function detectWallet() {
+  if (typeof window === 'undefined') return null;
+  if (window.rabby) return window.rabby.provider || window.ethereum;
+  if (window.ethereum?.isRabby) return window.ethereum;
+  if (window.ethereum?.isMetaMask) return window.ethereum;
+  if (window.ethereum) return window.ethereum;
+  return null;
+}
+
+async function connectWallet() {
+  const btn = document.getElementById('walletBtn');
+  btn.disabled = true;
+  btn.textContent = 'Connecting...';
+  
+  try {
+    const provider = detectWallet();
+    if (!provider) {
+      alert('No wallet detected. Please install MetaMask or Rabby.');
+      btn.disabled = false;
+      btn.textContent = 'Connect Wallet';
+      return;
+    }
+    
+    // Check chain
+    const currentChainId = await provider.request({ method: 'eth_chainId' });
+    if (currentChainId !== BRADBURY_CHAIN_ID) {
+      try {
+        await provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: BRADBURY_CHAIN_ID }],
+        });
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          await provider.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: BRADBURY_CHAIN_ID,
+              chainName: 'GenLayer Bradbury Testnet',
+              rpcUrls: ['https://rpc-bradbury.genlayer.com'],
+              nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 },
+              blockExplorerUrls: ['https://explorer-bradbury.genlayer.com'],
+            }],
+          });
+        } else {
+          throw switchError;
+        }
+      }
+    }
+    
+    const accounts = await provider.request({ method: 'eth_requestAccounts' });
+    if (!accounts || accounts.length === 0) {
+      alert('No accounts found. Please unlock your wallet.');
+      btn.disabled = false;
+      btn.textContent = 'Connect Wallet';
+      return;
+    }
+    
+    account = accounts[0];
+    client = createClient({ chain: chains.testnetBradbury, account });
+    
+    // Update UI
+    btn.textContent = account.slice(0, 6) + '...' + account.slice(-4);
+    btn.classList.add('connected');
+    btn.disabled = false;
+    
+    document.getElementById('walletStatus').style.display = 'flex';
+    document.getElementById('walletAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
+    document.getElementById('infoBox').innerHTML = '<strong>Wallet connected.</strong> You can now create agreements, submit proofs, and view agreement status directly on GenLayer Bradbury.';
+    
+    // Enable buttons
+    document.getElementById('createBtn').disabled = false;
+    document.getElementById('createBtn').textContent = 'Create Agreement →';
+    document.getElementById('proofBtn').disabled = false;
+    document.getElementById('proofBtn').textContent = 'Submit Proof →';
+    document.getElementById('viewBtn').disabled = false;
+    document.getElementById('viewBtn').textContent = 'Fetch Agreement';
+    
+  } catch (err) {
+    console.error('Connection failed:', err);
+    alert('Connection failed: ' + (err.message || 'Unknown error'));
+    btn.disabled = false;
+    btn.textContent = 'Connect Wallet';
+  }
+}
+
+async function withRetry(fn, maxAttempts = 5) {
+  let attempt = 0;
+  let delay = 4000;
+  while (attempt < maxAttempts) {
+    try {
+      return await fn();
+    } catch (e) {
+      const msg = e?.error?.message ?? e?.message ?? '';
+      if (msg.includes('-32005') || msg.includes('rate limit') || msg.includes('empty')) {
+        console.warn(`Retry ${attempt + 1}/${maxAttempts} after ${delay}ms`);
+        await new Promise(r => setTimeout(r, delay));
+        delay *= 2;
+        attempt++;
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error('Too many retries');
+}
+
 async function createAgreement() {
-  var id = document.getElementById('agreementId').value;
-  var worker = document.getElementById('workerAddress').value;
-  var terms = document.getElementById('termsUrl').value;
-  var pay = document.getElementById('paymentPerTick').value;
-  var interval = document.getElementById('intervalSeconds').value;
-  var total = document.getElementById('totalPayments').value;
-  if (!id || !worker || !terms || !pay || !interval || !total) {
+  if (!client || !account) { showOutput('createOutput', 'Error: Connect wallet first', true); return; }
+  
+  const id = document.getElementById('agreementId').value;
+  const worker = document.getElementById('workerAddress').value;
+  const terms = document.getElementById('termsUrl').value;
+  const pay = document.getElementById('paymentPerTick').value;
+  const interval = document.getElementById('intervalSeconds').value;
+  const total = document.getElementById('totalTicks').value;
+  const uptime = document.getElementById('uptimeRequired').value;
+  const responseTime = document.getElementById('responseTimeRequired').value;
+  const penalty = document.getElementById('penaltyRate').value;
+  
+  if (!id || !worker || !terms || !pay || !interval || !total || !uptime || !responseTime || !penalty) {
     showOutput('createOutput', 'Error: Please fill all fields', true);
     return;
   }
+  
   showOutput('createOutput', 'Creating agreement...', false);
+  
   try {
-    var res = await fetch(HIREE_API + '/create-agreement', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ agreementId: id, worker: worker, terms: terms, paymentPerTick: pay, intervalSeconds: interval, totalPayments: total })
-    });
-    var data = await res.json();
-    if (data.success) {
-      showOutput('createOutput', '✅ Created!\nTx: ' + data.txHash + '\n\nWaiting for finalization...', false);
-      setTimeout(function() { viewAgreementById(id); }, 5000);
-    } else {
-      showOutput('createOutput', 'Error: ' + data.error, true);
-    }
+    const totalEscrow = BigInt(pay) * BigInt(total);
+    const txHash = await withRetry(() => client.writeContract({
+      address: CONTRACT,
+      functionName: 'create_agreement',
+      args: [id, worker, terms, BigInt(pay), BigInt(interval), BigInt(total), BigInt(uptime), BigInt(responseTime), BigInt(penalty)],
+      value: totalEscrow,
+    }));
+    
+    showOutput('createOutput', '✅ Created!\nTx: ' + txHash + '\n\nWaiting for finalization...', false);
+    setTimeout(() => viewAgreementById(id), 5000);
   } catch (e) {
     showOutput('createOutput', 'Error: ' + e.message, true);
   }
 }
 
 async function submitProof() {
-  var id = document.getElementById('proofAgreementId').value;
-  var url = document.getElementById('proofUrl').value;
-  var nonce = document.getElementById('proofNonce').value;
-  if (!id || !url || !nonce) {
+  if (!client || !account) { showOutput('proofOutput', 'Error: Connect wallet first', true); return; }
+  
+  const id = document.getElementById('proofAgreementId').value;
+  const proofHash = document.getElementById('proofHash').value;
+  const statusCode = document.getElementById('statusCode').value;
+  const responseTime = document.getElementById('responseTime').value;
+  const nonce = document.getElementById('proofNonce').value;
+  const signature = document.getElementById('signature').value;
+  
+  if (!id || !proofHash || !statusCode || !responseTime || !nonce || !signature) {
     showOutput('proofOutput', 'Error: Please fill all fields', true);
     return;
   }
+  
   showOutput('proofOutput', 'Submitting proof...', false);
+  
   try {
-    var res = await fetch(WORKER_API + '/submit-proof', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ agreementId: id, proofUrl: url, nonce: nonce })
-    });
-    var data = await res.json();
-    if (data.success) {
-      showOutput('proofOutput', '✅ Proof submitted!\nTx: ' + data.txHash + '\nProof Hash: ' + data.proofHash, false);
-    } else {
-      showOutput('proofOutput', 'Error: ' + data.error, true);
-    }
+    const txHash = await withRetry(() => client.writeContract({
+      address: CONTRACT,
+      functionName: 'submit_proof',
+      args: [id, proofHash, BigInt(statusCode), BigInt(responseTime), BigInt(nonce), signature],
+      value: 0n,
+    }));
+    
+    showOutput('proofOutput', '✅ Proof submitted!\nTx: ' + txHash, false);
   } catch (e) {
     showOutput('proofOutput', 'Error: ' + e.message, true);
   }
 }
 
 async function viewAgreement() {
-  var id = document.getElementById('viewAgreementId').value;
-  if (!id) {
-    showOutput('viewOutput', 'Error: Please enter agreement ID', true);
-    return;
-  }
+  const id = document.getElementById('viewAgreementId').value;
+  if (!id) { showOutput('viewOutput', 'Error: Enter agreement ID', true); return; }
   await viewAgreementById(id);
 }
 
 async function viewAgreementById(id) {
-  showOutput('viewOutput', 'Fetching...', false);
+  if (!client) { showOutput('viewOutput', 'Error: Connect wallet first', true); return; }
+  
+  showOutput('viewOutput', 'Fetching agreement...', false);
+  
   try {
-    var res = await fetch(HIREE_API + '/agreement/' + id);
-    var data = await res.json();
-    if (data.success && data.data) {
-      var d = data.data;
-      showOutput('viewOutput', 
-        '📋 Agreement: ' + d.id + '\n' +
-        'Status: ' + d.status + '\n' +
-        'Paid: ' + d.paid_ticks + '/' + d.total_ticks + '\n' +
-        'Violations: ' + d.violations + '\n' +
-        'Worker: ' + d.worker.slice(0,10) + '...' + d.worker.slice(-8) + '\n' +
-        'Terms: ' + d.terms,
-        false
-      );
+    const result = await withRetry(() => client.readContract({
+      address: CONTRACT,
+      functionName: 'get_agreement',
+      args: [id],
+    }));
+    
+    if (result) {
+      showOutput('viewOutput', '📋 Agreement: ' + id + '\n\n' + JSON.stringify(result, null, 2), false);
     } else {
-      showOutput('viewOutput', 'Agreement not found or not yet finalized', true);
+      showOutput('viewOutput', 'Agreement not found: ' + id, true);
     }
   } catch (e) {
     showOutput('viewOutput', 'Error: ' + e.message, true);
   }
 }
 
-// Hamburger menu
-document.querySelector('.hamburger').addEventListener('click', () => {
-  document.querySelector('.mobile-menu').classList.toggle('open');
-});
-
 // Theme toggle
 function toggleTheme() {
   const html = document.documentElement;
   const current = html.getAttribute('data-theme');
-  const next = current === 'dark' ? 'light' : 'dark';
-  html.setAttribute('data-theme', next);
-  localStorage.setItem('theme', next);
+  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
 }
-
-const saved = localStorage.getItem('theme');
-if (saved) document.documentElement.setAttribute('data-theme', saved);
 </script>
 
 </body>
