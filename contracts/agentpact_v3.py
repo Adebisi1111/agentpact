@@ -39,7 +39,7 @@ class AgentPact(gl.Contract):
     agreement_counter: u256
     proof_counter: u256
     
-    @gl.public.write
+    @gl.public.write.payable
     def create_agreement(
         self,
         agreement_id: str,
