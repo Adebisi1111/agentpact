@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -82,13 +82,6 @@
     .theme-icon-dark { width: 20px; height: 20px; display: none; }
     [data-theme="dark"] .theme-icon-light { display: none; }
     [data-theme="dark"] .theme-icon-dark { display: block; }
-    
-    .hamburger { display: none; margin-left: auto; background: none; border: none; cursor: pointer; padding: 8px; }
-    .hamburger-bar { display: block; width: 22px; height: 2px; background: var(--heading); margin: 5px 0; }
-    
-    .mobile-menu { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--dark); padding: 20px; flex-direction: column; gap: 18px; z-index: 100; }
-    .mobile-menu.open { display: flex; }
-    .mobile-menu a { color: #fff; font-weight: 700; text-transform: uppercase; font-size: 14px; }
     
     .wallet-btn {
       display: inline-flex;
@@ -220,7 +213,7 @@
     }
     
     .demo-btn:hover { background: var(--accent-hover); }
-    .demo-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .demo-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     
     .demo-btn-outline {
       background: transparent;
@@ -263,6 +256,14 @@
     
     .info-box strong { color: var(--accent); }
     
+    .overlay-message {
+      text-align: center;
+      padding: 2rem;
+      color: var(--body);
+      font-size: 0.875rem;
+      opacity: 0.6;
+    }
+    
     /* Footer */
     footer { border-top: 1px solid rgba(0,0,0,0.08); padding: 2rem; text-align: center; font-size: 0.75rem; color: var(--body); transition: border-color 0.3s; }
     [data-theme="dark"] footer { border-top-color: rgba(255,255,255,0.08); }
@@ -284,7 +285,7 @@
     <a href="index.html#why">WHY</a>
   </div>
   
-  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
     <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="12" cy="12" r="5"/>
       <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
@@ -327,42 +328,48 @@
   <div class="app-grid">
     <div class="demo-card">
       <h3>📝 Create Agreement</h3>
-      <input type="text" id="agreementId" class="input" placeholder="Agreement ID (e.g., SA-001)">
-      <input type="text" id="workerAddress" class="input" placeholder="Worker Address (0x...)">
-      <input type="text" id="termsUrl" class="input" placeholder="Terms URL (e.g., https://api.example.com)">
-      <div class="input-row">
-        <input type="number" id="paymentPerTick" class="input" placeholder="Payment per tick (wei)">
-        <input type="number" id="intervalSeconds" class="input" placeholder="Interval (sec)">
+      <div id="createForm">
+        <input type="text" id="agreementId" class="input" placeholder="Agreement ID (e.g., SA-001)">
+        <input type="text" id="workerAddress" class="input" placeholder="Worker Address (0x...)">
+        <input type="text" id="termsUrl" class="input" placeholder="Terms URL (e.g., https://api.example.com)">
+        <div class="input-row">
+          <input type="number" id="paymentPerTick" class="input" placeholder="Payment per tick (wei)">
+          <input type="number" id="intervalSeconds" class="input" placeholder="Interval (sec)">
+        </div>
+        <div class="input-row">
+          <input type="number" id="totalTicks" class="input" placeholder="Total ticks">
+          <input type="number" id="uptimeRequired" class="input" placeholder="Uptime required (%)">
+        </div>
+        <div class="input-row">
+          <input type="number" id="responseTimeRequired" class="input" placeholder="Max response time (ms)">
+          <input type="number" id="penaltyRate" class="input" placeholder="Penalty rate (%)">
+        </div>
+        <button class="demo-btn" id="createBtn" onclick="createAgreement()">Create Agreement →</button>
       </div>
-      <div class="input-row">
-        <input type="number" id="totalTicks" class="input" placeholder="Total ticks">
-        <input type="number" id="uptimeRequired" class="input" placeholder="Uptime required (%)">
-      </div>
-      <div class="input-row">
-        <input type="number" id="responseTimeRequired" class="input" placeholder="Max response time (ms)">
-        <input type="number" id="penaltyRate" class="input" placeholder="Penalty rate (%)">
-      </div>
-      <button class="demo-btn" id="createBtn" onclick="createAgreement()" disabled>Connect Wallet First</button>
+      <div id="createOverlay" class="overlay-message" style="display:none;">Connect wallet to create agreements</div>
       <div id="createOutput" class="output"></div>
     </div>
     
     <div class="demo-card">
       <h3>✅ Submit Proof</h3>
-      <input type="text" id="proofAgreementId" class="input" placeholder="Agreement ID">
-      <input type="text" id="proofHash" class="input" placeholder="Proof hash (0x...)">
-      <div class="input-row">
-        <input type="number" id="statusCode" class="input" placeholder="Status code (200)">
-        <input type="number" id="responseTime" class="input" placeholder="Response time (ms)">
+      <div id="proofForm">
+        <input type="text" id="proofAgreementId" class="input" placeholder="Agreement ID">
+        <input type="text" id="proofHash" class="input" placeholder="Proof hash (0x...)">
+        <div class="input-row">
+          <input type="number" id="statusCode" class="input" placeholder="Status code (200)">
+          <input type="number" id="responseTime" class="input" placeholder="Response time (ms)">
+        </div>
+        <input type="number" id="proofNonce" class="input" placeholder="Nonce (1, 2, 3...)">
+        <input type="text" id="signature" class="input" placeholder="Signature (0x...)">
+        <button class="demo-btn" id="proofBtn" onclick="submitProof()">Submit Proof →</button>
       </div>
-      <input type="number" id="proofNonce" class="input" placeholder="Nonce (1, 2, 3...)">
-      <input type="text" id="signature" class="input" placeholder="Signature (0x...)">
-      <button class="demo-btn" id="proofBtn" onclick="submitProof()" disabled>Connect Wallet First</button>
+      <div id="proofOverlay" class="overlay-message" style="display:none;">Connect wallet to submit proofs</div>
       <div id="proofOutput" class="output"></div>
       
       <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.06);">
         <h3 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem;">🔍 View Agreement</h3>
         <input type="text" id="viewAgreementId" class="input" placeholder="Agreement ID">
-        <button class="demo-btn demo-btn-outline" id="viewBtn" onclick="viewAgreement()" disabled>Connect Wallet First</button>
+        <button class="demo-btn demo-btn-outline" id="viewBtn" onclick="viewAgreement()">Fetch Agreement</button>
         <div id="viewOutput" class="output"></div>
       </div>
     </div>
@@ -390,6 +397,13 @@ window.createAgreement = createAgreement;
 window.submitProof = submitProof;
 window.viewAgreement = viewAgreement;
 
+// Theme toggle
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+});
+
 function showOutput(id, msg, isError) {
   const el = document.getElementById(id);
   el.textContent = msg;
@@ -403,6 +417,13 @@ function detectWallet() {
   if (window.ethereum?.isMetaMask) return window.ethereum;
   if (window.ethereum) return window.ethereum;
   return null;
+}
+
+function setFormEnabled(enabled) {
+  const inputs = document.querySelectorAll('.input');
+  const buttons = document.querySelectorAll('.demo-btn');
+  inputs.forEach(i => i.disabled = !enabled);
+  buttons.forEach(b => b.disabled = !enabled);
 }
 
 async function connectWallet() {
@@ -465,13 +486,8 @@ async function connectWallet() {
     document.getElementById('walletAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
     document.getElementById('infoBox').innerHTML = '<strong>Wallet connected.</strong> You can now create agreements, submit proofs, and view agreement status directly on GenLayer Bradbury.';
     
-    // Enable buttons
-    document.getElementById('createBtn').disabled = false;
-    document.getElementById('createBtn').textContent = 'Create Agreement →';
-    document.getElementById('proofBtn').disabled = false;
-    document.getElementById('proofBtn').textContent = 'Submit Proof →';
-    document.getElementById('viewBtn').disabled = false;
-    document.getElementById('viewBtn').textContent = 'Fetch Agreement';
+    // Enable all form inputs and buttons
+    setFormEnabled(true);
     
   } catch (err) {
     console.error('Connection failed:', err);
@@ -480,6 +496,9 @@ async function connectWallet() {
     btn.textContent = 'Connect Wallet';
   }
 }
+
+// Disable forms on load
+setFormEnabled(false);
 
 async function withRetry(fn, maxAttempts = 5) {
   let attempt = 0;
@@ -595,13 +614,6 @@ async function viewAgreementById(id) {
   } catch (e) {
     showOutput('viewOutput', 'Error: ' + e.message, true);
   }
-}
-
-// Theme toggle
-function toggleTheme() {
-  const html = document.documentElement;
-  const current = html.getAttribute('data-theme');
-  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
 }
 </script>
 
