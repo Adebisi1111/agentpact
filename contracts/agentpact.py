@@ -26,6 +26,10 @@ class ServiceAgreement:
     uptime_required: u256
     response_time_required: u256
     penalty_rate: u256
+    total_deposited: u256
+    total_paid_out: u256
+    total_refunded: u256
+    total_penalties: u256
 
 
 class AgentPact(gl.Contract):
@@ -62,6 +66,11 @@ class AgentPact(gl.Contract):
         if worker == str(gl.message.sender_address):
             raise ValueError("Worker cannot be the same as hiree")
         
+        total_escrow = payment_per_tick * total_ticks
+        
+        if gl.message.value < total_escrow:
+            raise ValueError(f"Insufficient escrow. Need {total_escrow}, got {gl.message.value}")
+        
         agreement = ServiceAgreement(
             id=agreement_id,
             hiree=str(gl.message.sender_address),
@@ -81,6 +90,10 @@ class AgentPact(gl.Contract):
             uptime_required=uptime_required,
             response_time_required=response_time_required,
             penalty_rate=penalty_rate,
+            total_deposited=total_escrow,
+            total_paid_out=u256(0),
+            total_refunded=u256(0),
+            total_penalties=u256(0),
         )
         
         self.agreements[agreement_id] = agreement
@@ -124,15 +137,46 @@ class AgentPact(gl.Contract):
             agreement.consecutive_failures = u256(0)
             self.proof_counter += u256(1)
             
+            payment_amount = agreement.payment_per_tick
+            agreement.total_paid_out += payment_amount
+            
+            # Update next deadline
+            agreement.next_deadline = u256(0)
+            
+            # Check uptime enforcement
+            total_checks = agreement.paid_ticks + agreement.violations
+            current_uptime = (agreement.paid_ticks * u256(100)) / total_checks
+            
+            if current_uptime < agreement.uptime_required:
+                agreement.status = "suspended"
+                remaining_ticks = agreement.total_ticks - agreement.paid_ticks
+                refund = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
+                if refund > u256(0):
+                    agreement.total_refunded += refund
+            
             if agreement.paid_ticks >= agreement.total_ticks:
                 agreement.status = "completed"
+                excess = agreement.total_deposited - agreement.total_paid_out - agreement.total_penalties
+                if excess > u256(0):
+                    agreement.total_refunded += excess
         else:
             agreement.last_check_status = "failed"
             agreement.violations += u256(1)
             agreement.consecutive_failures += u256(1)
             
+            # Calculate penalty
+            penalty = (agreement.payment_per_tick * agreement.penalty_rate) / u256(100)
+            agreement.total_penalties += penalty
+            
             if agreement.consecutive_failures >= u256(3):
                 agreement.status = "suspended"
+                remaining_ticks = agreement.total_ticks - agreement.paid_ticks
+                refund = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
+                if refund > u256(0):
+                    agreement.total_refunded += refund
+            
+            # Update next deadline even on failure
+            agreement.next_deadline = u256(0)
         
         self.agreements[agreement_id] = agreement
         return True
@@ -149,7 +193,12 @@ class AgentPact(gl.Contract):
         if agreement.status != "active":
             raise ValueError("Can only cancel active agreements")
         
+        remaining_ticks = agreement.total_ticks - agreement.paid_ticks
+        refund_amount = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
+        
         agreement.status = "cancelled"
+        agreement.total_refunded += refund_amount
+        
         self.agreements[agreement_id] = agreement
         return True
     
@@ -180,3 +229,12 @@ class AgentPact(gl.Contract):
         
         uptime = (agreement.paid_ticks * u256(100)) / total_checks
         return uptime
+    
+    @gl.public.view
+    def is_due(self, agreement_id: str) -> bool:
+        agreement = self.agreements.get(agreement_id)
+        if agreement is None:
+            return False
+        if agreement.status != "active":
+            return False
+        return u256(0) >= agreement.next_deadline

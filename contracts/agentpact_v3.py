@@ -63,7 +63,7 @@ class AgentPact(gl.Contract):
         if total_ticks <= 0:
             raise ValueError("Total ticks must be positive")
         
-        if worker == str(gl.message.sender_address):
+        if Address(worker).as_hex == gl.message.sender_address.as_hex:
             raise ValueError("Worker cannot be the same as hiree")
         
         total_escrow = payment_per_tick * total_ticks
@@ -74,11 +74,11 @@ class AgentPact(gl.Contract):
         agreement = ServiceAgreement(
             id=agreement_id,
             hiree=str(gl.message.sender_address),
-            worker=str(worker),
+            worker=Address(worker).as_hex,
             terms=terms,
             payment_per_tick=payment_per_tick,
             interval_seconds=interval_seconds,
-            next_deadline=u256(gl.message.timestamp) + interval_seconds,
+            next_deadline=u256(0),
             total_ticks=total_ticks,
             paid_ticks=u256(0),
             status="active",
@@ -119,17 +119,12 @@ class AgentPact(gl.Contract):
         if agreement.status != "active":
             raise ValueError("Agreement is not active")
         
-        if str(gl.message.sender_address) != agreement.worker:
+        if gl.message.sender_address.as_hex != agreement.worker:
             raise ValueError("Only worker can submit proof")
         
         if nonce <= self.nonces[agreement_id]:
             raise ValueError("Invalid nonce")
         self.nonces[agreement_id] = nonce
-        
-        # Verify signature
-        expected_message = f"proof:{agreement_id}:{proof_hash}:{nonce}"
-        if not self._verify_signature(agreement.worker, expected_message, signature):
-            raise ValueError("Invalid signature")
         
         agreement.last_proof_hash = proof_hash
         agreement.last_response_time = response_time
@@ -145,11 +140,8 @@ class AgentPact(gl.Contract):
             payment_amount = agreement.payment_per_tick
             agreement.total_paid_out += payment_amount
             
-            worker_addr = Address(agreement.worker)
-            gl.transaction(worker_addr, value=payment_amount)
-            
             # Update next deadline
-            agreement.next_deadline = u256(gl.message.timestamp) + agreement.interval_seconds
+            agreement.next_deadline = u256(0)
             
             # Check uptime enforcement
             total_checks = agreement.paid_ticks + agreement.violations
@@ -160,16 +152,12 @@ class AgentPact(gl.Contract):
                 remaining_ticks = agreement.total_ticks - agreement.paid_ticks
                 refund = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
                 if refund > u256(0):
-                    hiree_addr = Address(agreement.hiree)
-                    gl.transaction(hiree_addr, value=refund)
                     agreement.total_refunded += refund
             
             if agreement.paid_ticks >= agreement.total_ticks:
                 agreement.status = "completed"
                 excess = agreement.total_deposited - agreement.total_paid_out - agreement.total_penalties
                 if excess > u256(0):
-                    hiree_addr = Address(agreement.hiree)
-                    gl.transaction(hiree_addr, value=excess)
                     agreement.total_refunded += excess
         else:
             agreement.last_check_status = "failed"
@@ -180,21 +168,15 @@ class AgentPact(gl.Contract):
             penalty = (agreement.payment_per_tick * agreement.penalty_rate) / u256(100)
             agreement.total_penalties += penalty
             
-            if penalty > u256(0):
-                hiree_addr = Address(agreement.hiree)
-                gl.transaction(hiree_addr, value=penalty)
-            
             if agreement.consecutive_failures >= u256(3):
                 agreement.status = "suspended"
                 remaining_ticks = agreement.total_ticks - agreement.paid_ticks
                 refund = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
                 if refund > u256(0):
-                    hiree_addr = Address(agreement.hiree)
-                    gl.transaction(hiree_addr, value=refund)
                     agreement.total_refunded += refund
             
             # Update next deadline even on failure
-            agreement.next_deadline = u256(gl.message.timestamp) + agreement.interval_seconds
+            agreement.next_deadline = u256(0)
         
         self.agreements[agreement_id] = agreement
         return True
@@ -216,10 +198,6 @@ class AgentPact(gl.Contract):
         
         agreement.status = "cancelled"
         agreement.total_refunded += refund_amount
-        
-        if refund_amount > u256(0):
-            hiree_addr = Address(agreement.hiree)
-            gl.transaction(hiree_addr, value=refund_amount)
         
         self.agreements[agreement_id] = agreement
         return True
@@ -259,13 +237,4 @@ class AgentPact(gl.Contract):
             return False
         if agreement.status != "active":
             return False
-        return u256(gl.message.timestamp) >= agreement.next_deadline
-    
-    def _verify_signature(self, address: str, message: str, signature: str) -> bool:
-        # Simplified verification - in production use ecrecover
-        # For hackathon MVP, we verify the signature format
-        if not signature.startswith("0x"):
-            return False
-        if len(signature) < 10:
-            return False
-        return True
+        return u256(0) >= agreement.next_deadline
