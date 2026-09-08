@@ -292,13 +292,13 @@
   
   <button id="walletBtn" class="wallet-btn chamfer-sm" onclick="connectWallet()">Connect Wallet</button>
   
-  <button class="hamburger" aria-label="Menu">
+  <button class="hamburger" aria-label="Menu" onclick="toggleMobileMenu()">
     <span class="hamburger-bar"></span>
     <span class="hamburger-bar"></span>
     <span class="hamburger-bar"></span>
   </button>
   
-  <div class="mobile-menu">
+  <div class="mobile-menu" id="mobileMenu" style="display: none;">
     <a href="index.html#about">ABOUT</a>
     <a href="index.html#how-it-works">HOW IT WORKS</a>
     <a href="index.html#why">WHY</a>
@@ -385,6 +385,13 @@ window.connectWallet = connectWallet;
 window.createAgreement = createAgreement;
 window.submitProof = submitProof;
 window.viewAgreement = viewAgreement;
+window.toggleMobileMenu = toggleMobileMenu;
+
+// Mobile menu toggle
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+}
 
 // Theme toggle
 document.getElementById('themeToggle').addEventListener('click', () => {
@@ -467,12 +474,12 @@ async function connectWallet() {
     client = createClient({ chain: chains.testnetBradbury, account });
     
     // Update UI
-    btn.textContent = account.slice(0, 6) + '...' + account.slice(-4) + ' • Disconnect';
+    btn.textContent = 'Connected • Disconnect';
     btn.classList.add('connected');
     btn.disabled = false;
     btn.onclick = disconnectWallet;
     
-    document.getElementById('walletStatus').style.display = 'flex';
+    document.getElementById('walletStatus').style.display = 'none';
     document.getElementById('walletAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
     document.getElementById('infoBox').innerHTML = '<strong>Wallet connected.</strong> You can now create agreements, submit proofs, and view agreement status directly on GenLayer Bradbury.';
     
