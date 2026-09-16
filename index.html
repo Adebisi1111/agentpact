@@ -147,20 +147,23 @@ async function connect() {
   
   if (chain !== CHAIN) {
     showNote('Switching network...', 'warn');
-    // First add the chain (in case user doesn't have it)
-    try {
-      await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN, chainName: 'GenLayer Studio Next', rpcUrls: [RPC], nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 }, blockExplorerUrls: ['https://explorer-studio-dev.genlayer.com/'] }] });
-    } catch(addErr) {
-      // If chain already exists, that's fine
-      console.log('addEthereumChain:', addErr.message);
-    }
-    // Then switch to it
+    // Try to switch first - works if user already has the chain added
     try {
       await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN }] });
     } catch(switchErr) {
-      console.log('switchEthereumChain:', switchErr.message);
-      showNote('⚠️ Please manually switch to GenLayer Studio Next (Chain ID: 61997) in MetaMask', 'err');
-      throw new Error('Please switch to GenLayer Studio Next (chain 61997)');
+      // If switch fails because chain not found (4902), try adding it
+      if (switchErr.code === 4902) {
+        try {
+          await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN, chainName: 'GenLayer Studio Next', rpcUrls: [RPC], nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 }, blockExplorerUrls: ['https://explorer-studio-dev.genlayer.com/'] }] });
+        } catch(addErr) {
+          showNote('Could not add network. Please manually switch to GenLayer Studio Next.', 'err');
+          throw new Error('Network not available');
+        }
+      } else {
+        console.log('Switch error:', switchErr);
+        showNote('Please manually switch wallet to GenLayer Studio Next.', 'err');
+        throw new Error('Please switch to GenLayer Studio Next');
+      }
     }
   }
   updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`);
