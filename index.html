@@ -48,15 +48,15 @@
 <div class="card">
   <h3>📝 Create Agreement</h3>
   <div class="grid">
-    <div><label>Agreement ID</label><input type="text" id="f_id" value="SA-001"></div>
-    <div><label>Worker Address</label><input type="text" id="f_worker" value="0x70997970C51812dc3A010C7d01b50e0d17dc79C8"></div>
-    <div style="grid-column:1/-1"><label>Terms URL</label><input type="text" id="f_terms" value="https://api.example.com/terms"></div>
-    <div><label>Payment/tick (wei)</label><input type="number" id="f_pay" value="1000"></div>
-    <div><label>Interval (sec)</label><input type="number" id="f_int" value="3600"></div>
-    <div><label>Total ticks</label><input type="number" id="f_ticks" value="10"></div>
-    <div><label>Uptime %</label><input type="number" id="f_up" value="95"></div>
-    <div><label>Max resp time (ms)</label><input type="number" id="f_resp" value="2000"></div>
-    <div><label>Penalty %</label><input type="number" id="f_pen" value="10"></div>
+    <div><label>Agreement ID</label><input type="text" id="f_id" placeholder="SA-001"></div>
+    <div><label>Worker Address</label><input type="text" id="f_worker" placeholder="0x..."></div>
+    <div style="grid-column:1/-1"><label>Terms URL</label><input type="text" id="f_terms" placeholder="https://..."></div>
+    <div><label>Payment/tick (wei)</label><input type="number" id="f_pay" placeholder="1000"></div>
+    <div><label>Interval (sec)</label><input type="number" id="f_int" placeholder="3600"></div>
+    <div><label>Total ticks</label><input type="number" id="f_ticks" placeholder="10"></div>
+    <div><label>Uptime %</label><input type="number" id="f_up" placeholder="95"></div>
+    <div><label>Max resp time (ms)</label><input type="number" id="f_resp" placeholder="2000"></div>
+    <div><label>Penalty %</label><input type="number" id="f_pen" placeholder="10"></div>
   </div>
   <div class="row">
     <button id="b_create" class="btn btn-p" disabled>Create</button>
@@ -68,8 +68,8 @@
 <div class="card">
   <h3>✅ Proof / Violations</h3>
   <div class="grid">
-    <div><label>Agreement ID</label><input type="text" id="p_id" value="SA-001"></div>
-    <div><label>Resp time (ms)</label><input type="number" id="p_resp" value="1500"></div>
+    <div><label>Agreement ID</label><input type="text" id="p_id" placeholder="SA-001"></div>
+    <div><label>Resp time (ms)</label><input type="number" id="p_resp" placeholder="1500"></div>
   </div>
   <div class="row">
     <button id="b_proof" class="btn btn-p" disabled>Submit Proof</button>
@@ -315,11 +315,18 @@ $('walletBtn').addEventListener('click', async () => {
 $('b_create').addEventListener('click', async () => {
   try {
     hideNote();
-    const id = $('f_id').value;
-    const args = [id, $('f_worker').value, $('f_terms').value, BigInt($('f_pay').value), BigInt($('f_int').value), BigInt($('f_ticks').value), BigInt($('f_up').value), BigInt($('f_resp').value), BigInt($('f_pen').value)];
-    const val = BigInt($('f_pay').value) * BigInt($('f_ticks').value);
+    const id = $('f_id').value || $('f_id').placeholder;
+    const worker = $('f_worker').value || $('f_worker').placeholder;
+    const terms = $('f_terms').value || $('f_terms').placeholder;
+    const pay = BigInt($('f_pay').value || $('f_pay').placeholder);
+    const interval = BigInt($('f_int').value || $('f_int').placeholder);
+    const total = BigInt($('f_ticks').value || $('f_ticks').placeholder);
+    const uptime = BigInt($('f_up').value || $('f_up').placeholder);
+    const respTime = BigInt($('f_resp').value || $('f_resp').placeholder);
+    const penalty = BigInt($('f_pen').value || $('f_pen').placeholder);
+    const val = pay * total;
     showOut('o_create', 'Creating...', false);
-    const hash = await sendTx('create_agreement', args, val);
+    const hash = await sendTx('create_agreement', [id, worker, terms, pay, interval, total, uptime, respTime, penalty], val);
     showOut('o_create', '✅ Created!\nTx: ' + hash, false);
   } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
 });
@@ -327,8 +334,8 @@ $('b_create').addEventListener('click', async () => {
 $('b_fund').addEventListener('click', async () => {
   try {
     hideNote();
-    const id = $('f_id').value;
-    const val = BigInt($('f_pay').value) * BigInt($('f_ticks').value);
+    const id = $('f_id').value || $('f_id').placeholder;
+    const val = BigInt($('f_pay').value || $('f_pay').placeholder) * BigInt($('f_ticks').value || $('f_ticks').placeholder);
     showOut('o_create', 'Funding...', false);
     const hash = await sendTx('fund_agreement', [id], val);
     showOut('o_create', '✅ Funded!\nTx: ' + hash, false);
@@ -338,8 +345,8 @@ $('b_fund').addEventListener('click', async () => {
 $('b_proof').addEventListener('click', async () => {
   try {
     hideNote();
-    const id = $('p_id').value;
-    const resp = BigInt($('p_resp').value);
+    const id = $('p_id').value || $('p_id').placeholder;
+    const resp = BigInt($('p_resp').value || $('p_resp').placeholder);
     const proofHash = '0x' + Array.from({length:12}, () => Math.floor(Math.random()*16).toString(16)).join('');
     showOut('o_proof', 'Submitting...', false);
     const hash = await sendTx('submit_proof', [id, proofHash, resp], 0n);
@@ -350,7 +357,7 @@ $('b_proof').addEventListener('click', async () => {
 $('b_viol').addEventListener('click', async () => {
   try {
     hideNote();
-    const id = $('f_id').value;
+    const id = $('f_id').value || $('f_id').placeholder;
     showOut('o_proof', 'Reporting...', false);
     const hash = await sendTx('report_violation', [id], 0n);
     showOut('o_proof', '✅ Violation reported!\nTx: ' + hash, false);
@@ -360,7 +367,7 @@ $('b_viol').addEventListener('click', async () => {
 $('b_cancel').addEventListener('click', async () => {
   try {
     hideNote();
-    const id = $('f_id').value;
+    const id = $('f_id').value || $('f_id').placeholder;
     showOut('o_proof', 'Cancelling...', false);
     const hash = await sendTx('cancel_agreement', [id], 0n);
     showOut('o_proof', '✅ Cancelled!\nTx: ' + hash, false);
@@ -370,11 +377,15 @@ $('b_cancel').addEventListener('click', async () => {
 $('b_view').addEventListener('click', async () => {
   try {
     hideNote();
-    const id = $('v_id').value;
+    const id = $('v_id').value || $('v_id').placeholder;
+    if (!id || id === 'e.g., SA-001') {
+      showNote('Please enter an agreement ID', 'warn');
+      return;
+    }
     showOut('o_view', 'Fetching...', false);
     const data = encodeCall('get_agreement', [id]);
     const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
-    showOut('o_view', '📋 ' + id + '\nRaw result:\n' + result + '\n\nView on explorer: https://explorer-studio.dev.genlayer.com/address/' + CONTRACT, false);
+    showOut('o_view', '📋 ' + id + '\nRaw result:\n' + result + '\n\nView on explorer: https://explorer-studio-dev.genlayer.com/address/' + CONTRACT, false);
   } catch (err) { showOut('o_view', 'Error: ' + err.message, true); }
 });
 
