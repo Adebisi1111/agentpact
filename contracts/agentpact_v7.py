@@ -243,10 +243,6 @@ class AgentPact(gl.Contract):
         return self.agreements.get(agreement_id) is not None
     
     @gl.public.view
-    def agreement_exists(self, agreement_id: str) -> bool:
-        return self.agreements.get(agreement_id) is not None
-    
-    @gl.public.view
     def get_agreement(self, agreement_id: str) -> Optional[ServiceAgreement]:
         return self.agreements.get(agreement_id)
     

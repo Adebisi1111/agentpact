@@ -144,7 +144,7 @@
 
 <script src="viem-iife.js"></script>
 <script>
-const CONTRACT = '0x474B24670435036D9e48AAFc3A6DA6eD8D0dE5A4';
+const CONTRACT = '0x95B525e1BB5Ed762C2A63769537BaEc080d14049';
 const CHAIN = '0xf22d';
 const RPC = 'https://studio-next.genlayer.com/api';
 
@@ -260,13 +260,13 @@ $('b_cancel').addEventListener('click', async () => {
   catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
 });
 
-// FIXED View button - simple and direct
+// View button - simple and direct using agreement_exists
 $('b_view').addEventListener('click', async () => {
   const id = $('v_id').value || $('v_id').placeholder;
   if (!id || id === 'e.g., SA-001') { showNote('Please enter an agreement ID', 'warn'); return; }
-  showOut('o_view', 'Checking on-chain...', false);
+  showOut('o_view', 'Checking...', false);
   try {
-    const selector = 'e26dc477';
+    const selector = '164abaa5';
     const strHex = Array.from(id).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
     const offset = '0000000000000000000000000000000000000000000000000000000000000020';
     const length = id.length.toString(16).padStart(64, '0');
@@ -274,37 +274,16 @@ $('b_view').addEventListener('click', async () => {
     const data = '0x' + selector + offset + length + paddedStr;
     const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
     
-    // Remove 0x prefix
-    const h = result.slice(2);
+    // bool return: 0x000...0 = false, 0x000...1 = true
+    const exists = result && result.length > 2 && parseInt(result.slice(2), 16) === 1;
     
-    // Check if all zeros (non-existent)
-    if (/^0+$/.test(h)) {
-      showOut('o_view', `❌ Agreement "${id}" does not exist on-chain.\n\nCreate it first using the form above.`, true);
-      return;
-    }
-    
-    // Try to decode as ABI string
-    // Format: offset (64 chars) + length (64 chars) + data
-    const strOffset = parseInt(h.slice(0, 64), 16);
-    const strLength = parseInt(h.slice(strOffset * 2, strOffset * 2 + 64), 16);
-    
-    if (strLength === 0 || strLength > 100) {
-      showOut('o_view', `❌ Agreement "${id}" does not exist on-chain.\n\nCreate it first using the form above.`, true);
-      return;
-    }
-    
-    const strHex2 = h.slice(strOffset * 2 + 64, strOffset * 2 + 64 + strLength * 2);
-    const status = Array.from({length: strLength}, (_, i) => String.fromCharCode(parseInt(strHex2.slice(i*2, i*2+2), 16))).join('');
-    
-    const emoji = { 'pending': '🟡', 'active': '🟢', 'completed': '✅', 'cancelled': '🔴', 'suspended': '🟠', 'NONEXISTENT': '❌' }[status] || '⚪';
-    
-    if (status === 'NONEXISTENT') {
-      showOut('o_view', `❌ Agreement "${id}" does not exist on-chain.\n\nCreate it first using the form above.`, true);
+    if (!exists) {
+      showOut('o_view', `❌ Agreement "${id}" does not exist on-chain.\n\nCreate it first.`, true);
     } else {
-      showOut('o_view`, `📋 Agreement: ${id}\n\nStatus: ${emoji} ${status}\n\nView on Explorer:\nhttps://explorer-studio-dev.genlayer.com/address/${CONTRACT}?tab=Contract+Interactions`, false);
+      showOut('o_view', `📋 Agreement "${id}" exists!\n\nExplorer: https://explorer-studio-dev.genlayer.com/address/${CONTRACT}?tab=Contract+Interactions`, false);
     }
   } catch (err) {
-    showOut('o_view', `❌ Agreement "${id}" does not exist on-chain.\n\nCreate it first using the form above.`, true);
+    showOut('o_view', `❌ Agreement "${id}" does not exist on-chain.`, true);
   }
 });
 
