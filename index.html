@@ -241,7 +241,7 @@ $('b_cancel').addEventListener('click', async () => {
 $('b_view').addEventListener('click', async () => {
   const id = $('v_id').value || $('v_id').placeholder;
   if (!id || id === 'e.g., SA-001') { showNote('Please enter an agreement ID', 'warn'); return; }
-  showOut('o_view', '📋 AgentPact Contract\n\n' + CONTRACT + '\n\nView on GenLayer Explorer:\nhttps://explorer-studio-dev.genlayer.com/address/' + CONTRACT + '?tab=Contract+Interactions', false);
+  showOut('o_view', '📋 AgentPact Contract\n\nAddress: ' + CONTRACT + '\nNetwork: GenLayer Studio Next (61997)\n\nThis contract manages trustless service agreements between AI agents.\n\nView full on-chain state:\nhttps://explorer-studio-dev.genlayer.com/address/' + CONTRACT + '?tab=Contract+Interactions', false);
 });
 
 if (window.ethereum) {
