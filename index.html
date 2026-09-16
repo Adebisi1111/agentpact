@@ -2,27 +2,669 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgentPact — Redirecting...</title>
-  <meta http-equiv="refresh" content="5;url=https://adebisi1111.github.io/agentpact/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AgentPact</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cg transform='rotate(-30 12 12)'%3E%3Ccircle cx='7.3' cy='3.2' r='1.45'/%3E%3Crect x='5.5' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Crect x='14.9' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Ccircle cx='16.7' cy='20.8' r='1.45'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --accent: #15BCDF; --bg: #06080f; --surface: #0c1220; --text: #d6e4f0; --muted: #7d8ba6; }
-    body { font-family: 'Quantico', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
-    .card { background: var(--surface); border: 1px solid rgba(21, 188, 223, 0.15); border-radius: 10px; padding: 2rem; max-width: 600px; text-align: center; }
-    h1 { color: var(--accent); margin-bottom: 0.5rem; font-size: 1.8rem; }
-    p { color: var(--muted); margin-bottom: 1.5rem; }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .btn { display: inline-block; padding: 0.8rem 1.6rem; background: var(--accent); color: var(--bg); border-radius: 10px; font-weight: 700; margin-top: 1rem; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #15BCDF;
+      --accent-glow: rgba(21, 188, 223, 0.35);
+      --bg: #06080f;
+      --surface: #0c1220;
+      --surface2: #131b2e;
+      --text: #d6e4f0;
+      --muted: #7d8ba6;
+      --danger: #ff5c7a;
+      --success: #52e0a1;
+      --yellow: #f59e0b;
+      --radius: 10px;
+    }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Quantico', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Nav */
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+    nav .logo { font-weight: 700; font-size: 1.3rem; color: var(--accent); text-decoration: none; margin-right: auto; white-space: nowrap; }
+    nav a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    nav a:hover { color: var(--text); }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .status-badge.connected { background: rgba(82, 224, 161, 0.15); color: var(--success); }
+    .status-badge.disconnected { background: rgba(255, 92, 122, 0.15); color: var(--danger); }
+    .status-badge.wrong-network { background: rgba(245, 158, 11, 0.15); color: var(--yellow); }
+    
+    .btn {
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      background: transparent;
+      padding: 0.5rem 1.2rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn:hover { background: var(--accent); color: var(--bg); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn:disabled:hover { background: transparent; color: var(--accent); }
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-primary:hover { background: #0e9bbf; border-color: #0e9bbf; }
+    .btn-primary:disabled:hover { background: var(--accent); }
+    .btn-danger { border-color: var(--danger); color: var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: white; }
+    
+    main { max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem; }
+    
+    h1 { font-size: 1.8rem; margin-bottom: 0.3rem; background: linear-gradient(135deg, var(--text), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .subtitle { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.95rem; }
+    
+    .card {
+      background: var(--surface);
+      border: 1px solid rgba(21, 188, 223, 0.12);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      margin-bottom: 1.2rem;
+    }
+    
+    h3 { color: var(--accent); margin-bottom: 0.8rem; font-size: 1.05rem; }
+    
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 0.8rem; }
+    .form-grid .full-width { grid-column: 1 / -1; }
+    
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    
+    label { font-size: 0.78rem; color: var(--muted); font-weight: 700; }
+    
+    input, select {
+      background: var(--surface2);
+      border: 1px solid rgba(21, 188, 223, 0.15);
+      color: var(--text);
+      padding: 0.6rem 0.8rem;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 0.85rem;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    input::placeholder { color: rgba(125, 139, 166, 0.5); }
+    
+    .btn-row { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    
+    .output {
+      background: var(--surface2);
+      border-radius: var(--radius);
+      padding: 0.8rem;
+      margin-top: 0.8rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.78rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 250px;
+      overflow-y: auto;
+      display: none;
+      line-height: 1.5;
+    }
+    .output.show { display: block; }
+    .output.error { color: var(--danger); border: 1px solid rgba(255, 92, 122, 0.3); }
+    .output.success { color: var(--success); border: 1px solid rgba(82, 224, 161, 0.3); }
+    
+    .banner {
+      border-radius: var(--radius);
+      padding: 0.8rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      display: none;
+    }
+    .banner.show { display: block; }
+    .banner.error { background: rgba(255, 92, 122, 0.1); border: 1px solid rgba(255, 92, 122, 0.3); color: var(--danger); }
+    .banner.success { background: rgba(82, 224, 161, 0.1); border: 1px solid rgba(82, 224, 161, 0.3); color: var(--success); }
+    .banner.warning { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--yellow); }
+    
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+      border-top: 1px solid rgba(21, 188, 223, 0.08);
+      margin-top: 2rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--accent);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      nav { gap: 0.6rem; padding: 0.8rem 1rem; }
+      nav .logo { font-size: 1.1rem; }
+      main { padding: 0.8rem 1rem; }
+      h1 { font-size: 1.5rem; }
+      .btn { padding: 0.45rem 1rem; font-size: 0.8rem; }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>⚡ AgentPact</h1>
-    <p>Redirecting to the AgentPact App...</p>
-    <p>If not redirected automatically, click below:</p>
-    <a href="https://adebisi1111.github.io/agentpact/" class="btn">Go to App</a>
-  </div>
+  <nav>
+    <a href="index.html" class="logo">⚡ AgentPact</a>
+    <span id="statusBadge" class="status-badge disconnected">Disconnected</span>
+    <button id="walletBtn" class="btn">Connect Wallet</button>
+  </nav>
+
+  <main>
+    <h1>AGENTPACT APP</h1>
+    <p class="subtitle">Trustless service agreements on GenLayer Studio Next</p>
+
+    <div id="banner" class="banner"></div>
+
+    <!-- Create Agreement -->
+    <div class="card">
+      <h3>📝 Create Agreement</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Agreement ID</label>
+          <input type="text" id="agreementId" value="SA-001" placeholder="e.g., SA-001">
+        </div>
+        <div class="form-group">
+          <label>Worker Address (0x...)</label>
+          <input type="text" id="workerAddress" value="0x70997970C51812dc3A010C7d01b50e0d17dc79C8" placeholder="0x...">
+        </div>
+        <div class="form-group full-width">
+          <label>Terms URL</label>
+          <input type="text" id="termsUrl" value="https://api.example.com/terms" placeholder="https://...">
+        </div>
+        <div class="form-group">
+          <label>Payment per tick (wei)</label>
+          <input type="number" id="paymentPerTick" value="1000">
+        </div>
+        <div class="form-group">
+          <label>Interval (seconds)</label>
+          <input type="number" id="intervalSeconds" value="3600">
+        </div>
+        <div class="form-group">
+          <label>Total ticks</label>
+          <input type="number" id="totalTicks" value="10">
+        </div>
+        <div class="form-group">
+          <label>Uptime required (%)</label>
+          <input type="number" id="uptimeRequired" value="95">
+        </div>
+        <div class="form-group">
+          <label>Max response time (ms)</label>
+          <input type="number" id="responseTimeRequired" value="2000">
+        </div>
+        <div class="form-group">
+          <label>Penalty rate (%)</label>
+          <input type="number" id="penaltyRate" value="10">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button id="createBtn" class="btn btn-primary" disabled>Create Agreement</button>
+        <button id="fundBtn" class="btn" disabled>Fund Agreement</button>
+      </div>
+      <div id="createOutput" class="output"></div>
+    </div>
+
+    <!-- Submit Proof / Report -->
+    <div class="card">
+      <h3>✅ Submit Proof / Report</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Agreement ID</label>
+          <input type="text" id="proofAgreementId" value="SA-001" placeholder="e.g., SA-001">
+        </div>
+        <div class="form-group">
+          <label>Response time (ms)</label>
+          <input type="number" id="proofResponseTime" value="1500">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button id="proofBtn" class="btn btn-primary" disabled>Submit Proof</button>
+        <button id="violationBtn" class="btn btn-danger" disabled>Report Violation</button>
+        <button id="cancelBtn" class="btn btn-danger" disabled>Cancel Agreement</button>
+      </div>
+      <div id="proofOutput" class="output"></div>
+    </div>
+
+    <!-- View Agreement -->
+    <div class="card">
+      <h3>🔍 View Agreement</h3>
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label>Agreement ID</label>
+          <input type="text" id="viewAgreementId" placeholder="e.g., SA-001">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button id="viewBtn" class="btn btn-primary" disabled>View</button>
+      </div>
+      <div id="viewOutput" class="output"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div>© 2026 AgentPact — Built on GenLayer</div>
+    <div style="margin-top:0.5rem;opacity:0.7">Contract: 0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E</div>
+  </footer>
+
+<script type="module">
+import { createClient, chains } from 'https://esm.sh/genlayer-js@2.0.0-rc.1/es2022/genlayer-js.mjs';
+import { privateKeyToAccount } from 'https://esm.sh/viem@2.38.6/accounts';
+
+const CONTRACT = '0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E';
+const CHAIN_ID = '0x1194D';
+const chain = chains.studioDevnet;
+
+let client = null;
+let account = null;
+
+const $ = id => document.getElementById(id);
+const banner = $('banner');
+
+function showBanner(msg, type) {
+  banner.textContent = msg;
+  banner.className = 'banner show ' + type;
+}
+function hideBanner() {
+  banner.className = 'banner';
+}
+
+function showOutput(id, msg, isError) {
+  const el = $(id);
+  el.textContent = msg;
+  el.className = 'output show ' + (isError ? 'error' : 'success');
+}
+
+function setLoading(btn, loading) {
+  if (loading) {
+    btn.dataset.originalText = btn.textContent;
+    btn.innerHTML = '<span class="loading-spinner"></span>Processing...';
+    btn.disabled = true;
+  } else {
+    btn.textContent = btn.dataset.originalText;
+    btn.disabled = account && getEthereum()?.chainId === CHAIN_ID ? false : true;
+  }
+}
+
+function getEthereum() {
+  return window.ethereum || (window as any).ethereum;
+}
+
+function updateStatus(status, text) {
+  const badge = $('statusBadge');
+  badge.className = 'status-badge ' + status;
+  badge.textContent = text;
+}
+
+function setButtonsEnabled(enabled) {
+  const buttons = ['createBtn', 'fundBtn', 'proofBtn', 'violationBtn', 'cancelBtn', 'viewBtn'];
+  buttons.forEach(id => {
+    const btn = $(id);
+    if (btn) btn.disabled = !enabled;
+  });
+}
+
+async function connectWallet() {
+  const ethereum = getEthereum();
+  if (!ethereum) {
+    throw new Error('No wallet detected. Please install MetaMask or Rabby.');
+  }
+
+  try {
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    if (!accounts || accounts.length === 0) {
+      throw new Error('No accounts found');
+    }
+
+    account = accounts[0];
+
+    const chainId = await ethereum.request({ method: 'eth_chainId' });
+    if (chainId !== CHAIN_ID) {
+      try {
+        await ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: CHAIN_ID,
+            chainName: 'GenLayer Studio Next',
+            rpcUrls: ['https://studio-next.genlayer.com/api'],
+            nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 },
+            blockExplorerUrls: ['https://explorer-studio-dev.genlayer.com/'],
+          }],
+        });
+      } catch (addError) {
+        // Ignore add error, try switch anyway
+      }
+      await ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN_ID }] });
+    }
+
+    client = createClient({ chain, account });
+    updateStatus('connected', `✓ ${account.slice(0, 6)}...${account.slice(-4)}`);
+    setButtonsEnabled(true);
+    
+    $('walletBtn').textContent = 'Disconnect';
+    return account;
+  } catch (err) {
+    throw err;
+  }
+}
+
+function disconnectWallet() {
+  account = null;
+  client = null;
+  updateStatus('disconnected', 'Disconnected');
+  setButtonsEnabled(false);
+  $('walletBtn').textContent = 'Connect Wallet';
+  hideBanner();
+}
+
+async function withRetry(fn, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try { return await fn(); }
+    catch (e) {
+      if (i === retries - 1) throw e;
+      await new Promise(r => setTimeout(r, 1000));
+    }
+  }
+}
+
+// Event listeners
+$('walletBtn').addEventListener('click', async () => {
+  if (account) {
+    disconnectWallet();
+    return;
+  }
+  try {
+    setLoading($('walletBtn'), true);
+    showBanner('Connecting wallet...', 'warning');
+    await connectWallet();
+    showBanner('Wallet connected!', 'success');
+    setTimeout(hideBanner, 3000);
+  } catch (err) {
+    showBanner('Error: ' + err.message, 'error');
+  } finally {
+    setLoading($('walletBtn'), false);
+  }
+});
+
+$('createBtn').addEventListener('click', async () => {
+  const btn = $('createBtn');
+  try {
+    setLoading(btn, true);
+    hideBanner();
+    const id = $('agreementId').value;
+    const worker = $('workerAddress').value;
+    const terms = $('termsUrl').value;
+    const pay = BigInt($('paymentPerTick').value);
+    const interval = BigInt($('intervalSeconds').value);
+    const total = BigInt($('totalTicks').value);
+    const uptime = BigInt($('uptimeRequired').value);
+    const responseTime = BigInt($('responseTimeRequired').value);
+    const penalty = BigInt($('penaltyRate').value);
+    const totalEscrow = pay * total;
+    
+    showOutput('createOutput', 'Creating agreement...', false);
+    
+    const hash = await withRetry(() => client.writeContract({
+      address: CONTRACT,
+      functionName: 'create_agreement',
+      args: [id, worker, terms, pay, interval, total, uptime, responseTime, penalty],
+      value: totalEscrow,
+    }));
+    
+    showOutput('createOutput', '✅ Created!\nTx: ' + hash + '\n\nWaiting for finalization...', false);
+    showBanner('Agreement created!', 'success');
+    setTimeout(() => viewAgreementById(id), 5000);
+  } catch (err) {
+    showOutput('createOutput', 'Error: ' + err.message, true);
+    showBanner('Error: ' + err.message, 'error');
+  } finally {
+    setLoading(btn, false);
+  }
+});
+
+$('fundBtn').addEventListener('click', async () => {
+  const btn = $('fundBtn');
+  try {
+    setLoading(btn, true);
+    hideBanner();
+    const id = $('agreementId').value;
+    const pay = BigInt($('paymentPerTick').value);
+    const total = BigInt($('totalTicks').value);
+    
+    showOutput('createOutput', 'Funding agreement...', false);
+    
+    const hash = await withRetry(() => client.writeContract({
+      address: CONTRACT,
+      functionName: 'fund_agreement',
+      args: [id],
+      value: pay * total,
+    }));
+    
+    showOutput('createOutput', '✅ Funded!\nTx: ' + hash, false);
+    showBanner('Agreement funded!', 'success');
+  } catch (err) {
+    showOutput('createOutput', 'Error: ' + err.message, true);
+    showBanner('Error: ' + err.message, 'error');
+  } finally {
+    setLoading(btn, false);
+  }
+});
+
+$('proofBtn').addEventListener('click', async () => {
+  const btn = $('proofBtn');
+  try {
+    setLoading(btn, true);
+    hideBanner();
+    const id = $('proofAgreementId').value;
+    const responseTime = BigInt($('proofResponseTime').value);
+    const proofHash = '0x' + Array.from({length: 12}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+    
+    showOutput('proofOutput', 'Submitting proof...', false);
+    
+    const hash = await withRetry(() => client.writeContract({
+      address: CONTRACT,
+      functionName: 'submit_proof',
+      args: [id, proofHash, responseTime],
+      value: 0n,
+    }));
+    
+    showOutput('proofOutput', '✅ Proof submitted!\nTx: ' + hash, false);
+    showBanner('Proof submitted!', 'success');
+  } catch (err) {
+    showOutput('proofOutput', 'Error: ' + err.message, true);
+    showBanner('Error: ' + err.message, 'error');
+  } finally {
+    setLoading(btn, false);
+  }
+});
+
+$('violationBtn').addEventListener('click', async () => {
+  const btn = $('violationBtn');
+  try {
+    setLoading(btn, true);
+    hideBanner();
+    const id = $('agreementId').value;
+    
+    showOutput('proofOutput', 'Reporting violation...', false);
+    
+    const hash = await withRetry(() => client.writeContract({
+      address: CONTRACT,
+      functionName: 'report_violation',
+      args: [id],
+      value: 0n,
+    }));
+    
+    showOutput('proofOutput', '✅ Violation reported!\nTx: ' + hash, false);
+    showBanner('Violation reported!', 'success');
+  } catch (err) {
+    showOutput('proofOutput', 'Error: ' + err.message, true);
+    showBanner('Error: ' + err.message, 'error');
+  } finally {
+    setLoading(btn, false);
+  }
+});
+
+$('cancelBtn').addEventListener('click', async () => {
+  const btn = $('cancelBtn');
+  try {
+    setLoading(btn, true);
+    hideBanner();
+    const id = $('agreementId').value;
+    
+    showOutput('proofOutput', 'Cancelling agreement...', false);
+    
+    const hash = await withRetry(() => client.writeContract({
+      address: CONTRACT,
+      functionName: 'cancel_agreement',
+      args: [id],
+      value: 0n,
+    }));
+    
+    showOutput('proofOutput', '✅ Agreement cancelled!\nTx: ' + hash, false);
+    showBanner('Agreement cancelled!', 'success');
+  } catch (err) {
+    showOutput('proofOutput', 'Error: ' + err.message, true);
+    showBanner('Error: ' + err.message, 'error');
+  } finally {
+    setLoading(btn, false);
+  }
+});
+
+$('viewBtn').addEventListener('click', async () => {
+  const btn = $('viewBtn');
+  try {
+    setLoading(btn, true);
+    hideBanner();
+    const id = $('viewAgreementId').value;
+    
+    showOutput('viewOutput', 'Fetching agreement...', false);
+    
+    const result = await withRetry(() => client.readContract({
+      address: CONTRACT,
+      functionName: 'get_agreement',
+      args: [id],
+    }));
+    
+    if (result) {
+      showOutput('viewOutput', '📋 Agreement: ' + id + '\n\n' + JSON.stringify(result, (k, v) => typeof v === 'bigint' ? v.toString() : v, 2), false);
+    } else {
+      showOutput('viewOutput', 'Agreement not found: ' + id, true);
+    }
+  } catch (err) {
+    showOutput('viewOutput', 'Error: ' + err.message, true);
+    showBanner('Error: ' + err.message, 'error');
+  } finally {
+    setLoading(btn, false);
+  }
+});
+
+async function viewAgreementById(id) {
+  $('viewAgreementId').value = id;
+  if (client) {
+    try {
+      const result = await withRetry(() => client.readContract({
+        address: CONTRACT,
+        functionName: 'get_agreement',
+        args: [id],
+      }));
+      if (result) {
+        showOutput('viewOutput', '📋 Agreement: ' + id + '\n\n' + JSON.stringify(result, (k, v) => typeof v === 'bigint' ? v.toString() : v, 2), false);
+      }
+    } catch (err) {
+      // Ignore
+    }
+  }
+}
+
+// Listen for account/chain changes
+const ethereum = getEthereum();
+if (ethereum) {
+  ethereum.on('accountsChanged', async (accounts) => {
+    if (accounts.length === 0) {
+      disconnectWallet();
+    } else {
+      account = accounts[0];
+      client = createClient({ chain, account });
+      updateStatus('connected', `✓ ${account.slice(0, 6)}...${account.slice(-4)}`);
+      setButtonsEnabled(true);
+    }
+  });
+  
+  ethereum.on('chainChanged', async (chainId) => {
+    if (chainId !== CHAIN_ID) {
+      updateStatus('wrong-network', 'Wrong Network');
+      setButtonsEnabled(false);
+      showBanner('⚠️ Please switch to GenLayer Studio Next (chain 61997)', 'warning');
+    } else {
+      updateStatus('connected', `✓ ${account?.slice(0, 6)}...${account?.slice(-4)}`);
+      setButtonsEnabled(true);
+      hideBanner();
+    }
+  });
+}
+
+// Check if already connected
+(async () => {
+  const eth = getEthereum();
+  if (eth) {
+    try {
+      const accounts = await eth.request({ method: 'eth_accounts' });
+      if (accounts && accounts.length > 0) {
+        account = accounts[0];
+        const chainId = await eth.request({ method: 'eth_chainId' });
+        if (chainId === CHAIN_ID) {
+          client = createClient({ chain, account });
+          updateStatus('connected', `✓ ${account.slice(0, 6)}...${account.slice(-4)}`);
+          setButtonsEnabled(true);
+          $('walletBtn').textContent = 'Disconnect';
+        } else {
+          updateStatus('wrong-network', 'Wrong Network');
+          showBanner('⚠️ Please switch to GenLayer Studio Next (chain 61997)', 'warning');
+        }
+      }
+    } catch (err) {
+      // Ignore
+    }
+  }
+})();
+</script>
+
 </body>
 </html>
