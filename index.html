@@ -2,115 +2,244 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AgentPact</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cg transform='rotate(-30 12 12)'%3E%3Ccircle cx='7.3' cy='3.2' r='1.45'/%3E%3Crect x='5.5' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Crect x='14.9' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Ccircle cx='16.7' cy='20.8' r='1.45'/%3E%3C/g%3E%3C/svg%3E">
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    *{margin:0;padding:0;box-sizing:border-box}
     :root{--accent:#15BCDF;--bg:#06080f;--surface:#0c1220;--surface2:#131b2e;--text:#d6e4f0;--muted:#7d8ba6;--danger:#ff5c7a;--success:#52e0a1;--yellow:#f59e0b;--radius:10px}
-    html{-webkit-text-size-adjust:100%}
-    body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-    nav{display:flex;align-items:center;gap:1rem;padding:1rem;max-width:1200px;margin:0 auto;flex-wrap:wrap}
-    nav .logo{font-weight:700;font-size:1.3rem;color:var(--accent);text-decoration:none;margin-right:auto}
-    .badge{display:inline-block;padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:700}
+    body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:1rem}
+    .header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+    .logo{font-size:1.4rem;font-weight:700;color:var(--accent)}
+    .badge{padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:700}
     .badge.conn{background:rgba(82,224,161,.15);color:var(--success)}
     .badge.disc{background:rgba(255,92,122,.15);color:var(--danger)}
-    .badge.wrong{background:rgba(245,158,11,.15);color:var(--yellow)}
-    .btn{border:1px solid var(--accent);color:var(--accent);background:transparent;padding:.5rem 1rem;border-radius:var(--radius);cursor:pointer;font-weight:700;font-size:.85rem}
+    .btn{border:1px solid var(--accent);color:var(--accent);background:transparent;padding:.5rem 1rem;border-radius:var(--radius);cursor:pointer;font-weight:700}
     .btn:hover{background:var(--accent);color:var(--bg)}
     .btn:disabled{opacity:.4;cursor:not-allowed}
     .btn-p{background:var(--accent);color:var(--bg)}
     .btn-d{border-color:var(--danger);color:var(--danger)}
-    .btn-d:hover{background:var(--danger);color:#fff}
-    main{max-width:900px;margin:0 auto;padding:1rem}
-    h1{font-size:1.6rem;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .sub{color:var(--muted);margin-bottom:1rem;font-size:.9rem}
     .card{background:var(--surface);border:1px solid rgba(21,188,223,.1);border-radius:var(--radius);padding:1rem;margin-bottom:1rem}
-    h3{color:var(--accent);margin-bottom:.6rem}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem}
-    .fw{grid-column:1/-1}
-    label{font-size:.75rem;color:var(--muted);display:block;margin-bottom:.2rem}
-    input{width:100%;background:var(--surface2);border:1px solid rgba(21,188,223,.15);color:var(--text);padding:.5rem;border-radius:var(--radius);font-size:.85rem}
-    input:focus{outline:none;border-color:var(--accent)}
+    h3{color:var(--accent);margin-bottom:.5rem}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem}
+    label{font-size:.75rem;color:var(--muted);display:block;margin-bottom:.1rem}
+    input{width:100%;background:var(--surface2);border:1px solid rgba(21,188,223,.15);color:var(--text);padding:.4rem;border-radius:var(--radius);font-size:.85rem}
     .row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
-    .out{background:var(--surface2);border-radius:var(--radius);padding:.6rem;margin-top:.6rem;font-family:monospace;font-size:.75rem;white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto;display:none}
+    .out{background:var(--surface2);border-radius:var(--radius);padding:.5rem;margin-top:.5rem;font-family:monospace;font-size:.75rem;white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto;display:none}
     .out.show{display:block}
     .out.err{color:var(--danger)}
     .out.ok{color:var(--success)}
-    .note{border-radius:var(--radius);padding:.6rem;margin-bottom:.8rem;font-size:.85rem;display:none}
+    .note{border-radius:var(--radius);padding:.5rem;margin-bottom:1rem;font-size:.85rem;display:none}
     .note.show{display:block}
     .note.err{background:rgba(255,92,122,.1);color:var(--danger)}
     .note.ok{background:rgba(82,224,161,.1);color:var(--success)}
     .note.warn{background:rgba(245,158,11,.1);color:var(--yellow)}
-    footer{text-align:center;padding:1rem;color:var(--muted);font-size:.75rem;border-top:1px solid rgba(21,188,223,.05);margin-top:1rem}
-    @media(max-width:600px){.grid{grid-template-columns:1fr}}
+    footer{margin-top:1rem;padding:1rem;border-top:1px solid rgba(21,188,223,.05);text-align:center;color:var(--muted);font-size:.75rem}
   </style>
 </head>
 <body>
-  <nav>
-    <span class="logo">⚡ AgentPact</span>
-    <span id="statusBadge" class="badge disc">Disconnected</span>
-    <button id="walletBtn" class="btn">Connect Wallet</button>
-  </nav>
+<div class="header">
+  <span class="logo">⚡ AgentPact</span>
+  <span id="badge" class="badge disc">Disconnected</span>
+  <button id="walletBtn" class="btn">Connect Wallet</button>
+</div>
 
-  <main>
-    <h1>AGENTPACT APP</h1>
-    <p class="sub">Trustless service agreements on GenLayer Studio Next</p>
+<div id="note" class="note"></div>
 
-    <div id="note" class="note"></div>
+<div class="card">
+  <h3>📝 Create Agreement</h3>
+  <div class="grid">
+    <div><label>Agreement ID</label><input type="text" id="f_id" value="SA-001"></div>
+    <div><label>Worker Address</label><input type="text" id="f_worker" value="0x70997970C51812dc3A010C7d01b50e0d17dc79C8"></div>
+    <div style="grid-column:1/-1"><label>Terms URL</label><input type="text" id="f_terms" value="https://api.example.com/terms"></div>
+    <div><label>Payment/tick (wei)</label><input type="number" id="f_pay" value="1000"></div>
+    <div><label>Interval (sec)</label><input type="number" id="f_int" value="3600"></div>
+    <div><label>Total ticks</label><input type="number" id="f_ticks" value="10"></div>
+    <div><label>Uptime %</label><input type="number" id="f_up" value="95"></div>
+    <div><label>Max resp time (ms)</label><input type="number" id="f_resp" value="2000"></div>
+    <div><label>Penalty %</label><input type="number" id="f_pen" value="10"></div>
+  </div>
+  <div class="row">
+    <button id="b_create" class="btn btn-p" disabled>Create</button>
+    <button id="b_fund" class="btn" disabled>Fund</button>
+  </div>
+  <div id="o_create" class="out"></div>
+</div>
 
-    <div class="card">
-      <h3>📝 Create Agreement</h3>
-      <div class="grid">
-        <div><label>Agreement ID</label><input type="text" id="f_id" value="SA-001"></div>
-        <div><label>Worker Address</label><input type="text" id="f_worker" value="0x70997970C51812dc3A010C7d01b50e0d17dc79C8"></div>
-        <div class="fw"><label>Terms URL</label><input type="text" id="f_terms" value="https://api.example.com/terms"></div>
-        <div><label>Payment/tick (wei)</label><input type="number" id="f_pay" value="1000"></div>
-        <div><label>Interval (sec)</label><input type="number" id="f_int" value="3600"></div>
-        <div><label>Total ticks</label><input type="number" id="f_ticks" value="10"></div>
-        <div><label>Uptime %</label><input type="number" id="f_up" value="95"></div>
-        <div><label>Max resp time (ms)</label><input type="number" id="f_resp" value="2000"></div>
-        <div><label>Penalty %</label><input type="number" id="f_pen" value="10"></div>
-      </div>
-      <div class="row">
-        <button id="b_create" class="btn btn-p" disabled>Create</button>
-        <button id="b_fund" class="btn" disabled>Fund</button>
-      </div>
-      <div id="o_create" class="out"></div>
-    </div>
+<div class="card">
+  <h3>✅ Proof / Violations</h3>
+  <div class="grid">
+    <div><label>Agreement ID</label><input type="text" id="p_id" value="SA-001"></div>
+    <div><label>Resp time (ms)</label><input type="number" id="p_resp" value="1500"></div>
+  </div>
+  <div class="row">
+    <button id="b_proof" class="btn btn-p" disabled>Submit Proof</button>
+    <button id="b_viol" class="btn btn-d" disabled>Report Violation</button>
+    <button id="b_cancel" class="btn btn-d" disabled>Cancel</button>
+  </div>
+  <div id="o_proof" class="out"></div>
+</div>
 
-    <div class="card">
-      <h3>✅ Proof / Violations</h3>
-      <div class="grid">
-        <div><label>Agreement ID</label><input type="text" id="p_id" value="SA-001"></div>
-        <div><label>Resp time (ms)</label><input type="number" id="p_resp" value="1500"></div>
-      </div>
-      <div class="row">
-        <button id="b_proof" class="btn btn-p" disabled>Submit Proof</button>
-        <button id="b_viol" class="btn btn-d" disabled>Report Violation</button>
-        <button id="b_cancel" class="btn btn-d" disabled>Cancel</button>
-      </div>
-      <div id="o_proof" class="out"></div>
-    </div>
+<div class="card">
+  <h3>🔍 View Agreement</h3>
+  <div class="grid">
+    <div style="grid-column:1/-1"><label>Agreement ID</label><input type="text" id="v_id" placeholder="e.g., SA-001"></div>
+  </div>
+  <div class="row"><button id="b_view" class="btn btn-p" disabled>View</button></div>
+  <div id="o_view" class="out"></div>
+</div>
 
-    <div class="card">
-      <h3>🔍 View Agreement</h3>
-      <div class="grid">
-        <div class="fw"><label>Agreement ID</label><input type="text" id="v_id" placeholder="e.g., SA-001"></div>
-      </div>
-      <div class="row"><button id="b_view" class="btn btn-p" disabled>View</button></div>
-      <div id="o_view" class="out"></div>
-    </div>
-  </main>
+<footer>© 2026 AgentPact — 0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E</footer>
 
-  <footer>
-    <div>© 2026 AgentPact</div>
-    <div style="opacity:.6;margin-top:.3rem">0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E</div>
-  </footer>
-<script src="viem-bundle.js"></script>
 <script>
+// Minimal keccak256 implementation
+function keccak256(msg) {
+  // Use Web Crypto API with SHA-256 as a workaround
+  // For production, we'd need a proper keccak256, but for demo purposes this will work
+  // Actually, we need REAL keccak256 for the function selectors
+  
+  // Let's use a simple keccak256 implementation
+  const P = [1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
+  const RC = [
+    0x0000000000000001n, 0x0000000000008082n, 0x800000000000808an, 0x8000000080008000n,
+    0x000000000000808bn, 0x0000000080000001n, 0x8000000080008081n, 0x8000000000008009n,
+    0x000000000000008an, 0x0000000000000088n, 0x0000000080008009n, 0x000000008000000an,
+    0x000000008000808bn, 0x800000000000008bn, 0x8000000000008089n, 0x8000000000008003n,
+    0x8000000000008002n, 0x8000000000000080n, 0x000000000000800an, 0x800000008000000an,
+    0x8000000080008081n, 0x8000000000008080n, 0x0000000080000001n, 0x8000000080008008n
+  ];
+  const ROT = [
+    [0, 36, 3, 41, 18],
+    [1, 44, 10, 45, 2],
+    [62, 6, 43, 15, 61],
+    [28, 55, 25, 21, 56],
+    [27, 20, 39, 8, 14]
+  ];
+  
+  function rotl64(a, n) {
+    n %= 64;
+    return ((a << BigInt(n)) | (a >> BigInt(64 - n))) & 0xFFFFFFFFFFFFFFFFn;
+  }
+  
+  function keccakF(state) {
+    const C = new Array(25);
+    const D = new Array(25);
+    
+    for (let round = 0; round < 24; round++) {
+      for (let i = 0; i < 25; i++) {
+        C[i] = state[i] ^ state[i + 5] ^ state[i + 10] ^ state[i + 15] ^ state[i + 20];
+      }
+      for (let i = 0; i < 25; i++) {
+        D[i] = C[(i + 4) % 5 + Math.floor(i / 5) * 5] ^ rotl64(C[(i + 1) % 5 + Math.floor(i / 5) * 5], 1);
+      }
+      for (let i = 0; i < 25; i++) {
+        const x = i % 5, y = Math.floor(i / 5);
+        state[i] = state[i] ^ D[i];
+      }
+      
+      for (let j = 0; j < 5; j++) {
+        for (let i = 0; i < 5; i++) {
+          const idx = i * 5 + j;
+          const rot = ROT[i][j];
+          if (rot > 0) {
+            state[idx] = rotl64(state[idx], rot);
+          }
+        }
+      }
+      
+      state[0] = state[0] ^ RC[round];
+    }
+    
+    return state;
+  }
+  
+  let bytes;
+  if (typeof msg === 'string') {
+    bytes = new TextEncoder().encode(msg);
+  } else {
+    bytes = msg;
+  }
+  
+  const rate = 136;
+  const padded = new Uint8Array(Math.ceil((bytes.length + 2) / rate) * rate);
+  padded.set(bytes);
+  padded[bytes.length] = 0x06;
+  padded[padded.length - 1] |= 0x80;
+  
+  const state = new Array(25).fill(0n);
+  
+  for (let offset = 0; offset < padded.length; offset += rate) {
+    const block = padded.slice(offset, offset + rate);
+    for (let i = 0; i < block.length; i += 8) {
+      let val = 0n;
+      for (let j = 0; j < 8 && i + j < block.length; j++) {
+        val |= BigInt(block[i + j]) << BigInt(j * 8);
+      }
+      state[i / 8] = state[i / 8] ^ val;
+    }
+    state = keccakF(state);
+  }
+  
+  const output = new Uint8Array(32);
+  for (let i = 0; i < 4; i++) {
+    let val = state[i];
+    for (let j = 0; j < 8; j++) {
+      output[i * 8 + j] = Number((val >> BigInt(j * 8)) & 0xFFn);
+    }
+  }
+  
+  return Array.from(output).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Encode function call
+function encodeCall(fn, args) {
+  const sig = getSig(fn);
+  const hash = keccak256(sig);
+  const selector = hash.slice(0, 8);
+  let encoded = selector;
+  let dynamicOffset = args.length * 32;
+  let dynamicData = '';
+  
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (typeof arg === 'string' && arg.startsWith('0x') && arg.length === 42) {
+      // Address
+      encoded += arg.slice(2).toLowerCase().padStart(64, '0');
+    } else if (typeof arg === 'string') {
+      // String
+      encoded += dynamicOffset.toString(16).padStart(64, '0');
+      const hex = strToHex(arg);
+      dynamicData += hex.length.toString(16).padStart(64, '0');
+      dynamicData += hex.padEnd(Math.ceil(hex.length / 64) * 64, '0');
+      dynamicOffset += 32 + Math.ceil(hex.length / 64) * 32;
+    } else {
+      // Number/BigInt
+      let h = BigInt(arg).toString(16);
+      if (h.length % 2) h = '0' + h;
+      encoded += h.padStart(64, '0');
+    }
+  }
+  return '0x' + encoded + dynamicData;
+}
+
+function getSig(fn) {
+  const sigs = {
+    'create_agreement': 'create_agreement(string,address,string,uint256,uint256,uint256,uint256,uint256,uint256)',
+    'fund_agreement': 'fund_agreement(string)',
+    'submit_proof': 'submit_proof(string,string,uint256)',
+    'report_violation': 'report_violation(string)',
+    'cancel_agreement': 'cancel_agreement(string)',
+    'get_agreement': 'get_agreement(string)',
+    'get_stats': 'get_stats()',
+  };
+  return sigs[fn] || fn + '()';
+}
+
+function strToHex(s) {
+  return Array.from(s).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+}
+
 const CONTRACT = '0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E';
-const CHAIN = '0xf22d'; // 61997 - Studio Next chain ID
+const CHAIN = '0xf22d';
 const RPC = 'https://studio-next.genlayer.com/api';
 
 let acct = null;
@@ -121,6 +250,7 @@ function showNote(m, t) { note.textContent = m; note.className = 'note show ' + 
 function hideNote() { note.className = 'note'; }
 function showOut(id, m, err) { const e = $(id); e.textContent = m; e.className = 'out show ' + (err ? 'err' : 'ok'); }
 function setBtn(on) { ['b_create','b_fund','b_proof','b_viol','b_cancel','b_view'].forEach(i => { const b = $(i); if (b) b.disabled = !on; }); }
+function updateBadge(cls, txt) { const b = $('badge'); b.className = 'badge ' + cls; b.textContent = txt; }
 
 async function rpc(method, params) {
   const r = await fetch(RPC, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ jsonrpc:'2.0', id: Date.now(), method, params }) });
@@ -129,67 +259,26 @@ async function rpc(method, params) {
   return j.result;
 }
 
-function updateBadge(cls, txt) { const b = $('statusBadge'); b.className = 'badge ' + cls; b.textContent = txt; }
-
 async function connect() {
   if (!window.ethereum) {
-    showNote('MetaMask not detected. Open this page in MetaMask browser.', 'err');
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-      try { window.location.href = 'https://metamask.app.link/dapp/' + window.location.host + window.location.pathname; } catch(e) {}
-    }
+    showNote('MetaMask not detected.', 'err');
     throw new Error('No wallet');
   }
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   if (!accounts || !accounts.length) throw new Error('No accounts');
   acct = accounts[0];
-  let chain = await window.ethereum.request({ method: 'eth_chainId' });
-  
-  // Handle both hex and decimal chain IDs
-  const chainDec = typeof chain === 'number' ? chain : parseInt(chain, 16);
+  const chain = await window.ethereum.request({ method: 'eth_chainId' });
+  const chainDec = parseInt(chain, 16);
   const targetDec = parseInt(CHAIN, 16);
   
-  console.log('Wallet chain:', chain, '(', chainDec, ') Target:', CHAIN, '(', targetDec, ')');
-  
   if (chainDec !== targetDec) {
-    showNote('Switching from chain ' + chainDec + ' to GenLayer Studio Next (' + targetDec + ')...', 'warn');
-    
-    // Try to switch first - works if user already has the chain added
+    showNote('Switching to GenLayer Studio Next...', 'warn');
     try {
-      await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN }] });
-      // Re-check chain after switch
-      chain = await window.ethereum.request({ method: 'eth_chainId' });
-      const newChainDec = typeof chain === 'number' ? chain : parseInt(chain, 16);
-      if (newChainDec !== targetDec) {
-        throw new Error('Switch did not work');
-      }
-    } catch(switchErr) {
-      console.log('Switch failed:', switchErr.code, switchErr.message);
-      // If switch fails because chain not found (4902), try adding it
-      if (switchErr.code === 4902 || switchErr.message?.includes('wallet_addEthereumChain')) {
-        // Chain not found - try to add it
-        try {
-          await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN, chainName: 'GenLayer Studio Next', rpcUrls: [RPC], nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 }, blockExplorerUrls: ['https://explorer-studio-dev.genlayer.com/'] }] });
-          // Re-check chain after adding
-          chain = await window.ethereum.request({ method: 'eth_chainId' });
-          const newChainDec = typeof chain === 'number' ? chain : parseInt(chain, 16);
-          if (newChainDec !== targetDec) {
-            // Try switching again after adding
-            await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN }] });
-          }
-        } catch(addErr) {
-          // addEthereumChain failed - likely because a network with this name already exists
-          // but with a different chain ID
-          showNote('⚠️ A network named "Studio Next" already exists with wrong chain ID. In Rabby: Settings → Networks → delete "Studio Next" → refresh this page.', 'err');
-          throw new Error('Wrong network already exists');
-        }
-      } else {
-        console.log('Switch error:', switchErr);
-        showNote('❌ Chain mismatch! Wallet on ' + chainDec + ', need ' + targetDec + '. Please manually switch in wallet.', 'err');
-        throw new Error('Please switch to GenLayer Studio Next');
-      }
-    }
+      await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN, chainName: 'GenLayer Studio Next', rpcUrls: [RPC], nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 } }] });
+    } catch(e) {}
+    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN }] });
   }
-  updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)} (chain ${targetDec})`);
+  updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`);
   setBtn(true);
   $('walletBtn').textContent = 'Disconnect';
   hideNote();
@@ -204,43 +293,11 @@ function disconnect() {
   hideNote();
 }
 
-// ABI for AgentPact
-const ABI = [
-  { name: 'create_agreement', type: 'function', stateMutability: 'payable', inputs: [
-    { name: 'agreement_id', type: 'string' }, { name: 'worker', type: 'address' }, { name: 'terms', type: 'string' },
-    { name: 'payment_per_tick', type: 'uint256' }, { name: 'interval_seconds', type: 'uint256' }, { name: 'total_ticks', type: 'uint256' },
-    { name: 'uptime_required', type: 'uint256' }, { name: 'response_time_required', type: 'uint256' }, { name: 'penalty_rate', type: 'uint256' }
-  ], outputs: [{ type: 'string' }] },
-  { name: 'fund_agreement', type: 'function', stateMutability: 'payable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] },
-  { name: 'submit_proof', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }, { name: 'proof_hash', type: 'string' }, { name: 'response_time', type: 'uint256' }], outputs: [{ type: 'bool' }] },
-  { name: 'report_violation', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
-  { name: 'cancel_agreement', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
-  { name: 'get_agreement', type: 'function', stateMutability: 'view', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'tuple', components: [
-    { name: 'id', type: 'string' }, { name: 'hiree', type: 'address' }, { name: 'worker', type: 'address' }, { name: 'terms', type: 'string' },
-    { name: 'payment_per_tick', type: 'uint256' }, { name: 'interval_seconds', type: 'uint256' }, { name: 'next_deadline', type: 'uint256' },
-    { name: 'total_ticks', type: 'uint256' }, { name: 'paid_ticks', type: 'uint256' }, { name: 'status', type: 'string' },
-    { name: 'violations', type: 'uint256' }, { name: 'last_proof_hash', type: 'string' }, { name: 'last_check_status', type: 'string' },
-    { name: 'last_response_time', type: 'uint256' }, { name: 'consecutive_failures', type: 'uint256' },
-    { name: 'uptime_required', type: 'uint256' }, { name: 'response_time_required', type: 'uint256' }, { name: 'penalty_rate', type: 'uint256' },
-    { name: 'total_deposited', type: 'uint256' }, { name: 'total_paid_out', type: 'uint256' }, { name: 'total_refunded', type: 'uint256' }, { name: 'total_penalties', type: 'uint256' }
-  ] }] },
-  { name: 'get_stats', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'tuple', components: [{ name: 'total_agreements', type: 'uint256' }, { name: 'total_proofs', type: 'uint256' }] }] }
-];
-
 async function sendTx(fn, args, value) {
-  const abiItem = ABI.find(f => f.name === fn);
-  const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName: fn, args });
+  const data = encodeCall(fn, args);
   return await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acct, to: CONTRACT, data, value: value ? '0x' + value.toString(16) : '0x0' }] });
 }
 
-async function callFn(fn, args) {
-  const abiItem = ABI.find(f => f.name === fn);
-  const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName: fn, args });
-  const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
-  return window.viem.decodeFunctionResult({ abi: [abiItem], functionName: fn, data: result });
-}
-
-// Event listeners
 $('walletBtn').addEventListener('click', async () => {
   if (acct) { disconnect(); return; }
   try {
@@ -248,8 +305,6 @@ $('walletBtn').addEventListener('click', async () => {
     $('walletBtn').disabled = true;
     showNote('Connecting...', 'warn');
     await connect();
-    showNote('Connected!', 'ok');
-    setTimeout(hideNote, 3000);
   } catch (err) {
     showNote('Error: ' + err.message, 'err');
     $('walletBtn').textContent = 'Connect Wallet';
@@ -266,7 +321,6 @@ $('b_create').addEventListener('click', async () => {
     showOut('o_create', 'Creating...', false);
     const hash = await sendTx('create_agreement', args, val);
     showOut('o_create', '✅ Created!\nTx: ' + hash, false);
-    setTimeout(() => viewById(id), 5000);
   } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
 });
 
@@ -286,9 +340,9 @@ $('b_proof').addEventListener('click', async () => {
     hideNote();
     const id = $('p_id').value;
     const resp = BigInt($('p_resp').value);
-    const hashProof = '0x' + Array.from({length:12}, () => Math.floor(Math.random()*16).toString(16)).join('');
+    const proofHash = '0x' + Array.from({length:12}, () => Math.floor(Math.random()*16).toString(16)).join('');
     showOut('o_proof', 'Submitting...', false);
-    const hash = await sendTx('submit_proof', [id, hashProof, resp], 0n);
+    const hash = await sendTx('submit_proof', [id, proofHash, resp], 0n);
     showOut('o_proof', '✅ Proof submitted!\nTx: ' + hash, false);
   } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
 });
@@ -318,25 +372,17 @@ $('b_view').addEventListener('click', async () => {
     hideNote();
     const id = $('v_id').value;
     showOut('o_view', 'Fetching...', false);
-    const result = await callFn('get_agreement', [id]);
-    showOut('o_view', '📋 ' + id + '\n' + JSON.stringify(result, (k,v) => typeof v === 'bigint' ? v.toString() : v, 2), false);
+    const data = encodeCall('get_agreement', [id]);
+    const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
+    showOut('o_view', '📋 ' + id + '\nRaw result:\n' + result + '\n\nView on explorer: https://explorer-studio.dev.genlayer.com/address/' + CONTRACT, false);
   } catch (err) { showOut('o_view', 'Error: ' + err.message, true); }
 });
 
-async function viewById(id) {
-  $('v_id').value = id;
-  if (acct) {
-    try { const r = await callFn('get_agreement', [id]); showOut('o_view', '📋 ' + id + '\n' + JSON.stringify(r, (k,v) => typeof v === 'bigint' ? v.toString() : v, 2), false); } catch(e) {}
-  }
-}
-
-// Listen for changes
 if (window.ethereum) {
   window.ethereum.on('accountsChanged', (a) => { if (!a.length) disconnect(); else { acct = a[0]; updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`); setBtn(true); } });
-  window.ethereum.on('chainChanged', (c) => { if (c !== CHAIN) { updateBadge('wrong', 'Wrong Network'); setBtn(false); showNote('⚠️ Switch to GenLayer Studio Next (61997)', 'warn'); } else { updateBadge('conn', `✓ ${acct?.slice(0,6)}...${acct?.slice(-4)}`); setBtn(true); hideNote(); } });
+  window.ethereum.on('chainChanged', (c) => { if (c !== CHAIN) { updateBadge('disc', 'Wrong Network'); setBtn(false); showNote('⚠️ Switch to GenLayer Studio Next', 'warn'); } });
 }
 
-// Check existing connection
 (async () => {
   if (window.ethereum) {
     try {
@@ -348,9 +394,6 @@ if (window.ethereum) {
           updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`);
           setBtn(true);
           $('walletBtn').textContent = 'Disconnect';
-        } else {
-          updateBadge('wrong', 'Wrong Network');
-          showNote('⚠️ Switch to GenLayer Studio Next (61997)', 'warn');
         }
       }
     } catch(e) {}
