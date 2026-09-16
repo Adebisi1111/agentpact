@@ -271,8 +271,18 @@ $('b_view').addEventListener('click', async () => {
       return;
     }
     showOut('o_view', 'Fetching...', false);
-    const result = await callFn('get_agreement', [id]);
-    showOut('o_view', '📋 ' + id + '\n' + JSON.stringify(result, (k,v) => typeof v === 'bigint' ? v.toString() : v, 2), false);
+    try {
+      const abiItem = ABI.find(f => f.name === 'get_agreement');
+      const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName: 'get_agreement', args: [id] });
+      const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
+      if (!result || result === '0x' || result.length <= 2) {
+        showOut('o_view', 'Agreement "' + id + '" does not exist yet.\n\nCreate and fund it first.', true);
+        return;
+      }
+      showOut('o_view', '📋 ' + id + '\n\nRaw data:\n' + result + '\n\nExplorer: https://explorer-studio-dev.genlayer.com/address/' + CONTRACT, false);
+    } catch (innerErr) {
+      showOut('o_view', 'Error: ' + innerErr.message + '\n\nThis may mean the agreement does not exist yet.', true);
+    }
   } catch (err) { showOut('o_view', 'Error: ' + err.message, true); }
 });
 
