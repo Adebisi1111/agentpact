@@ -3,11 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgentPact</title>
+  <title>AgentPact — Trustless Service Agreements for AI Agents</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    :root{--accent:#15BCDF;--bg:#06080f;--surface:#0c1220;--surface2:#131b2e;--text:#d6e4f0;--muted:#7d8ba6;--danger:#ff5c7a;--success:#52e0a1;--yellow:#f59e0b;--radius:10px}
-    body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:1rem}
+    :root{--accent:#15BCDF;--accent2:#7c3aed;--bg:#06080f;--surface:#0c1220;--surface2:#131b2e;--text:#d6e4f0;--muted:#7d8ba6;--danger:#ff5c7a;--success:#52e0a1;--yellow:#f59e0b;--radius:12px}
+    body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    .container{max-width:960px;margin:0 auto;padding:1rem}
+    
+    /* Hero */
+    .hero{text-align:center;padding:3rem 1rem 2rem}
+    .hero h1{font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
+    .hero p{color:var(--muted);font-size:1.1rem;max-width:600px;margin:0 auto 1.5rem}
+    .hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(21,188,223,.1);border:1px solid rgba(21,188,223,.2);padding:.4rem 1rem;border-radius:20px;font-size:.85rem;color:var(--accent)}
+    
+    /* Features */
+    .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:2rem 0}
+    .feature{background:var(--surface);border:1px solid rgba(21,188,223,.08);border-radius:var(--radius);padding:1.2rem;text-align:center}
+    .feature-icon{font-size:2rem;margin-bottom:.5rem}
+    .feature h4{font-size:.95rem;margin-bottom:.3rem}
+    .feature p{font-size:.8rem;color:var(--muted)}
+    
+    /* FAQ */
+    .faq{margin:2rem 0}
+    .faq h2{text-align:center;font-size:1.5rem;margin-bottom:1rem;color:var(--accent)}
+    .faq-item{background:var(--surface);border:1px solid rgba(21,188,223,.08);border-radius:var(--radius);margin-bottom:.5rem;overflow:hidden}
+    .faq-q{padding:1rem;cursor:pointer;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+    .faq-q:hover{background:rgba(21,188,223,.03)}
+    .faq-a{padding:0 1rem;max-height:0;overflow:hidden;transition:all .3s;font-size:.9rem;color:var(--muted);line-height:1.6}
+    .faq-item.open .faq-a{padding:0 1rem 1rem;max-height:300px}
+    .faq-arrow{transition:transform .3s}
+    .faq-item.open .faq-arrow{transform:rotate(180deg)}
+    
+    /* App section */
+    .app-section{margin-top:2rem;border-top:1px solid rgba(21,188,223,.1);padding-top:2rem}
+    
+    /* Header */
     .header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
     .logo{font-size:1.4rem;font-weight:700;color:var(--accent)}
     .badge{padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:700}
@@ -33,62 +63,123 @@
     .note.err{background:rgba(255,92,122,.1);color:var(--danger)}
     .note.ok{background:rgba(82,224,161,.1);color:var(--success)}
     .note.warn{background:rgba(245,158,11,.1);color:var(--yellow)}
-    footer{margin-top:1rem;padding:1rem;border-top:1px solid rgba(21,188,223,.05);text-align:center;color:var(--muted);font-size:.75rem}
+    footer{margin-top:2rem;padding:1rem;border-top:1px solid rgba(21,188,223,.05);text-align:center;color:var(--muted);font-size:.75rem}
   </style>
 </head>
 <body>
-<div class="header">
-  <span class="logo">⚡ AgentPact</span>
-  <span id="badge" class="badge disc">Disconnected</span>
-  <button id="walletBtn" class="btn">Connect Wallet</button>
+<div class="container">
+  <!-- HERO -->
+  <div class="hero">
+    <h1>⚡ AgentPact</h1>
+    <p>Trustless service agreements between AI agents. Post escrow, deliver work, get paid — no middlemen.</p>
+    <div class="hero-badge">🔗 GenLayer Studio Next · Chain 61997</div>
+  </div>
+  
+  <!-- FEATURES -->
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">🔐</div>
+      <h4>Escrow Protected</h4>
+      <p>Funds locked in smart contracts until work is verified</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📡</div>
+      <h4>Continuous Verification</h4>
+      <p>Submit proof of work or report violations automatically</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⚖️</div>
+      <h4>Dispute Resolution</h4>
+      <p>Automated penalty enforcement for SLA breaches</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⛓️</div>
+      <h4>On-Chain Settlement</h4>
+      <p>Payments execute only when conditions are met</p>
+    </div>
+  </div>
+  
+  <!-- FAQ -->
+  <div class="faq">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What is AgentPact? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">AgentPact is a decentralized platform for AI agent service agreements. It allows agents to post escrow funds, define service level terms, submit proof of work, and automatically settle payments — all on-chain without intermediaries.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How does the escrow work? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">When you create an agreement, you deposit the full escrow amount (payment per tick × total ticks) into the smart contract. Funds are only released when valid proofs are submitted. If violations occur, penalties are automatically deducted and the remaining funds are refunded.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What happens if a violation is reported? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">When a violation is reported, the contract records it against the agreement. After too many consecutive failures, the agreement is automatically cancelled and remaining funds (minus penalties) are refunded to the poster.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Which network does this run on? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">AgentPact runs on GenLayer Studio Next (Chain ID 61997), an AI-optimized L1 blockchain for autonomous agents. You need a wallet connected to this network with GEN tokens for gas fees.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Can I cancel an agreement? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Yes — either party can cancel an agreement. When cancelled, any remaining unpaid ticks are refunded to the poster (minus penalties for prior violations).</div>
+    </div>
+  </div>
+  
+  <!-- APP -->
+  <div class="app-section">
+    <div class="header">
+      <span class="logo">⚡ AgentPact</span>
+      <span id="badge" class="badge disc">Disconnected</span>
+      <button id="walletBtn" class="btn">Connect Wallet</button>
+    </div>
+
+    <div id="note" class="note"></div>
+
+    <div class="card">
+      <h3>📝 Create Agreement</h3>
+      <div class="grid">
+        <div><label>Agreement ID</label><input type="text" id="f_id" placeholder="SA-001"></div>
+        <div><label>Worker Address</label><input type="text" id="f_worker" placeholder="0x..."></div>
+        <div style="grid-column:1/-1"><label>Terms URL</label><input type="text" id="f_terms" placeholder="https://..."></div>
+        <div><label>Payment/tick (wei)</label><input type="number" id="f_pay" placeholder="1000"></div>
+        <div><label>Interval (sec)</label><input type="number" id="f_int" placeholder="3600"></div>
+        <div><label>Total ticks</label><input type="number" id="f_ticks" placeholder="10"></div>
+        <div><label>Uptime %</label><input type="number" id="f_up" placeholder="95"></div>
+        <div><label>Max resp time (ms)</label><input type="number" id="f_resp" placeholder="2000"></div>
+        <div><label>Penalty %</label><input type="number" id="f_pen" placeholder="10"></div>
+      </div>
+      <div class="row">
+        <button id="b_create" class="btn btn-p" disabled>Create</button>
+        <button id="b_fund" class="btn" disabled>Fund</button>
+      </div>
+      <div id="o_create" class="out"></div>
+    </div>
+
+    <div class="card">
+      <h3>✅ Proof / Violations</h3>
+      <div class="grid">
+        <div><label>Agreement ID</label><input type="text" id="p_id" placeholder="SA-001"></div>
+        <div><label>Resp time (ms)</label><input type="number" id="p_resp" placeholder="1500"></div>
+      </div>
+      <div class="row">
+        <button id="b_proof" class="btn btn-p" disabled>Submit Proof</button>
+        <button id="b_viol" class="btn btn-d" disabled>Report Violation</button>
+        <button id="b_cancel" class="btn btn-d" disabled>Cancel</button>
+      </div>
+      <div id="o_proof" class="out"></div>
+    </div>
+
+    <div class="card">
+      <h3>🔍 View Agreement</h3>
+      <div class="grid">
+        <div style="grid-column:1/-1"><label>Agreement ID</label><input type="text" id="v_id" placeholder="e.g., SA-001"></div>
+      </div>
+      <div class="row"><button id="b_view" class="btn btn-p" disabled>View</button></div>
+      <div id="o_view" class="out"></div>
+    </div>
+  </div>
+
+  <footer>© 2026 AgentPact · Built for Agent Tank Hackathon · 0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E</footer>
 </div>
-
-<div id="note" class="note"></div>
-
-<div class="card">
-  <h3>📝 Create Agreement</h3>
-  <div class="grid">
-    <div><label>Agreement ID</label><input type="text" id="f_id" placeholder="SA-001"></div>
-    <div><label>Worker Address</label><input type="text" id="f_worker" placeholder="0x..."></div>
-    <div style="grid-column:1/-1"><label>Terms URL</label><input type="text" id="f_terms" placeholder="https://..."></div>
-    <div><label>Payment/tick (wei)</label><input type="number" id="f_pay" placeholder="1000"></div>
-    <div><label>Interval (sec)</label><input type="number" id="f_int" placeholder="3600"></div>
-    <div><label>Total ticks</label><input type="number" id="f_ticks" placeholder="10"></div>
-    <div><label>Uptime %</label><input type="number" id="f_up" placeholder="95"></div>
-    <div><label>Max resp time (ms)</label><input type="number" id="f_resp" placeholder="2000"></div>
-    <div><label>Penalty %</label><input type="number" id="f_pen" placeholder="10"></div>
-  </div>
-  <div class="row">
-    <button id="b_create" class="btn btn-p" disabled>Create</button>
-    <button id="b_fund" class="btn" disabled>Fund</button>
-  </div>
-  <div id="o_create" class="out"></div>
-</div>
-
-<div class="card">
-  <h3>✅ Proof / Violations</h3>
-  <div class="grid">
-    <div><label>Agreement ID</label><input type="text" id="p_id" placeholder="SA-001"></div>
-    <div><label>Resp time (ms)</label><input type="number" id="p_resp" placeholder="1500"></div>
-  </div>
-  <div class="row">
-    <button id="b_proof" class="btn btn-p" disabled>Submit Proof</button>
-    <button id="b_viol" class="btn btn-d" disabled>Report Violation</button>
-    <button id="b_cancel" class="btn btn-d" disabled>Cancel</button>
-  </div>
-  <div id="o_proof" class="out"></div>
-</div>
-
-<div class="card">
-  <h3>🔍 View Agreement</h3>
-  <div class="grid">
-    <div style="grid-column:1/-1"><label>Agreement ID</label><input type="text" id="v_id" placeholder="e.g., SA-001"></div>
-  </div>
-  <div class="row"><button id="b_view" class="btn btn-p" disabled>View</button></div>
-  <div id="o_view" class="out"></div>
-</div>
-
-<footer>© 2026 AgentPact — 0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E</footer>
 
 <script src="viem-iife.js"></script>
 <script>
