@@ -148,7 +148,15 @@ function setButtonsEnabled(enabled) {
 }
 
 async function connectWallet() {
-  if (!window.ethereum) throw new Error('No wallet detected. Install MetaMask or Rabby.');
+  if (!window.ethereum) {
+    // Show install prompt
+    showBanner('MetaMask not detected. Please install MetaMask or open this page in MetaMask browser.', 'error');
+    // Try to deep link to MetaMask if on mobile
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      window.location.href = 'https://metamask.app.link/dapp/adebisi1111.github.io/agentpact/';
+    }
+    throw new Error('No wallet detected. Install MetaMask or open in MetaMask browser.');
+  }
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   if (!accounts || accounts.length === 0) throw new Error('No accounts found');
   account = accounts[0];
@@ -233,10 +241,13 @@ $('walletBtn').addEventListener('click', async () => {
     $('walletBtn').textContent = 'Connecting...';
     $('walletBtn').disabled = true;
     showBanner('Connecting wallet...', 'warning');
+    console.log('window.ethereum:', !!window.ethereum);
+    console.log('window.viem:', !!window.viem);
     await connectWallet();
     showBanner('Wallet connected!', 'success');
     setTimeout(hideBanner, 3000);
   } catch (err) {
+    console.error('Wallet connection error:', err);
     showBanner('Error: ' + err.message, 'error');
     $('walletBtn').textContent = 'Connect Wallet';
     $('walletBtn').disabled = false;
@@ -403,6 +414,12 @@ if (window.ethereum) {
 
 // Check if already connected
 (async () => {
+  // Verify viem loaded
+  if (!window.viem) {
+    showBanner('⚠️ Failed to load wallet library. Please refresh the page.', 'error');
+    return;
+  }
+  
   if (window.ethereum) {
     try {
       const accounts = await window.ethereum.request({ method: 'eth_accounts' });
