@@ -273,17 +273,6 @@ $('b_view').addEventListener('click', async () => {
 
 <script src="viem-iife.js"></script>
 <script>
-// viem not used - keeping for potential future use
-  // keccak256("get_agreement(string)") = 0x... first 4 bytes
-  const selector = 'ff6f0fee'; // keccak256("get_agreement(string)")[0:4]
-  // Encode string: offset (32 bytes) + length + data padded to 32 bytes
-  const strHex = Array.from(id).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
-  const offset = '0000000000000000000000000000000000000000000000000000000000000020';
-  const length = id.length.toString(16).padStart(64, '0');
-  const paddedStr = strHex.padEnd(64, '0');
-  return selector + offset + length + paddedStr;
-}
-
 if (window.ethereum) {
   window.ethereum.on('accountsChanged', (a) => { if (!a.length) disconnect(); else { acct = a[0]; updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`); setBtn(true); } });
   window.ethereum.on('chainChanged', (c) => { if (c !== CHAIN) { updateBadge('disc', 'Wrong Network'); setBtn(false); showNote('⚠️ Switch to GenLayer Studio Next', 'warn'); } });
