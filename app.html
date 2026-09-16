@@ -355,11 +355,11 @@ $('b_cancel').addEventListener('click', async () => {
   } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
 });
 
-// FIXED: View button uses get_agreement_status and checks for empty string
+// FIXED: View button with proper string decoding and finalization wait
 $('b_view').addEventListener('click', async () => {
   const id = $('v_id').value || $('v_id').placeholder;
   if (!id || id === 'e.g., SA-001') { showNote('Please enter an agreement ID', 'warn'); return; }
-  showOut('o_view', 'Checking on-chain...', false);
+  showOut('o_view', 'Checking on-chain...\n\nNote: If you just created/funded, wait 2-3 minutes for GenLayer finalization.', false);
   try {
     const statusSelector = 'e26dc477';
     const strHex = Array.from(id).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
@@ -370,26 +370,41 @@ $('b_view').addEventListener('click', async () => {
     
     const statusResult = await rpc('eth_call', [{ to: CONTRACT, data: statusData }, 'latest']);
     
-    // Check if result is empty (non-existent agreement returns empty string)
+    // Debug: log raw result
+    console.log('Raw status result:', statusResult);
+    
+    // Check if result is empty or all zeros
     if (!statusResult || statusResult === '0x' || statusResult.length <= 2 || /^0x0+$/.test(statusResult)) {
-      showOut('o_view', '❌ Agreement "' + id + '" does not exist on-chain.\n\nCreate it first using the form above.', true);
+      showOut('o_view', '❌ Agreement "' + id + '" does not exist on-chain.\n\nIf you just created it, wait 2-3 minutes for GenLayer consensus finalization.', true);
       return;
     }
     
-    // Decode string result
+    // Decode string result - try multiple formats
     const h = statusResult.slice(2);
-    const strOffset = parseInt(h.slice(0, 64), 16) * 2;
-    const strLength = parseInt(h.slice(strOffset, strOffset + 64), 16);
+    let status = '';
     
-    if (strLength === 0) {
-      showOut('o_view', '❌ Agreement "' + id + '" does not exist on-chain.\n\nCreate it first using the form above.', true);
-      return;
+    try {
+      // Standard ABI encoding: offset (32) + length (32) + data
+      const strOffset = parseInt(h.slice(0, 64), 16);
+      const strLength = parseInt(h.slice(strOffset * 2, strOffset * 2 + 64), 16);
+      
+      if (strLength > 0 && strLength < 1000) {
+        const strHex2 = h.slice(strOffset * 2 + 64, strOffset * 2 + 64 + strLength * 2);
+        status = Array.from({length: strLength}, (_, i) => 
+          String.fromCharCode(parseInt(strHex2.slice(i*2, i*2+2), 16))
+        ).join('');
+      }
+    } catch (e) {
+      // If decoding fails, try reading as direct string
+      status = h.match(/.{2}/g)?.map(b => String.fromCharCode(parseInt(b, 16))).replace(/[^\x20-\x7E]/g, '').join('') || '';
     }
     
-    const strHex2 = h.slice(strOffset + 64, strOffset + 64 + strLength * 2);
-    const status = Array.from({length: strLength}, (_, i) => 
-      String.fromCharCode(parseInt(strHex2.slice(i*2, i*2+2), 16))
-    ).join('');
+    console.log('Decoded status:', status);
+    
+    if (!status || status.length === 0) {
+      showOut('o_view', '❌ Agreement "' + id + '" does not exist on-chain.\n\nIf you just created it, wait 2-3 minutes for GenLayer consensus finalization.', true);
+      return;
+    }
     
     const statusEmoji = {
       'pending': '🟡',
