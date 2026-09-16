@@ -5,185 +5,164 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>AgentPact</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cg transform='rotate(-30 12 12)'%3E%3Ccircle cx='7.3' cy='3.2' r='1.45'/%3E%3Crect x='5.5' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Crect x='14.9' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Ccircle cx='16.7' cy='20.8' r='1.45'/%3E%3C/g%3E%3C/svg%3E">
-  <script src="viem.bundle.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--accent:#15BCDF;--accent-glow:rgba(21,188,223,.35);--bg:#06080f;--surface:#0c1220;--surface2:#131b2e;--text:#d6e4f0;--muted:#7d8ba6;--danger:#ff5c7a;--success:#52e0a1;--yellow:#f59e0b;--radius:10px}
-    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-    body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
-    nav{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;max-width:1200px;margin:0 auto;flex-wrap:wrap}
-    nav .logo{font-weight:700;font-size:1.3rem;color:var(--accent);text-decoration:none;margin-right:auto;white-space:nowrap}
-    .status-badge{display:inline-block;padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:700;white-space:nowrap}
-    .status-badge.connected{background:rgba(82,224,161,.15);color:var(--success)}
-    .status-badge.disconnected{background:rgba(255,92,122,.15);color:var(--danger)}
-    .status-badge.wrong-network{background:rgba(245,158,11,.15);color:var(--yellow)}
-    .btn{border:1px solid var(--accent);color:var(--accent);background:transparent;padding:.5rem 1.2rem;border-radius:var(--radius);cursor:pointer;font-family:inherit;font-weight:700;font-size:.85rem;transition:all .2s;white-space:nowrap}
+    :root{--accent:#15BCDF;--bg:#06080f;--surface:#0c1220;--surface2:#131b2e;--text:#d6e4f0;--muted:#7d8ba6;--danger:#ff5c7a;--success:#52e0a1;--yellow:#f59e0b;--radius:10px}
+    html{-webkit-text-size-adjust:100%}
+    body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    nav{display:flex;align-items:center;gap:1rem;padding:1rem;max-width:1200px;margin:0 auto;flex-wrap:wrap}
+    nav .logo{font-weight:700;font-size:1.3rem;color:var(--accent);text-decoration:none;margin-right:auto}
+    .badge{display:inline-block;padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:700}
+    .badge.conn{background:rgba(82,224,161,.15);color:var(--success)}
+    .badge.disc{background:rgba(255,92,122,.15);color:var(--danger)}
+    .badge.wrong{background:rgba(245,158,11,.15);color:var(--yellow)}
+    .btn{border:1px solid var(--accent);color:var(--accent);background:transparent;padding:.5rem 1rem;border-radius:var(--radius);cursor:pointer;font-weight:700;font-size:.85rem}
     .btn:hover{background:var(--accent);color:var(--bg)}
     .btn:disabled{opacity:.4;cursor:not-allowed}
-    .btn:disabled:hover{background:transparent;color:var(--accent)}
-    .btn-primary{background:var(--accent);color:var(--bg)}
-    .btn-primary:hover{background:#0e9bbf;border-color:#0e9bbf}
-    .btn-primary:disabled:hover{background:var(--accent)}
-    .btn-danger{border-color:var(--danger);color:var(--danger)}
-    .btn-danger:hover{background:var(--danger);color:#fff}
-    main{max-width:900px;margin:0 auto;padding:1rem 1.5rem}
-    h1{font-size:1.8rem;margin-bottom:.3rem;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .subtitle{color:var(--muted);margin-bottom:1.5rem;font-size:.95rem}
-    .card{background:var(--surface);border:1px solid rgba(21,188,223,.12);border-radius:var(--radius);padding:1.2rem;margin-bottom:1.2rem}
-    h3{color:var(--accent);margin-bottom:.8rem;font-size:1.05rem}
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem}
-    .form-grid .full-width{grid-column:1/-1}
-    .form-group{display:flex;flex-direction:column;gap:.3rem}
-    label{font-size:.78rem;color:var(--muted);font-weight:700}
-    input{background:var(--surface2);border:1px solid rgba(21,188,223,.15);color:var(--text);padding:.6rem .8rem;border-radius:var(--radius);font-family:inherit;font-size:.85rem;-webkit-appearance:none;appearance:none}
-    input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-    .btn-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:.5rem}
-    .output{background:var(--surface2);border-radius:var(--radius);padding:.8rem;margin-top:.8rem;font-family:'Courier New',Courier,monospace;font-size:.78rem;white-space:pre-wrap;word-break:break-all;max-height:250px;overflow-y:auto;display:none;line-height:1.5}
-    .output.show{display:block}
-    .output.error{color:var(--danger);border:1px solid rgba(255,92,122,.3)}
-    .output.success{color:var(--success);border:1px solid rgba(82,224,161,.3)}
-    .banner{border-radius:var(--radius);padding:.8rem 1rem;margin-bottom:1rem;font-size:.85rem;display:none}
-    .banner.show{display:block}
-    .banner.error{background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.3);color:var(--danger)}
-    .banner.success{background:rgba(82,224,161,.1);border:1px solid rgba(82,224,161,.3);color:var(--success)}
-    .banner.warning{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--yellow)}
-    footer{text-align:center;padding:1.5rem;color:var(--muted);font-size:.78rem;border-top:1px solid rgba(21,188,223,.08);margin-top:2rem}
-    .loading-spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;margin-right:.4rem;vertical-align:middle}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    @media(max-width:600px){.form-grid{grid-template-columns:1fr}nav{gap:.6rem;padding:.8rem 1rem}nav .logo{font-size:1.1rem}main{padding:.8rem 1rem}h1{font-size:1.5rem}}
+    .btn-p{background:var(--accent);color:var(--bg)}
+    .btn-d{border-color:var(--danger);color:var(--danger)}
+    .btn-d:hover{background:var(--danger);color:#fff}
+    main{max-width:900px;margin:0 auto;padding:1rem}
+    h1{font-size:1.6rem;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .sub{color:var(--muted);margin-bottom:1rem;font-size:.9rem}
+    .card{background:var(--surface);border:1px solid rgba(21,188,223,.1);border-radius:var(--radius);padding:1rem;margin-bottom:1rem}
+    h3{color:var(--accent);margin-bottom:.6rem}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem}
+    .fw{grid-column:1/-1}
+    label{font-size:.75rem;color:var(--muted);display:block;margin-bottom:.2rem}
+    input{width:100%;background:var(--surface2);border:1px solid rgba(21,188,223,.15);color:var(--text);padding:.5rem;border-radius:var(--radius);font-size:.85rem}
+    input:focus{outline:none;border-color:var(--accent)}
+    .row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
+    .out{background:var(--surface2);border-radius:var(--radius);padding:.6rem;margin-top:.6rem;font-family:monospace;font-size:.75rem;white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto;display:none}
+    .out.show{display:block}
+    .out.err{color:var(--danger)}
+    .out.ok{color:var(--success)}
+    .note{border-radius:var(--radius);padding:.6rem;margin-bottom:.8rem;font-size:.85rem;display:none}
+    .note.show{display:block}
+    .note.err{background:rgba(255,92,122,.1);color:var(--danger)}
+    .note.ok{background:rgba(82,224,161,.1);color:var(--success)}
+    .note.warn{background:rgba(245,158,11,.1);color:var(--yellow)}
+    footer{text-align:center;padding:1rem;color:var(--muted);font-size:.75rem;border-top:1px solid rgba(21,188,223,.05);margin-top:1rem}
+    @media(max-width:600px){.grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <nav>
-    <a href="index.html" class="logo">⚡ AgentPact</a>
-    <span id="statusBadge" class="status-badge disconnected">Disconnected</span>
+    <span class="logo">⚡ AgentPact</span>
+    <span id="statusBadge" class="badge disc">Disconnected</span>
     <button id="walletBtn" class="btn">Connect Wallet</button>
   </nav>
 
   <main>
     <h1>AGENTPACT APP</h1>
-    <p class="subtitle">Trustless service agreements on GenLayer Studio Next</p>
+    <p class="sub">Trustless service agreements on GenLayer Studio Next</p>
 
-    <div id="banner" class="banner"></div>
+    <div id="note" class="note"></div>
 
     <div class="card">
       <h3>📝 Create Agreement</h3>
-      <div class="form-grid">
-        <div class="form-group"><label>Agreement ID</label><input type="text" id="agreementId" value="SA-001" placeholder="e.g., SA-001"></div>
-        <div class="form-group"><label>Worker Address (0x...)</label><input type="text" id="workerAddress" value="0x70997970C51812dc3A010C7d01b50e0d17dc79C8" placeholder="0x..."></div>
-        <div class="form-group full-width"><label>Terms URL</label><input type="text" id="termsUrl" value="https://api.example.com/terms" placeholder="https://..."></div>
-        <div class="form-group"><label>Payment per tick (wei)</label><input type="number" id="paymentPerTick" value="1000"></div>
-        <div class="form-group"><label>Interval (seconds)</label><input type="number" id="intervalSeconds" value="3600"></div>
-        <div class="form-group"><label>Total ticks</label><input type="number" id="totalTicks" value="10"></div>
-        <div class="form-group"><label>Uptime required (%)</label><input type="number" id="uptimeRequired" value="95"></div>
-        <div class="form-group"><label>Max response time (ms)</label><input type="number" id="responseTimeRequired" value="2000"></div>
-        <div class="form-group"><label>Penalty rate (%)</label><input type="number" id="penaltyRate" value="10"></div>
+      <div class="grid">
+        <div><label>Agreement ID</label><input type="text" id="f_id" value="SA-001"></div>
+        <div><label>Worker Address</label><input type="text" id="f_worker" value="0x70997970C51812dc3A010C7d01b50e0d17dc79C8"></div>
+        <div class="fw"><label>Terms URL</label><input type="text" id="f_terms" value="https://api.example.com/terms"></div>
+        <div><label>Payment/tick (wei)</label><input type="number" id="f_pay" value="1000"></div>
+        <div><label>Interval (sec)</label><input type="number" id="f_int" value="3600"></div>
+        <div><label>Total ticks</label><input type="number" id="f_ticks" value="10"></div>
+        <div><label>Uptime %</label><input type="number" id="f_up" value="95"></div>
+        <div><label>Max resp time (ms)</label><input type="number" id="f_resp" value="2000"></div>
+        <div><label>Penalty %</label><input type="number" id="f_pen" value="10"></div>
       </div>
-      <div class="btn-row">
-        <button id="createBtn" class="btn btn-primary" disabled>Create Agreement</button>
-        <button id="fundBtn" class="btn" disabled>Fund Agreement</button>
+      <div class="row">
+        <button id="b_create" class="btn btn-p" disabled>Create</button>
+        <button id="b_fund" class="btn" disabled>Fund</button>
       </div>
-      <div id="createOutput" class="output"></div>
+      <div id="o_create" class="out"></div>
     </div>
 
     <div class="card">
-      <h3>✅ Submit Proof / Report</h3>
-      <div class="form-grid">
-        <div class="form-group"><label>Agreement ID</label><input type="text" id="proofAgreementId" value="SA-001" placeholder="e.g., SA-001"></div>
-        <div class="form-group"><label>Response time (ms)</label><input type="number" id="proofResponseTime" value="1500"></div>
+      <h3>✅ Proof / Violations</h3>
+      <div class="grid">
+        <div><label>Agreement ID</label><input type="text" id="p_id" value="SA-001"></div>
+        <div><label>Resp time (ms)</label><input type="number" id="p_resp" value="1500"></div>
       </div>
-      <div class="btn-row">
-        <button id="proofBtn" class="btn btn-primary" disabled>Submit Proof</button>
-        <button id="violationBtn" class="btn btn-danger" disabled>Report Violation</button>
-        <button id="cancelBtn" class="btn btn-danger" disabled>Cancel Agreement</button>
+      <div class="row">
+        <button id="b_proof" class="btn btn-p" disabled>Submit Proof</button>
+        <button id="b_viol" class="btn btn-d" disabled>Report Violation</button>
+        <button id="b_cancel" class="btn btn-d" disabled>Cancel</button>
       </div>
-      <div id="proofOutput" class="output"></div>
+      <div id="o_proof" class="out"></div>
     </div>
 
     <div class="card">
       <h3>🔍 View Agreement</h3>
-      <div class="form-grid">
-        <div class="form-group full-width"><label>Agreement ID</label><input type="text" id="viewAgreementId" placeholder="e.g., SA-001"></div>
+      <div class="grid">
+        <div class="fw"><label>Agreement ID</label><input type="text" id="v_id" placeholder="e.g., SA-001"></div>
       </div>
-      <div class="btn-row"><button id="viewBtn" class="btn btn-primary" disabled>View</button></div>
-      <div id="viewOutput" class="output"></div>
+      <div class="row"><button id="b_view" class="btn btn-p" disabled>View</button></div>
+      <div id="o_view" class="out"></div>
     </div>
   </main>
 
   <footer>
-    <div>© 2026 AgentPact — Built on GenLayer</div>
-    <div style="margin-top:.5rem;opacity:.7">Contract: 0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E</div>
+    <div>© 2026 AgentPact</div>
+    <div style="opacity:.6;margin-top:.3rem">0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E</div>
   </footer>
-
+<script src="viem-bundle.js"></script>
 <script>
 const CONTRACT = '0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E';
-const CHAIN_ID = '0x1194D';
-const CHAIN_ID_DEC = 61997;
-const RPC_URL = 'https://studio-next.genlayer.com/api';
-const EXPLORER = 'https://explorer-studio-dev.genlayer.com';
+const CHAIN = '0x1194D';
+const RPC = 'https://studio-next.genlayer.com/api';
 
-const chain = {
-  id: CHAIN_ID_DEC,
-  name: 'Studio Next',
-  rpcUrls: { default: { http: [RPC_URL] } },
-  blockExplorers: { default: { url: EXPLORER, name: 'Explorer' } },
-  nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 },
-  testnet: true,
-};
+let acct = null;
+const $ = x => document.getElementById(x);
+const note = $('note');
 
-let account = null;
-let publicClient = null;
+function showNote(m, t) { note.textContent = m; note.className = 'note show ' + t; }
+function hideNote() { note.className = 'note'; }
+function showOut(id, m, err) { const e = $(id); e.textContent = m; e.className = 'out show ' + (err ? 'err' : 'ok'); }
+function setBtn(on) { ['b_create','b_fund','b_proof','b_viol','b_cancel','b_view'].forEach(i => { const b = $(i); if (b) b.disabled = !on; }); }
 
-const $ = id => document.getElementById(id);
-const banner = $('banner');
-
-function showBanner(msg, type) { banner.textContent = msg; banner.className = 'banner show ' + type; }
-function hideBanner() { banner.className = 'banner'; }
-function showOutput(id, msg, isError) { const el = $(id); el.textContent = msg; el.className = 'output show ' + (isError ? 'error' : 'success'); }
-
-function updateStatus(status, text) { const badge = $('statusBadge'); badge.className = 'status-badge ' + status; badge.textContent = text; }
-
-function setButtonsEnabled(enabled) {
-  ['createBtn','fundBtn','proofBtn','violationBtn','cancelBtn','viewBtn'].forEach(id => { const b = $(id); if (b) b.disabled = !enabled; });
+async function rpc(method, params) {
+  const r = await fetch(RPC, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ jsonrpc:'2.0', id: Date.now(), method, params }) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error.message || 'RPC error');
+  return j.result;
 }
 
-async function connectWallet() {
+function updateBadge(cls, txt) { const b = $('statusBadge'); b.className = 'badge ' + cls; b.textContent = txt; }
+
+async function connect() {
   if (!window.ethereum) {
-    // Show install prompt
-    showBanner('MetaMask not detected. Please install MetaMask or open this page in MetaMask browser.', 'error');
-    // Try to deep link to MetaMask if on mobile
-    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      window.location.href = 'https://metamask.app.link/dapp/adebisi1111.github.io/agentpact/';
+    showNote('MetaMask not detected. Open this page in MetaMask browser.', 'err');
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      try { window.location.href = 'https://metamask.app.link/dapp/' + window.location.host + window.location.pathname; } catch(e) {}
     }
-    throw new Error('No wallet detected. Install MetaMask or open in MetaMask browser.');
+    throw new Error('No wallet');
   }
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-  if (!accounts || accounts.length === 0) throw new Error('No accounts found');
-  account = accounts[0];
-  const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-  if (chainId !== CHAIN_ID) {
-    try {
-      await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN_ID, chainName: 'GenLayer Studio Next', rpcUrls: [RPC_URL], nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 }, blockExplorerUrls: [EXPLORER + '/'] }] });
-    } catch (e) {}
-    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN_ID }] });
+  if (!accounts || !accounts.length) throw new Error('No accounts');
+  acct = accounts[0];
+  const chain = await window.ethereum.request({ method: 'eth_chainId' });
+  if (chain !== CHAIN) {
+    try { await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN, chainName: 'GenLayer Studio Next', rpcUrls: [RPC], nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 }, blockExplorerUrls: ['https://explorer-studio-dev.genlayer.com/'] }] }); } catch(e) {}
+    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN }] });
   }
-  publicClient = window.viem.createPublicClient({ chain, transport: window.viem.http(RPC_URL) });
-  updateStatus('connected', `✓ ${account.slice(0,6)}...${account.slice(-4)}`);
-  setButtonsEnabled(true);
+  updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`);
+  setBtn(true);
   $('walletBtn').textContent = 'Disconnect';
-  return account;
+  return acct;
 }
 
-function disconnectWallet() {
-  account = null; publicClient = null;
-  updateStatus('disconnected', 'Disconnected');
-  setButtonsEnabled(false);
+function disconnect() {
+  acct = null;
+  updateBadge('disc', 'Disconnected');
+  setBtn(false);
   $('walletBtn').textContent = 'Connect Wallet';
-  hideBanner();
+  hideNote();
 }
 
-// ABI for AgentPact contract
-const AGENTPACT_ABI = [
+// ABI for AgentPact
+const ABI = [
   { name: 'create_agreement', type: 'function', stateMutability: 'payable', inputs: [
     { name: 'agreement_id', type: 'string' }, { name: 'worker', type: 'address' }, { name: 'terms', type: 'string' },
     { name: 'payment_per_tick', type: 'uint256' }, { name: 'interval_seconds', type: 'uint256' }, { name: 'total_ticks', type: 'uint256' },
@@ -205,238 +184,133 @@ const AGENTPACT_ABI = [
   { name: 'get_stats', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'tuple', components: [{ name: 'total_agreements', type: 'uint256' }, { name: 'total_proofs', type: 'uint256' }] }] }
 ];
 
-async function writeContract(functionName, args, value) {
-  const abiItem = AGENTPACT_ABI.find(f => f.name === functionName);
-  if (!abiItem) throw new Error('Unknown function: ' + functionName);
-  
-  const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName, args });
-  
-  const hash = await window.ethereum.request({
-    method: 'eth_sendTransaction',
-    params: [{ from: account, to: CONTRACT, data, value: value ? '0x' + value.toString(16) : '0x0' }]
-  });
-  
-  return hash;
+async function sendTx(fn, args, value) {
+  const abiItem = ABI.find(f => f.name === fn);
+  const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName: fn, args });
+  return await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acct, to: CONTRACT, data, value: value ? '0x' + value.toString(16) : '0x0' }] });
 }
 
-async function readContract(functionName, args) {
-  const abiItem = AGENTPACT_ABI.find(f => f.name === functionName);
-  if (!abiItem) throw new Error('Unknown function: ' + functionName);
-  
-  const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName, args });
-  
-  const result = await window.ethereum.request({
-    method: 'eth_call',
-    params: [{ to: CONTRACT, data }, 'latest']
-  });
-  
-  const decoded = window.viem.decodeFunctionResult({ abi: [abiItem], functionName, data: result });
-  return decoded;
+async function callFn(fn, args) {
+  const abiItem = ABI.find(f => f.name === fn);
+  const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName: fn, args });
+  const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
+  return window.viem.decodeFunctionResult({ abi: [abiItem], functionName: fn, data: result });
 }
 
 // Event listeners
 $('walletBtn').addEventListener('click', async () => {
-  if (account) { disconnectWallet(); return; }
+  if (acct) { disconnect(); return; }
   try {
     $('walletBtn').textContent = 'Connecting...';
     $('walletBtn').disabled = true;
-    showBanner('Connecting wallet...', 'warning');
-    console.log('window.ethereum:', !!window.ethereum);
-    console.log('window.viem:', !!window.viem);
-    await connectWallet();
-    showBanner('Wallet connected!', 'success');
-    setTimeout(hideBanner, 3000);
+    showNote('Connecting...', 'warn');
+    await connect();
+    showNote('Connected!', 'ok');
+    setTimeout(hideNote, 3000);
   } catch (err) {
-    console.error('Wallet connection error:', err);
-    showBanner('Error: ' + err.message, 'error');
+    showNote('Error: ' + err.message, 'err');
     $('walletBtn').textContent = 'Connect Wallet';
     $('walletBtn').disabled = false;
   }
 });
 
-$('createBtn').addEventListener('click', async () => {
-  const btn = $('createBtn');
+$('b_create').addEventListener('click', async () => {
   try {
-    btn.textContent = 'Creating...'; btn.disabled = true;
-    hideBanner();
-    const id = $('agreementId').value;
-    const worker = $('workerAddress').value;
-    const terms = $('termsUrl').value;
-    const pay = BigInt($('paymentPerTick').value);
-    const interval = BigInt($('intervalSeconds').value);
-    const total = BigInt($('totalTicks').value);
-    const uptime = BigInt($('uptimeRequired').value);
-    const responseTime = BigInt($('responseTimeRequired').value);
-    const penalty = BigInt($('penaltyRate').value);
-    const totalEscrow = pay * total;
-    showOutput('createOutput', 'Creating agreement...', false);
-    const hash = await writeContract('create_agreement', [id, worker, terms, pay, interval, total, uptime, responseTime, penalty], totalEscrow);
-    showOutput('createOutput', '✅ Created!\nTx: ' + hash + '\n\nWaiting for finalization...', false);
-    showBanner('Agreement created!', 'success');
-    setTimeout(() => viewAgreementById(id), 5000);
-  } catch (err) {
-    showOutput('createOutput', 'Error: ' + err.message, true);
-    showBanner('Error: ' + err.message, 'error');
-  } finally {
-    btn.textContent = 'Create Agreement'; btn.disabled = false;
-  }
+    hideNote();
+    const id = $('f_id').value;
+    const args = [id, $('f_worker').value, $('f_terms').value, BigInt($('f_pay').value), BigInt($('f_int').value), BigInt($('f_ticks').value), BigInt($('f_up').value), BigInt($('f_resp').value), BigInt($('f_pen').value)];
+    const val = BigInt($('f_pay').value) * BigInt($('f_ticks').value);
+    showOut('o_create', 'Creating...', false);
+    const hash = await sendTx('create_agreement', args, val);
+    showOut('o_create', '✅ Created!\nTx: ' + hash, false);
+    setTimeout(() => viewById(id), 5000);
+  } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
 });
 
-$('fundBtn').addEventListener('click', async () => {
-  const btn = $('fundBtn');
+$('b_fund').addEventListener('click', async () => {
   try {
-    btn.textContent = 'Funding...'; btn.disabled = true;
-    hideBanner();
-    const id = $('agreementId').value;
-    const pay = BigInt($('paymentPerTick').value);
-    const total = BigInt($('totalTicks').value);
-    showOutput('createOutput', 'Funding agreement...', false);
-    const hash = await writeContract('fund_agreement', [id], pay * total);
-    showOutput('createOutput', '✅ Funded!\nTx: ' + hash, false);
-    showBanner('Agreement funded!', 'success');
-  } catch (err) {
-    showOutput('createOutput', 'Error: ' + err.message, true);
-    showBanner('Error: ' + err.message, 'error');
-  } finally {
-    btn.textContent = 'Fund Agreement'; btn.disabled = false;
-  }
+    hideNote();
+    const id = $('f_id').value;
+    const val = BigInt($('f_pay').value) * BigInt($('f_ticks').value);
+    showOut('o_create', 'Funding...', false);
+    const hash = await sendTx('fund_agreement', [id], val);
+    showOut('o_create', '✅ Funded!\nTx: ' + hash, false);
+  } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
 });
 
-$('proofBtn').addEventListener('click', async () => {
-  const btn = $('proofBtn');
+$('b_proof').addEventListener('click', async () => {
   try {
-    btn.textContent = 'Submitting...'; btn.disabled = true;
-    hideBanner();
-    const id = $('proofAgreementId').value;
-    const responseTime = BigInt($('proofResponseTime').value);
-    const proofHash = '0x' + Array.from({length: 12}, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    showOutput('proofOutput', 'Submitting proof...', false);
-    const hash = await writeContract('submit_proof', [id, proofHash, responseTime], 0n);
-    showOutput('proofOutput', '✅ Proof submitted!\nTx: ' + hash, false);
-    showBanner('Proof submitted!', 'success');
-  } catch (err) {
-    showOutput('proofOutput', 'Error: ' + err.message, true);
-    showBanner('Error: ' + err.message, 'error');
-  } finally {
-    btn.textContent = 'Submit Proof'; btn.disabled = false;
-  }
+    hideNote();
+    const id = $('p_id').value;
+    const resp = BigInt($('p_resp').value);
+    const hashProof = '0x' + Array.from({length:12}, () => Math.floor(Math.random()*16).toString(16)).join('');
+    showOut('o_proof', 'Submitting...', false);
+    const hash = await sendTx('submit_proof', [id, hashProof, resp], 0n);
+    showOut('o_proof', '✅ Proof submitted!\nTx: ' + hash, false);
+  } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
 });
 
-$('violationBtn').addEventListener('click', async () => {
-  const btn = $('violationBtn');
+$('b_viol').addEventListener('click', async () => {
   try {
-    btn.textContent = 'Reporting...'; btn.disabled = true;
-    hideBanner();
-    const id = $('agreementId').value;
-    showOutput('proofOutput', 'Reporting violation...', false);
-    const hash = await writeContract('report_violation', [id], 0n);
-    showOutput('proofOutput', '✅ Violation reported!\nTx: ' + hash, false);
-    showBanner('Violation reported!', 'success');
-  } catch (err) {
-    showOutput('proofOutput', 'Error: ' + err.message, true);
-    showBanner('Error: ' + err.message, 'error');
-  } finally {
-    btn.textContent = 'Report Violation'; btn.disabled = false;
-  }
+    hideNote();
+    const id = $('f_id').value;
+    showOut('o_proof', 'Reporting...', false);
+    const hash = await sendTx('report_violation', [id], 0n);
+    showOut('o_proof', '✅ Violation reported!\nTx: ' + hash, false);
+  } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
 });
 
-$('cancelBtn').addEventListener('click', async () => {
-  const btn = $('cancelBtn');
+$('b_cancel').addEventListener('click', async () => {
   try {
-    btn.textContent = 'Cancelling...'; btn.disabled = true;
-    hideBanner();
-    const id = $('agreementId').value;
-    showOutput('proofOutput', 'Cancelling agreement...', false);
-    const hash = await writeContract('cancel_agreement', [id], 0n);
-    showOutput('proofOutput', '✅ Cancelled!\nTx: ' + hash, false);
-    showBanner('Agreement cancelled!', 'success');
-  } catch (err) {
-    showOutput('proofOutput', 'Error: ' + err.message, true);
-    showBanner('Error: ' + err.message, 'error');
-  } finally {
-    btn.textContent = 'Cancel Agreement'; btn.disabled = false;
-  }
+    hideNote();
+    const id = $('f_id').value;
+    showOut('o_proof', 'Cancelling...', false);
+    const hash = await sendTx('cancel_agreement', [id], 0n);
+    showOut('o_proof', '✅ Cancelled!\nTx: ' + hash, false);
+  } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
 });
 
-$('viewBtn').addEventListener('click', async () => {
-  const btn = $('viewBtn');
+$('b_view').addEventListener('click', async () => {
   try {
-    btn.textContent = 'Loading...'; btn.disabled = true;
-    hideBanner();
-    const id = $('viewAgreementId').value;
-    showOutput('viewOutput', 'Fetching agreement...', false);
-    const result = await readContract('get_agreement', [id]);
-    if (result) {
-      showOutput('viewOutput', '📋 Agreement: ' + id + '\n\n' + JSON.stringify(result, (k, v) => typeof v === 'bigint' ? v.toString() : v, 2), false);
-    } else {
-      showOutput('viewOutput', 'Agreement not found: ' + id, true);
-    }
-  } catch (err) {
-    showOutput('viewOutput', 'Error: ' + err.message, true);
-    showBanner('Error: ' + err.message, 'error');
-  } finally {
-    btn.textContent = 'View'; btn.disabled = false;
-  }
+    hideNote();
+    const id = $('v_id').value;
+    showOut('o_view', 'Fetching...', false);
+    const result = await callFn('get_agreement', [id]);
+    showOut('o_view', '📋 ' + id + '\n' + JSON.stringify(result, (k,v) => typeof v === 'bigint' ? v.toString() : v, 2), false);
+  } catch (err) { showOut('o_view', 'Error: ' + err.message, true); }
 });
 
-async function viewAgreementById(id) {
-  $('viewAgreementId').value = id;
-  if (account) {
-    try {
-      const result = await readContract('get_agreement', [id]);
-      if (result) showOutput('viewOutput', '📋 Agreement: ' + id + '\n\n' + JSON.stringify(result, (k, v) => typeof v === 'bigint' ? v.toString() : v, 2), false);
-    } catch (err) {}
+async function viewById(id) {
+  $('v_id').value = id;
+  if (acct) {
+    try { const r = await callFn('get_agreement', [id]); showOut('o_view', '📋 ' + id + '\n' + JSON.stringify(r, (k,v) => typeof v === 'bigint' ? v.toString() : v, 2), false); } catch(e) {}
   }
 }
 
-// Listen for account/chain changes
+// Listen for changes
 if (window.ethereum) {
-  window.ethereum.on('accountsChanged', async (accounts) => {
-    if (accounts.length === 0) { disconnectWallet(); }
-    else {
-      account = accounts[0];
-      updateStatus('connected', `✓ ${account.slice(0,6)}...${account.slice(-4)}`);
-      setButtonsEnabled(true);
-    }
-  });
-  window.ethereum.on('chainChanged', async (chainId) => {
-    if (chainId !== CHAIN_ID) {
-      updateStatus('wrong-network', 'Wrong Network');
-      setButtonsEnabled(false);
-      showBanner('⚠️ Please switch to GenLayer Studio Next (chain 61997)', 'warning');
-    } else {
-      updateStatus('connected', `✓ ${account?.slice(0,6)}...${account?.slice(-4)}`);
-      setButtonsEnabled(true);
-      hideBanner();
-    }
-  });
+  window.ethereum.on('accountsChanged', (a) => { if (!a.length) disconnect(); else { acct = a[0]; updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`); setBtn(true); } });
+  window.ethereum.on('chainChanged', (c) => { if (c !== CHAIN) { updateBadge('wrong', 'Wrong Network'); setBtn(false); showNote('⚠️ Switch to GenLayer Studio Next (61997)', 'warn'); } else { updateBadge('conn', `✓ ${acct?.slice(0,6)}...${acct?.slice(-4)}`); setBtn(true); hideNote(); } });
 }
 
-// Check if already connected
+// Check existing connection
 (async () => {
-  // Verify viem loaded
-  if (!window.viem) {
-    showBanner('⚠️ Failed to load wallet library. Please refresh the page.', 'error');
-    return;
-  }
-  
   if (window.ethereum) {
     try {
-      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      if (accounts && accounts.length > 0) {
-        account = accounts[0];
-        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-        if (chainId === CHAIN_ID) {
-          publicClient = window.viem.createPublicClient({ chain, transport: window.viem.http(RPC_URL) });
-          updateStatus('connected', `✓ ${account.slice(0,6)}...${account.slice(-4)}`);
-          setButtonsEnabled(true);
+      const a = await window.ethereum.request({ method: 'eth_accounts' });
+      if (a && a.length) {
+        acct = a[0];
+        const c = await window.ethereum.request({ method: 'eth_chainId' });
+        if (c === CHAIN) {
+          updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`);
+          setBtn(true);
           $('walletBtn').textContent = 'Disconnect';
         } else {
-          updateStatus('wrong-network', 'Wrong Network');
-          showBanner('⚠️ Please switch to GenLayer Studio Next (chain 61997)', 'warning');
+          updateBadge('wrong', 'Wrong Network');
+          showNote('⚠️ Switch to GenLayer Studio Next (61997)', 'warn');
         }
       }
-    } catch (err) {}
+    } catch(e) {}
   }
 })();
 </script>
