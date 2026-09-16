@@ -114,26 +114,17 @@ async function rpc(method, params) {
 }
 
 async function connect() {
-  if (!window.ethereum) {
-    showNote('MetaMask not detected.', 'err');
-    throw new Error('No wallet');
-  }
-  if (!window.viem) {
-    showNote('Wallet library not loaded. Please refresh.', 'err');
-    throw new Error('viem not loaded');
-  }
+  if (!window.ethereum) { showNote('MetaMask not detected.', 'err'); throw new Error('No wallet'); }
+  if (!window.viem) { showNote('viem not loaded.', 'err'); throw new Error('viem not loaded'); }
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   if (!accounts || !accounts.length) throw new Error('No accounts');
   acct = accounts[0];
   const chain = await window.ethereum.request({ method: 'eth_chainId' });
   const chainDec = typeof chain === 'number' ? chain : parseInt(chain, 16);
   const targetDec = parseInt(CHAIN, 16);
-  
   if (chainDec !== targetDec) {
     showNote('Switching to GenLayer Studio Next...', 'warn');
-    try {
-      await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN, chainName: 'GenLayer Studio Next', rpcUrls: [RPC], nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 } }] });
-    } catch(e) {}
+    try { await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN, chainName: 'GenLayer Studio Next', rpcUrls: [RPC], nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 } }] }); } catch(e) {}
     await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN }] });
   }
   updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`);
@@ -155,47 +146,6 @@ async function sendTx(fn, args, value) {
   const abiItem = ABI.find(f => f.name === fn);
   const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName: fn, args });
   return await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acct, to: CONTRACT, data, value: value ? '0x' + value.toString(16) : '0x0' }] });
-}
-
-async function callFn(fn, args) {
-  const abiItem = ABI.find(f => f.name === fn);
-  const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName: fn, args });
-  const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
-  if (!result || result === '0x' || result.length <= 2) return null;
-  if (fn === 'get_agreement') return parseGetAgreement(result);
-  try { return window.viem.decodeFunctionResult({ abi: [abiItem], functionName: fn, data: result }); }
-  catch(e) { return result; }
-}
-
-function parseGetAgreement(hex) {
-  const h = hex.slice(2);
-  const fields = [];
-  let pos = 0;
-  const readUint = () => { const v = parseInt(h.slice(pos, pos + 64), 16); pos += 64; return v; };
-  const readAddr = () => { const v = '0x' + h.slice(pos + 24, pos + 64); pos += 64; return v; };
-  const readStringAt = (offset) => { const abs = offset * 2; const len = parseInt(h.slice(abs, abs + 64), 16); return h.slice(abs + 64, abs + 64 + len * 2).match(/.{2}/g).map(b => String.fromCharCode(parseInt(b, 16))).join(''); };
-  pos = 64;
-  const idOff = readUint(); fields.push(readStringAt(idOff));
-  fields.push(readAddr());
-  fields.push(readAddr());
-  const termsOff = readUint(); fields.push(readStringAt(termsOff));
-  fields.push(readUint()); fields.push(readUint()); fields.push(readUint());
-  fields.push(readUint()); fields.push(readUint());
-  const statusOff = readUint(); fields.push(readStringAt(statusOff));
-  fields.push(readUint());
-  const proofHashOff = readUint(); fields.push(readStringAt(proofHashOff));
-  const checkStatusOff = readUint(); fields.push(readStringAt(checkStatusOff));
-  fields.push(readUint()); fields.push(readUint()); fields.push(readUint());
-  fields.push(readUint()); fields.push(readUint()); fields.push(readUint());
-  fields.push(readUint()); fields.push(readUint()); fields.push(readUint());
-  const keys = ['id', 'hiree', 'worker', 'terms', 'payment_per_tick', 'interval_seconds',
-    'next_deadline', 'total_ticks', 'paid_ticks', 'status', 'violations',
-    'last_proof_hash', 'last_check_status', 'last_response_time', 'consecutive_failures',
-    'uptime_required', 'response_time_required', 'penalty_rate', 'total_deposited',
-    'total_paid_out', 'total_refunded', 'total_penalties'];
-  const obj = {};
-  keys.forEach((k, i) => { obj[k] = fields[i]; });
-  return obj;
 }
 
 const ABI = [
@@ -292,26 +242,16 @@ $('b_view').addEventListener('click', async () => {
   try {
     hideNote();
     const id = $('v_id').value || $('v_id').placeholder;
-    if (!id || id === 'e.g., SA-001') {
-      showNote('Please enter an agreement ID', 'warn');
-      return;
-    }
+    if (!id || id === 'e.g., SA-001') { showNote('Please enter an agreement ID', 'warn'); return; }
     showOut('o_view', 'Fetching...', false);
-    
-    // Manual calldata encoding: get_agreement(string) with id as argument
-    const selector = 'ff6f0fee';
-    const strHex = Array.from(id).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
-    const offset = '0000000000000000000000000000000000000000000000000000000000000020';
-    const length = id.length.toString(16).padStart(64, '0');
-    const paddedStr = strHex.padEnd(64, '0');
-    const data = '0x' + selector + offset + length + paddedStr;
-    
-    const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
-    if (!result || result === '0x' || result.length <= 2) {
-      showOut('o_view', 'Agreement "' + id + '" does not exist.', true);
-      return;
-    }
-    showOut('o_view', '📋 ' + id + '\n\nRaw result:\n' + result, false);
+    const statsResult = await rpc('eth_call', [{ to: CONTRACT, data: '0x3a462524' }, 'latest']);
+    const existsData = 'ff6f0fee000000000000000000000000000000000000000000000000000000000000020' + id.length.toString(16).padStart(64, '0') + Array.from(id).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('').padEnd(64, '0');
+    const existsResult = await rpc('eth_call', [{ to: CONTRACT, data: '0x' + existsData }, 'latest']);
+    const exists = existsResult && existsResult.length > 2 && parseInt(existsResult.slice(2), 16) > 0;
+    const h = statsResult && statsResult.length >= 130 ? statsResult.slice(2) : '';
+    const totalAgreements = h ? parseInt(h.slice(0, 64), 16) : 0;
+    const totalProofs = h ? parseInt(h.slice(64, 128), 16) : 0;
+    showOut('o_view', '📋 AgentPact Stats\n\nTotal Agreements: ' + totalAgreements + '\nTotal Proofs Submitted: ' + totalProofs + '\n\nAgreement "' + id + '": ' + (exists ? '✅ Exists' : '❌ Not Found') + '\n\nExplorer: https://explorer-studio-dev.genlayer.com/address/' + CONTRACT, false);
   } catch (err) { showOut('o_view', 'Error: ' + err.message, true); }
 });
 
