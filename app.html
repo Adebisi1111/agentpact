@@ -355,37 +355,38 @@ $('b_cancel').addEventListener('click', async () => {
   } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
 });
 
-// FIXED: View button uses agreement_exists and get_agreement_status (simple return types)
+// FIXED: View button uses get_agreement_status and checks for empty string
 $('b_view').addEventListener('click', async () => {
   const id = $('v_id').value || $('v_id').placeholder;
   if (!id || id === 'e.g., SA-001') { showNote('Please enter an agreement ID', 'warn'); return; }
   showOut('o_view', 'Checking on-chain...', false);
   try {
-    // Step 1: Check if agreement exists
-    const existsSelector = '164abaa5';
+    const statusSelector = 'e26dc477';
     const strHex = Array.from(id).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
     const offset = '0000000000000000000000000000000000000000000000000000000000000020';
     const length = id.length.toString(16).padStart(64, '0');
     const paddedStr = strHex.padEnd(64, '0');
-    const existsData = '0x' + existsSelector + offset + length + paddedStr;
+    const statusData = '0x' + statusSelector + offset + length + paddedStr;
     
-    const existsResult = await rpc('eth_call', [{ to: CONTRACT, data: existsData }, 'latest']);
-    const exists = existsResult && existsResult.length > 2 && parseInt(existsResult.slice(2), 16) === 1;
+    const statusResult = await rpc('eth_call', [{ to: CONTRACT, data: statusData }, 'latest']);
     
-    if (!exists) {
+    // Check if result is empty (non-existent agreement returns empty string)
+    if (!statusResult || statusResult === '0x' || statusResult.length <= 2 || /^0x0+$/.test(statusResult)) {
       showOut('o_view', '❌ Agreement "' + id + '" does not exist on-chain.\n\nCreate it first using the form above.', true);
       return;
     }
     
-    // Step 2: Get agreement status
-    const statusSelector = 'e26dc477';
-    const statusData = '0x' + statusSelector + offset + length + paddedStr;
-    const statusResult = await rpc('eth_call', [{ to: CONTRACT, data: statusData }, 'latest']);
-    
     // Decode string result
     const h = statusResult.slice(2);
-    const strLength = parseInt(h.slice(64, 128), 16);
-    const strHex2 = h.slice(128, 128 + strLength * 2);
+    const strOffset = parseInt(h.slice(0, 64), 16) * 2;
+    const strLength = parseInt(h.slice(strOffset, strOffset + 64), 16);
+    
+    if (strLength === 0) {
+      showOut('o_view', '❌ Agreement "' + id + '" does not exist on-chain.\n\nCreate it first using the form above.', true);
+      return;
+    }
+    
+    const strHex2 = h.slice(strOffset + 64, strOffset + 64 + strLength * 2);
     const status = Array.from({length: strLength}, (_, i) => 
       String.fromCharCode(parseInt(strHex2.slice(i*2, i*2+2), 16))
     ).join('');
