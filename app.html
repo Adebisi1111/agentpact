@@ -318,10 +318,23 @@ $('b_fund').addEventListener('click', async () => {
   try {
     hideNote();
     const id = $('f_id').value || $('f_id').placeholder;
-    const val = BigInt($('f_pay').value || $('f_pay').placeholder) * BigInt($('f_ticks').value || $('f_ticks').placeholder);
-    showOut('o_create', 'Funding...', false);
+    const pay = BigInt($('f_pay').value || $('f_pay').placeholder);
+    const total = BigInt($('f_ticks').value || $('f_ticks').placeholder);
+    const val = pay * total;
+    
+    // Check if user has enough balance
+    const balance = await rpc('eth_getBalance', [acct, 'latest']);
+    const balanceGen = Number(balance) / 1e18;
+    const neededGen = Number(val) / 1e18;
+    
+    if (balanceGen < neededGen) {
+      showOut('o_create', `❌ Insufficient GEN!\n\nYou have: ${balanceGen.toFixed(4)} GEN\nYou need: ${neededGen.toFixed(4)} GEN\n\nGet test GEN from:\nhttps://faucet.genlayer.com/`, true);
+      return;
+    }
+    
+    showOut('o_create', `Funding... Sending ${neededGen.toFixed(4)} GEN to escrow.`, false);
     const hash = await sendTx('fund_agreement', [id], val);
-    showOut('o_create', '✅ Funded!\nTx: ' + hash, false);
+    showOut('o_create', `✅ Funded!\nAmount: ${neededGen.toFixed(4)} GEN locked in escrow\nTx: ${hash}`, false);
   } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
 });
 
