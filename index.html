@@ -271,8 +271,6 @@ $('b_view').addEventListener('click', async () => {
   showOut('o_view', '📋 Agreement: ' + id + '\n\nExplorer: https://explorer-studio-dev.genlayer.com/address/' + CONTRACT, false);
 });
 
-<script src="viem-iife.js"></script>
-<script>
 if (window.ethereum) {
   window.ethereum.on('accountsChanged', (a) => { if (!a.length) disconnect(); else { acct = a[0]; updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`); setBtn(true); } });
   window.ethereum.on('chainChanged', (c) => { if (c !== CHAIN) { updateBadge('disc', 'Wrong Network'); setBtn(false); showNote('⚠️ Switch to GenLayer Studio Next', 'warn'); } });
