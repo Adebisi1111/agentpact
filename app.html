@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgentPact — App</title>
+  <title>AgentPact App — Trustless Service Agreements</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cg transform='rotate(-30 12 12)'%3E%3Ccircle cx='7.3' cy='3.2' r='1.45'/%3E%3Crect x='5.5' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Crect x='14.9' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Ccircle cx='16.7' cy='20.8' r='1.45'/%3E%3C/g%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,6 +15,7 @@
       --accent: #15BCDF;
       --accent-hover: #3fd0ef;
       --accent-border: #0fa3c2;
+      --danger: #ff5c7a;
       --bg: #F2F1F0;
       --bg-alt: #F7F6F8;
       --heading: #2b3033;
@@ -49,219 +50,68 @@
     a { color: var(--nav); text-decoration: none; transition: color 0.2s; }
     a:hover { color: var(--accent); }
     
-    .chamfer { clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); }
-    
     /* Navbar */
-    .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: clamp(20px, 5vw, 56px);
-      padding: clamp(20px, 3vw, 38px) clamp(20px, 4vw, 48px);
-      background: var(--bg);
-      border-bottom: 1px solid rgba(0,0,0,0.08);
-      transition: background 0.3s;
-    }
-    
-    [data-theme="dark"] .navbar { border-bottom-color: rgba(255,255,255,0.08); }
-    
+    .navbar { position: relative; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; gap: clamp(20px, 5vw, 56px); padding: clamp(20px, 3vw, 38px) clamp(20px, 4vw, 48px) 0; }
     .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
     .nav-logo-text { font-size: clamp(22px, 5vw, 30px); font-weight: 700; color: var(--heading); letter-spacing: -0.5px; text-transform: lowercase; }
-    
     .nav-links { display: flex; gap: 34px; align-items: center; }
     .nav-links a { font-weight: 700; font-size: clamp(12px, 2.4vw, 15px); letter-spacing: 0.06em; color: var(--nav); white-space: nowrap; text-transform: uppercase; }
     [data-theme="dark"] .nav-links a { color: #e0e0e0; }
     [data-theme="dark"] .nav-links a:hover { color: var(--accent); }
-    
     .theme-toggle { margin-left: auto; background: none; border: none; cursor: pointer; padding: 8px; color: var(--nav); transition: color 0.2s; }
     .theme-toggle:hover { color: var(--accent); }
     .theme-icon-light { width: 20px; height: 20px; display: block; }
     .theme-icon-dark { width: 20px; height: 20px; display: none; }
     [data-theme="dark"] .theme-icon-light { display: none; }
     [data-theme="dark"] .theme-icon-dark { display: block; }
-    
+    .nav-cta { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; background: var(--accent); border: 1px solid var(--accent-border); color: #fff; font-family: inherit; font-weight: 700; font-size: clamp(12px, 2.4vw, 15px); letter-spacing: 0.14em; text-transform: uppercase; padding: 14px 26px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 0 1px rgba(21, 188, 223, 0.35), 0 10px 30px -12px rgba(15, 163, 194, 0.6); }
+    .nav-cta:hover { background: var(--accent-hover); box-shadow: 0 0 0 1px rgba(63, 208, 239, 0.5), 0 14px 36px -10px rgba(15, 163, 194, 0.8); }
     .hamburger { display: none; margin-left: auto; background: none; border: none; cursor: pointer; padding: 8px; }
     .hamburger-bar { display: block; width: 22px; height: 2px; background: var(--heading); margin: 5px 0; }
-    
     .mobile-menu { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--dark); padding: 20px; flex-direction: column; gap: 18px; z-index: 100; }
     .mobile-menu.open { display: flex; }
     .mobile-menu a { color: #fff; font-weight: 700; text-transform: uppercase; font-size: 14px; }
-    
-    .wallet-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--accent);
-      border: 1px solid var(--accent-border);
-      color: #fff;
-      font-family: inherit;
-      font-weight: 700;
-      font-size: clamp(12px, 2.4vw, 15px);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      padding: 14px 26px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 0 0 1px rgba(21, 188, 223, 0.35), 0 10px 30px -12px rgba(15, 163, 194, 0.6);
-    }
-    
-    .wallet-btn:hover { background: var(--accent-hover); }
-    .wallet-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .wallet-btn.connected { background: #10b981; border-color: #059669; }
-    
-    @media (max-width: 700px) {
-      .nav-links { display: none; }
-      .hamburger { display: block; }
-    }
+    @media (max-width: 700px) { .nav-links, .nav-cta { display: none; } .hamburger { display: block; } }
     
     /* App Section */
-    .app-section {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: clamp(40px, 6vw, 80px) clamp(20px, 4vw, 48px);
-    }
-    
-    .app-header { text-align: center; margin-bottom: 3rem; }
-    .app-header h1 { font-size: clamp(34px, 6.5vw, 72px); font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.98; color: var(--heading); }
-    .app-header p { color: var(--body); font-size: 1rem; margin-top: 1rem; }
-    
-    .wallet-status {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1.5rem;
-      flex-wrap: wrap;
-    }
-    
-    .wallet-address {
-      font-family: 'SF Mono', Monaco, monospace;
-      font-size: 0.875rem;
-      color: var(--heading);
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-    }
-    
-    .network-badge {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #10b981;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-    }
-    
-    .app-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-      align-items: start;
-    }
-    
-    @media (max-width: 700px) {
-      .app-grid { grid-template-columns: 1fr; }
-    }
-    
-    .demo-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 1.5rem;
-      transition: background 0.3s, border 0.3s;
-    }
-    
-    [data-theme="dark"] .demo-card { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
-    
-    .demo-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--heading); }
-    
-    .input {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: var(--heading);
-      font-size: 0.875rem;
-      margin-bottom: 0.75rem;
-      transition: all 0.2s;
-      font-family: inherit;
-    }
-    
-    .input::placeholder { color: rgba(43, 48, 51, 0.3); }
-    .input:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.08); }
-    [data-theme="dark"] .input { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
-    [data-theme="dark"] .input::placeholder { color: rgba(255,255,255,0.4); }
-    [data-theme="dark"] .input:focus { border-color: var(--accent); background: rgba(255,255,255,0.12); }
-    
-    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-    @media (max-width: 500px) { .input-row { grid-template-columns: 1fr; } }
-    
-    .demo-btn {
-      width: 100%;
-      padding: 0.75rem;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.875rem;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: 1px solid var(--accent-border);
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 0 0 1px rgba(21, 188, 223, 0.35), 0 10px 30px -12px rgba(15, 163, 194, 0.6);
-    }
-    
-    .demo-btn:hover { background: var(--accent-hover); }
-    .demo-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    
-    .demo-btn-outline {
-      background: transparent;
-      color: var(--accent);
-      box-shadow: none;
-    }
-    
-    .demo-btn-outline:hover { background: rgba(21, 188, 223, 0.1); box-shadow: none; }
-    
-    .output {
-      background: rgba(0,0,0,0.05);
-      border-radius: 10px;
-      padding: 1rem;
-      margin-top: 1rem;
-      font-family: 'SF Mono', Monaco, monospace;
-      font-size: 0.75rem;
-      color: #1a1c1e;
-      white-space: pre-wrap;
-      word-break: break-all;
-      max-height: 200px;
-      overflow-y: auto;
-      display: none;
-      border: 1px solid rgba(0,0,0,0.08);
-    }
-    
-    .output.show { display: block; }
-    .output.error { color: #dc2626; }
-    [data-theme="dark"] .output { background: rgba(255,255,255,0.08); color: #4ade80; border-color: rgba(255,255,255,0.15); }
-    [data-theme="dark"] .output.error { color: #f87171; }
-    
-    .info-box {
-      background: rgba(21, 188, 223, 0.05);
-      border: 1px solid rgba(21, 188, 223, 0.2);
-      border-radius: 10px;
-      padding: 1rem;
-      margin-bottom: 1.5rem;
-      font-size: 0.875rem;
-      color: var(--body);
-    }
-    
-    .info-box strong { color: var(--accent); }
+    .app-section { background: var(--bg); padding: clamp(60px, 10vw, 140px) clamp(20px, 9vw, 118px); transition: background 0.3s; }
+    .app-section h1 { font-size: clamp(34px, 6.5vw, 72px); font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.98; color: var(--heading); margin-bottom: 3rem; }
+    .app-container { max-width: 900px; margin: 0 auto; }
+    .app-panel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; overflow: hidden; }
+    .app-panel-header { display: flex; align-items: center; gap: 1rem; padding: 1.5rem 2rem; border-bottom: 1px solid var(--card-border); flex-wrap: wrap; }
+    .app-panel-title { font-size: 1.25rem; font-weight: 700; color: var(--heading); }
+    .app-badge { padding: .3rem .8rem; border-radius: 20px; font-size: .75rem; font-weight: 700; }
+    .app-badge.conn { background: rgba(82,224,161,.15); color: #52e0a1; }
+    .app-badge.disc { background: rgba(255,92,122,.15); color: #ff5c7a; }
+    .app-panel-body { padding: 2rem; }
+    .app-tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .app-tab { padding: .5rem 1rem; border: 1px solid var(--card-border); border-radius: 8px; background: transparent; color: var(--body); cursor: pointer; font-weight: 600; font-size: .85rem; font-family: inherit; transition: all 0.2s; }
+    .app-tab:hover { border-color: var(--accent); color: var(--accent); }
+    .app-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    @media (max-width: 600px) { .app-grid { grid-template-columns: 1fr; } }
+    .app-label { font-size: .75rem; color: var(--body); display: block; margin-bottom: .25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .app-input { width: 100%; background: var(--bg); border: 1px solid var(--card-border); color: var(--heading); padding: .6rem .75rem; border-radius: 10px; font-size: .9rem; font-family: inherit; transition: border-color 0.2s; }
+    .app-input:focus { outline: none; border-color: var(--accent); }
+    .app-row { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
+    .app-btn { border: 1px solid var(--accent); color: var(--accent); background: transparent; padding: .6rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: .85rem; font-family: inherit; transition: all 0.2s; }
+    .app-btn:hover { background: var(--accent); color: #fff; }
+    .app-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .app-btn.primary { background: var(--accent); color: #fff; }
+    .app-btn.primary:hover { background: var(--accent-hover); }
+    .app-btn.danger { border-color: var(--danger); color: var(--danger); }
+    .app-btn.danger:hover { background: var(--danger); color: #fff; }
+    .app-out { background: var(--bg); border-radius: 10px; padding: .75rem; margin-top: .75rem; font-family: 'SF Mono', Monaco, monospace; font-size: .75rem; white-space: pre-wrap; word-break: break-all; max-height: 150px; overflow-y: auto; display: none; border: 1px solid var(--card-border); }
+    .app-out.show { display: block; }
+    .app-out.err { color: #ff5c7a; border-color: rgba(255,92,122,.2); }
+    .app-out.ok { color: #52e0a1; border-color: rgba(82,224,161,.2); }
+    .app-note { border-radius: 10px; padding: .75rem; margin-bottom: 1rem; font-size: .85rem; display: none; }
+    .app-note.show { display: block; }
+    .app-note.err { background: rgba(255,92,122,.1); color: #ff5c7a; }
+    .app-note.ok { background: rgba(82,224,161,.1); color: #52e0a1; }
+    .app-note.warn { background: rgba(245,158,11,.1); color: #f59e0b; }
+    .app-divider { height: 1px; background: var(--card-border); margin: 1.5rem 0; }
+    .app-section-title { font-size: .85rem; font-weight: 700; color: var(--heading); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
     
     /* Footer */
     footer { border-top: 1px solid rgba(0,0,0,0.08); padding: 2rem; text-align: center; font-size: 0.75rem; color: var(--body); transition: border-color 0.3s; }
@@ -274,335 +124,299 @@
 
 <nav class="navbar">
   <a href="index.html" class="nav-logo">
-    <img src="logo.svg" alt="AgentPact" style="width:38px;height:38px;border-radius:8px">
     <span class="nav-logo-text">agentpact<span style="font-weight:400;color:rgba(255,255,255,0.5)">.ai</span></span>
   </a>
-  
   <div class="nav-links">
     <a href="index.html#about">ABOUT</a>
     <a href="index.html#how-it-works">HOW IT WORKS</a>
     <a href="index.html#why">WHY</a>
+    <a href="index.html#faq">FAQ</a>
   </div>
-  
   <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
-    <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="5"/>
-      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-    </svg>
-    <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-    </svg>
+    <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
   </button>
-  
-  <button id="walletBtn" class="wallet-btn chamfer-sm" onclick="connectWallet()">Connect Wallet</button>
-  
-  <button class="hamburger" aria-label="Menu">
-    <span class="hamburger-bar"></span>
-    <span class="hamburger-bar"></span>
-    <span class="hamburger-bar"></span>
-  </button>
-  
+  <a href="app.html" class="nav-cta">App</a>
+  <button class="hamburger" aria-label="Menu"><span class="hamburger-bar"></span><span class="hamburger-bar"></span><span class="hamburger-bar"></span></button>
   <div class="mobile-menu">
-    <a href="index.html#about">ABOUT</a>
-    <a href="index.html#how-it-works">HOW IT WORKS</a>
-    <a href="index.html#why">WHY</a>
+    <a href="index.html#about">ABOUT</a><a href="index.html#how-it-works">HOW IT WORKS</a><a href="index.html#why">WHY</a><a href="index.html#faq">FAQ</a><a href="app.html">APP</a>
   </div>
 </nav>
 
 <section class="app-section">
-  <div class="app-header">
-    <h1>AGENTPACT APP</h1>
-    <p>Create agreements, submit proofs, and verify — all on GenLayer Bradbury</p>
-    
-    <div class="wallet-status" id="walletStatus" style="display:none;">
-      <span class="wallet-address" id="walletAddress"></span>
-      <span class="network-badge">GenLayer Bradbury</span>
-    </div>
-  </div>
-  
-  <div class="info-box" id="infoBox">
-    <strong>Welcome to AgentPact.</strong> Connect your wallet (MetaMask or Rabby) to GenLayer Bradbury Testnet to create service agreements, submit proofs, and track performance. Make sure you have test GEN for gas and escrow.
-  </div>
-  
-  <div class="app-grid">
-    <div class="demo-card">
-      <h3>📝 Create Agreement</h3>
-      <input type="text" id="agreementId" class="input" placeholder="Agreement ID (e.g., SA-001)">
-      <input type="text" id="workerAddress" class="input" placeholder="Worker Address (0x...)">
-      <input type="text" id="termsUrl" class="input" placeholder="Terms URL (e.g., https://api.example.com)">
-      <div class="input-row">
-        <input type="number" id="paymentPerTick" class="input" placeholder="Payment per tick (wei)">
-        <input type="number" id="intervalSeconds" class="input" placeholder="Interval (sec)">
+  <h1>APP</h1>
+  <div class="app-container">
+    <div class="app-panel">
+      <div class="app-panel-header">
+        <span class="app-panel-title">⚡ AgentPact</span>
+        <span id="app-badge" class="app-badge disc">Disconnected</span>
+        <button id="walletBtn" class="app-btn">Connect Wallet</button>
       </div>
-      <div class="input-row">
-        <input type="number" id="totalTicks" class="input" placeholder="Total ticks">
-        <input type="number" id="uptimeRequired" class="input" placeholder="Uptime required (%)">
-      </div>
-      <div class="input-row">
-        <input type="number" id="responseTimeRequired" class="input" placeholder="Max response time (ms)">
-        <input type="number" id="penaltyRate" class="input" placeholder="Penalty rate (%)">
-      </div>
-      <button class="demo-btn" id="createBtn" onclick="createAgreement()" disabled>Connect Wallet First</button>
-      <div id="createOutput" class="output"></div>
-    </div>
-    
-    <div class="demo-card">
-      <h3>✅ Submit Proof</h3>
-      <input type="text" id="proofAgreementId" class="input" placeholder="Agreement ID">
-      <input type="text" id="proofHash" class="input" placeholder="Proof hash (0x...)">
-      <div class="input-row">
-        <input type="number" id="statusCode" class="input" placeholder="Status code (200)">
-        <input type="number" id="responseTime" class="input" placeholder="Response time (ms)">
-      </div>
-      <input type="number" id="proofNonce" class="input" placeholder="Nonce (1, 2, 3...)">
-      <input type="text" id="signature" class="input" placeholder="Signature (0x...)">
-      <button class="demo-btn" id="proofBtn" onclick="submitProof()" disabled>Connect Wallet First</button>
-      <div id="proofOutput" class="output"></div>
-      
-      <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.06);">
-        <h3 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem;">🔍 View Agreement</h3>
-        <input type="text" id="viewAgreementId" class="input" placeholder="Agreement ID">
-        <button class="demo-btn demo-btn-outline" id="viewBtn" onclick="viewAgreement()" disabled>Connect Wallet First</button>
-        <div id="viewOutput" class="output"></div>
+      <div class="app-panel-body">
+        <div id="app-note" class="app-note"></div>
+        
+        <div class="app-section-title">Create Agreement</div>
+        <div class="app-grid">
+          <div><label class="app-label">Agreement ID</label><input type="text" class="app-input" id="f_id" placeholder="SA-001"></div>
+          <div><label class="app-label">Worker Address</label><input type="text" class="app-input" id="f_worker" placeholder="0x..."></div>
+          <div style="grid-column:1/-1"><label class="app-label">Terms URL</label><input type="text" class="app-input" id="f_terms" placeholder="https://..."></div>
+          <div><label class="app-label">Payment/tick (wei)</label><input type="number" class="app-input" id="f_pay" placeholder="1000"></div>
+          <div><label class="app-label">Interval (sec)</label><input type="number" class="app-input" id="f_int" placeholder="3600"></div>
+          <div><label class="app-label">Total ticks</label><input type="number" class="app-input" id="f_ticks" placeholder="10"></div>
+          <div><label class="app-label">Uptime %</label><input type="number" class="app-input" id="f_up" placeholder="95"></div>
+          <div><label class="app-label">Max resp time (ms)</label><input type="number" class="app-input" id="f_resp" placeholder="2000"></div>
+          <div><label class="app-label">Penalty %</label><input type="number" class="app-input" id="f_pen" placeholder="10"></div>
+        </div>
+        <div class="app-row">
+          <button id="b_create" class="app-btn primary" disabled>Create</button>
+          <button id="b_fund" class="app-btn" disabled>Fund</button>
+        </div>
+        <div id="o_create" class="app-out"></div>
+        
+        <div class="app-divider"></div>
+        
+        <div class="app-section-title">Proof / Violations</div>
+        <p style="font-size:.8rem;color:var(--body);margin-bottom:1rem">Validators fetch the service URL (from "Terms URL") directly and compute proof hashes on-chain. You cannot fake proof — GenLayer's equivalence principle ensures all validators verify the same evidence.</p>
+        <div class="app-grid">
+          <div><label class="app-label">Agreement ID</label><input type="text" class="app-input" id="p_id" placeholder="SA-001"></div>
+          <div></div>
+        </div>
+        <div class="app-row">
+          <button id="b_proof" class="app-btn primary" disabled>Submit Proof</button>
+          <button id="b_viol" class="app-btn danger" disabled>Report Violation</button>
+          <button id="b_cancel" class="app-btn danger" disabled>Cancel</button>
+        </div>
+        <div id="o_proof" class="app-out"></div>
+        
+        <div class="app-divider"></div>
+        
+        <div class="app-section-title">View Agreement</div>
+        <div class="app-grid">
+          <div style="grid-column:1/-1"><label class="app-label">Agreement ID</label><input type="text" class="app-input" id="v_id" placeholder="e.g., SA-001"></div>
+        </div>
+        <div class="app-row"><button id="b_view" class="app-btn primary" disabled>View</button></div>
+        <div id="o_view" class="app-out"></div>
       </div>
     </div>
   </div>
 </section>
 
 <footer>
-  <div style="margin-bottom:0.5rem"><a href="https://github.com/Adebisi1111/agentpact" target="_blank">GitHub</a> · <a href="index.html">Home</a> · <a href="index.html#about">About</a></div>
-  <div>© 2026 AgentPact — Built on GenLayer</div>
-  <div style="margin-top:0.5rem;opacity:0.7">Contract: 0xf3bb0D88A3D07C7A349f30292c9ff470b2990652</div>
+  <div style="margin-bottom:0.5rem"><a href="https://github.com/Adebisi1111/agentpact" target="_blank">GitHub</a> · <a href="index.html">Home</a> · <a href="index.html#about">About</a> · <a href="index.html#faq">FAQ</a></div>
+  <div>© 2026 AgentPact — Built on GenLayer Studio Next</div>
+  <div style="margin-top:0.5rem;opacity:0.7">Contract: 0x36aD11cB39548afB8a7Bd78b7e3F0031866ef063</div>
 </footer>
 
-<script type="module">
-import { createClient, chains } from 'https://cdn.jsdelivr.net/npm/genlayer-js@latest/+esm';
+<script src="viem-iife.js"></script>
+<script>
+const CONTRACT = '0x36aD11cB39548afB8a7Bd78b7e3F0031866ef063';
+const CHAIN = '0xf22d';
+const RPC = 'https://studio-next.genlayer.com/api';
 
-const CONTRACT = '0xf3bb0D88A3D07C7A349f30292c9ff470b2990652';
-const BRADBURY_CHAIN_ID = '0x107D';
+let acct = null;
+const $ = x => document.getElementById(x);
 
-let client = null;
-let account = null;
+function showNote(m, t) { const e = $('app-note'); e.textContent = m; e.className = 'app-note show ' + t; }
+function hideNote() { $('app-note').className = 'app-note'; }
+function showOut(id, m, err) { const e = $(id); e.textContent = m; e.className = 'app-out show' + (err ? ' err' : ' ok'); }
+function setBtn(on) { ['b_create','b_fund','b_proof','b_viol','b_cancel','b_view'].forEach(i => { const b = $(i); if (b) b.disabled = !on; }); }
+function updateBadge(cls, txt) { const b = $('app-badge'); b.className = 'app-badge ' + cls; b.textContent = txt; }
 
-// Expose to window for onclick handlers
-window.connectWallet = connectWallet;
-window.createAgreement = createAgreement;
-window.submitProof = submitProof;
-window.viewAgreement = viewAgreement;
-
-function showOutput(id, msg, isError) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.className = 'output show' + (isError ? ' error' : '');
+async function rpc(method, params) {
+  const r = await fetch(RPC, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ jsonrpc:'2.0', id: Date.now(), method, params }) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error.message || 'RPC error');
+  return j.result;
 }
 
-function detectWallet() {
-  if (typeof window === 'undefined') return null;
-  if (window.rabby) return window.rabby.provider || window.ethereum;
-  if (window.ethereum?.isRabby) return window.ethereum;
-  if (window.ethereum?.isMetaMask) return window.ethereum;
-  if (window.ethereum) return window.ethereum;
-  return null;
+async function connect() {
+  if (!window.ethereum) { showNote('MetaMask not detected.', 'err'); throw new Error('No wallet'); }
+  if (!window.viem) { showNote('viem not loaded.', 'err'); throw new Error('viem not loaded'); }
+  const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+  if (!accounts || !accounts.length) throw new Error('No accounts');
+  acct = accounts[0];
+  const chain = await window.ethereum.request({ method: 'eth_chainId' });
+  const chainDec = typeof chain === 'number' ? chain : parseInt(chain, 16);
+  const targetDec = parseInt(CHAIN, 16);
+  if (chainDec !== targetDec) {
+    showNote('Switching to GenLayer Studio Next...', 'warn');
+    try { await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN, chainName: 'GenLayer Studio Next', rpcUrls: [RPC], nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 } }] }); } catch(e) {}
+    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN }] });
+  }
+  updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`);
+  setBtn(true);
+  $('walletBtn').textContent = 'Disconnect';
+  hideNote();
+  return acct;
 }
 
-async function connectWallet() {
-  const btn = document.getElementById('walletBtn');
-  btn.disabled = true;
-  btn.textContent = 'Connecting...';
-  
+function disconnect() {
+  acct = null;
+  updateBadge('disc', 'Disconnected');
+  setBtn(false);
+  $('walletBtn').textContent = 'Connect Wallet';
+  hideNote();
+}
+
+async function sendTx(fn, args, value) {
+  const abiItem = ABI.find(f => f.name === fn);
+  const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName: fn, args });
+  return await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acct, to: CONTRACT, data, value: value ? '0x' + value.toString(16) : '0x0' }] });
+}
+
+const ABI = [
+  { name: 'create_agreement', type: 'function', stateMutability: 'nonpayable', inputs: [
+    { name: 'agreement_id', type: 'string' }, { name: 'worker', type: 'address' }, { name: 'terms', type: 'string' },
+    { name: 'payment_per_tick', type: 'uint256' }, { name: 'interval_seconds', type: 'uint256' }, { name: 'total_ticks', type: 'uint256' },
+    { name: 'uptime_required', type: 'uint256' }, { name: 'response_time_required', type: 'uint256' }, { name: 'penalty_rate', type: 'uint256' }
+  ], outputs: [{ type: 'string' }] },
+  { name: 'fund_agreement', type: 'function', stateMutability: 'payable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] },
+  { name: 'submit_proof', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
+  { name: 'report_violation', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
+  { name: 'cancel_agreement', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
+  { name: 'get_agreement', type: 'function', stateMutability: 'view', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] },
+  { name: 'get_stats', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'tuple', components: [{ name: 'total_agreements', type: 'uint256' }, { name: 'total_proofs', type: 'uint256' }] }] }
+];
+
+$('walletBtn').addEventListener('click', async () => {
+  if (acct) { disconnect(); return; }
   try {
-    const provider = detectWallet();
-    if (!provider) {
-      alert('No wallet detected. Please install MetaMask or Rabby.');
-      btn.disabled = false;
-      btn.textContent = 'Connect Wallet';
+    $('walletBtn').textContent = 'Connecting...';
+    $('walletBtn').disabled = true;
+    showNote('Connecting...', 'warn');
+    await connect();
+  } catch (err) {
+    showNote('Error: ' + err.message, 'err');
+    $('walletBtn').textContent = 'Connect Wallet';
+    $('walletBtn').disabled = false;
+  }
+});
+
+$('b_create').addEventListener('click', async () => {
+  try {
+    hideNote();
+    const id = $('f_id').value || $('f_id').placeholder;
+    const worker = $('f_worker').value || $('f_worker').placeholder;
+    const terms = $('f_terms').value || $('f_terms').placeholder;
+    const pay = BigInt($('f_pay').value || $('f_pay').placeholder);
+    const interval = BigInt($('f_int').value || $('f_int').placeholder);
+    const total = BigInt($('f_ticks').value || $('f_ticks').placeholder);
+    const uptime = BigInt($('f_up').value || $('f_up').placeholder);
+    const respTime = BigInt($('f_resp').value || $('f_resp').placeholder);
+    const penalty = BigInt($('f_pen').value || $('f_pen').placeholder);
+    showOut('o_create', 'Creating...', false);
+    const hash = await sendTx('create_agreement', [id, worker, terms, pay, interval, total, uptime, respTime, penalty], 0n);
+    showOut('o_create', '✅ Created!\nTx: ' + hash, false);
+  } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
+});
+
+$('b_fund').addEventListener('click', async () => {
+  try {
+    hideNote();
+    const id = $('f_id').value || $('f_id').placeholder;
+    const val = BigInt($('f_pay').value || $('f_pay').placeholder) * BigInt($('f_ticks').value || $('f_ticks').placeholder);
+    showOut('o_create', 'Funding...', false);
+    const hash = await sendTx('fund_agreement', [id], val);
+    showOut('o_create', '✅ Funded!\nTx: ' + hash, false);
+  } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
+});
+
+$('b_proof').addEventListener('click', async () => {
+  try {
+    hideNote();
+    const id = $('p_id').value || $('p_id').placeholder;
+    showOut('o_proof', 'Submitting proof... Validators will verify the service.', false);
+    const hash = await sendTx('submit_proof', [id], 0n);
+    showOut('o_proof', '✅ Proof submitted!\nTx: ' + hash, false);
+  } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
+});
+
+$('b_viol').addEventListener('click', async () => {
+  try {
+    hideNote();
+    const id = $('f_id').value || $('f_id').placeholder;
+    showOut('o_proof', 'Reporting...', false);
+    const hash = await sendTx('report_violation', [id], 0n);
+    showOut('o_proof', '✅ Violation reported!\nTx: ' + hash, false);
+  } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
+});
+
+$('b_cancel').addEventListener('click', async () => {
+  try {
+    hideNote();
+    const id = $('f_id').value || $('f_id').placeholder;
+    showOut('o_proof', 'Cancelling...', false);
+    const hash = await sendTx('cancel_agreement', [id], 0n);
+    showOut('o_proof', '✅ Cancelled!\nTx: ' + hash, false);
+  } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
+});
+
+// FIXED: View button now checks if agreement exists on-chain
+$('b_view').addEventListener('click', async () => {
+  const id = $('v_id').value || $('v_id').placeholder;
+  if (!id || id === 'e.g., SA-001') { showNote('Please enter an agreement ID', 'warn'); return; }
+  showOut('o_view', 'Checking on-chain...', false);
+  try {
+    // Encode get_agreement(string) call manually
+    const selector = 'ff6f0fee';
+    const strHex = Array.from(id).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+    const offset = '0000000000000000000000000000000000000000000000000000000000000020';
+    const length = id.length.toString(16).padStart(64, '0');
+    const paddedStr = strHex.padEnd(64, '0');
+    const data = '0x' + selector + offset + length + paddedStr;
+    
+    const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
+    
+    // If result is empty or all zeros, agreement doesn't exist
+    if (!result || result === '0x' || result.length <= 2 || /^0x0+$/.test(result)) {
+      showOut('o_view', '❌ Agreement "' + id + '" does not exist on-chain.\n\nCreate it first using the form above.', true);
       return;
     }
     
-    // Check chain
-    const currentChainId = await provider.request({ method: 'eth_chainId' });
-    if (currentChainId !== BRADBURY_CHAIN_ID) {
-      try {
-        await provider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: BRADBURY_CHAIN_ID }],
-        });
-      } catch (switchError) {
-        if (switchError.code === 4902) {
-          await provider.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: BRADBURY_CHAIN_ID,
-              chainName: 'GenLayer Bradbury Testnet',
-              rpcUrls: ['https://rpc-bradbury.genlayer.com'],
-              nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 },
-              blockExplorerUrls: ['https://explorer-bradbury.genlayer.com'],
-            }],
-          });
-        } else {
-          throw switchError;
+    // Agreement exists — show details with explorer link
+    showOut('o_view', '✅ Agreement "' + id + '" exists on-chain.\n\nView full details on GenLayer Explorer:\nhttps://explorer-studio-dev.genlayer.com/address/' + CONTRACT + '?tab=Contract+Interactions', false);
+  } catch (err) {
+    // If call fails, agreement likely doesn't exist
+    showOut('o_view', '❌ Agreement "' + id + '" does not exist on-chain.\n\nError: ' + err.message, true);
+  }
+});
+
+if (window.ethereum) {
+  window.ethereum.on('accountsChanged', (a) => { if (!a.length) disconnect(); else { acct = a[0]; updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`); setBtn(true); } });
+  window.ethereum.on('chainChanged', (c) => { if (c !== CHAIN) { updateBadge('disc', 'Wrong Network'); setBtn(false); showNote('⚠️ Switch to GenLayer Studio Next', 'warn'); } });
+}
+
+(async () => {
+  if (window.ethereum) {
+    try {
+      const a = await window.ethereum.request({ method: 'eth_accounts' });
+      if (a && a.length) {
+        acct = a[0];
+        const c = await window.ethereum.request({ method: 'eth_chainId' });
+        if (c === CHAIN) {
+          updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`);
+          setBtn(true);
+          $('walletBtn').textContent = 'Disconnect';
         }
       }
-    }
-    
-    const accounts = await provider.request({ method: 'eth_requestAccounts' });
-    if (!accounts || accounts.length === 0) {
-      alert('No accounts found. Please unlock your wallet.');
-      btn.disabled = false;
-      btn.textContent = 'Connect Wallet';
-      return;
-    }
-    
-    account = accounts[0];
-    client = createClient({ chain: chains.testnetBradbury, account });
-    
-    // Update UI
-    btn.textContent = account.slice(0, 6) + '...' + account.slice(-4);
-    btn.classList.add('connected');
-    btn.disabled = false;
-    
-    document.getElementById('walletStatus').style.display = 'flex';
-    document.getElementById('walletAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
-    document.getElementById('infoBox').innerHTML = '<strong>Wallet connected.</strong> You can now create agreements, submit proofs, and view agreement status directly on GenLayer Bradbury.';
-    
-    // Enable buttons
-    document.getElementById('createBtn').disabled = false;
-    document.getElementById('createBtn').textContent = 'Create Agreement →';
-    document.getElementById('proofBtn').disabled = false;
-    document.getElementById('proofBtn').textContent = 'Submit Proof →';
-    document.getElementById('viewBtn').disabled = false;
-    document.getElementById('viewBtn').textContent = 'Fetch Agreement';
-    
-  } catch (err) {
-    console.error('Connection failed:', err);
-    alert('Connection failed: ' + (err.message || 'Unknown error'));
-    btn.disabled = false;
-    btn.textContent = 'Connect Wallet';
+    } catch(e) {}
   }
-}
+})();
+</script>
 
-async function withRetry(fn, maxAttempts = 5) {
-  let attempt = 0;
-  let delay = 4000;
-  while (attempt < maxAttempts) {
-    try {
-      return await fn();
-    } catch (e) {
-      const msg = e?.error?.message ?? e?.message ?? '';
-      if (msg.includes('-32005') || msg.includes('rate limit') || msg.includes('empty')) {
-        console.warn(`Retry ${attempt + 1}/${maxAttempts} after ${delay}ms`);
-        await new Promise(r => setTimeout(r, delay));
-        delay *= 2;
-        attempt++;
-        continue;
-      }
-      throw e;
-    }
-  }
-  throw new Error('Too many retries');
-}
-
-async function createAgreement() {
-  if (!client || !account) { showOutput('createOutput', 'Error: Connect wallet first', true); return; }
-  
-  const id = document.getElementById('agreementId').value;
-  const worker = document.getElementById('workerAddress').value;
-  const terms = document.getElementById('termsUrl').value;
-  const pay = document.getElementById('paymentPerTick').value;
-  const interval = document.getElementById('intervalSeconds').value;
-  const total = document.getElementById('totalTicks').value;
-  const uptime = document.getElementById('uptimeRequired').value;
-  const responseTime = document.getElementById('responseTimeRequired').value;
-  const penalty = document.getElementById('penaltyRate').value;
-  
-  if (!id || !worker || !terms || !pay || !interval || !total || !uptime || !responseTime || !penalty) {
-    showOutput('createOutput', 'Error: Please fill all fields', true);
-    return;
-  }
-  
-  showOutput('createOutput', 'Creating agreement...', false);
-  
-  try {
-    const totalEscrow = BigInt(pay) * BigInt(total);
-    const txHash = await withRetry(() => client.writeContract({
-      address: CONTRACT,
-      functionName: 'create_agreement',
-      args: [id, worker, terms, BigInt(pay), BigInt(interval), BigInt(total), BigInt(uptime), BigInt(responseTime), BigInt(penalty)],
-      value: totalEscrow,
-    }));
-    
-    showOutput('createOutput', '✅ Created!\nTx: ' + txHash + '\n\nWaiting for finalization...', false);
-    setTimeout(() => viewAgreementById(id), 5000);
-  } catch (e) {
-    showOutput('createOutput', 'Error: ' + e.message, true);
-  }
-}
-
-async function submitProof() {
-  if (!client || !account) { showOutput('proofOutput', 'Error: Connect wallet first', true); return; }
-  
-  const id = document.getElementById('proofAgreementId').value;
-  const proofHash = document.getElementById('proofHash').value;
-  const statusCode = document.getElementById('statusCode').value;
-  const responseTime = document.getElementById('responseTime').value;
-  const nonce = document.getElementById('proofNonce').value;
-  const signature = document.getElementById('signature').value;
-  
-  if (!id || !proofHash || !statusCode || !responseTime || !nonce || !signature) {
-    showOutput('proofOutput', 'Error: Please fill all fields', true);
-    return;
-  }
-  
-  showOutput('proofOutput', 'Submitting proof...', false);
-  
-  try {
-    const txHash = await withRetry(() => client.writeContract({
-      address: CONTRACT,
-      functionName: 'submit_proof',
-      args: [id, proofHash, BigInt(statusCode), BigInt(responseTime), BigInt(nonce), signature],
-      value: 0n,
-    }));
-    
-    showOutput('proofOutput', '✅ Proof submitted!\nTx: ' + txHash, false);
-  } catch (e) {
-    showOutput('proofOutput', 'Error: ' + e.message, true);
-  }
-}
-
-async function viewAgreement() {
-  const id = document.getElementById('viewAgreementId').value;
-  if (!id) { showOutput('viewOutput', 'Error: Enter agreement ID', true); return; }
-  await viewAgreementById(id);
-}
-
-async function viewAgreementById(id) {
-  if (!client) { showOutput('viewOutput', 'Error: Connect wallet first', true); return; }
-  
-  showOutput('viewOutput', 'Fetching agreement...', false);
-  
-  try {
-    const result = await withRetry(() => client.readContract({
-      address: CONTRACT,
-      functionName: 'get_agreement',
-      args: [id],
-    }));
-    
-    if (result) {
-      showOutput('viewOutput', '📋 Agreement: ' + id + '\n\n' + JSON.stringify(result, null, 2), false);
-    } else {
-      showOutput('viewOutput', 'Agreement not found: ' + id, true);
-    }
-  } catch (e) {
-    showOutput('viewOutput', 'Error: ' + e.message, true);
-  }
-}
-
-// Theme toggle
+<script>
 function toggleTheme() {
   const html = document.documentElement;
-  const current = html.getAttribute('data-theme');
-  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
 }
+
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); }
+else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) { document.documentElement.setAttribute('data-theme', 'dark'); }
+
+document.querySelector('.hamburger').addEventListener('click', () => { document.querySelector('.mobile-menu').classList.toggle('open'); });
 </script>
 
 </body>

@@ -184,46 +184,6 @@
     .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
     .faq-item.open .faq-answer { max-height: 500px; }
     .faq-answer p { padding-bottom: 1.5rem; color: var(--body); font-size: 0.9375rem; line-height: 1.7; }
-    
-    /* App Section */
-    .app-section { background: var(--bg-alt); padding: clamp(60px, 10vw, 140px) clamp(20px, 9vw, 118px); transition: background 0.3s; }
-    .app-section h2 { text-align: center; font-size: clamp(34px, 6.5vw, 72px); font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.98; color: var(--heading); margin-bottom: 3rem; }
-    .app-container { max-width: 900px; margin: 0 auto; }
-    .app-panel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; overflow: hidden; }
-    .app-panel-header { display: flex; align-items: center; gap: 1rem; padding: 1.5rem 2rem; border-bottom: 1px solid var(--card-border); flex-wrap: wrap; }
-    .app-panel-title { font-size: 1.25rem; font-weight: 700; color: var(--heading); }
-    .app-badge { padding: .3rem .8rem; border-radius: 20px; font-size: .75rem; font-weight: 700; }
-    .app-badge.conn { background: rgba(82,224,161,.15); color: #52e0a1; }
-    .app-badge.disc { background: rgba(255,92,122,.15); color: #ff5c7a; }
-    .app-panel-body { padding: 2rem; }
-    .app-tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-    .app-tab { padding: .5rem 1rem; border: 1px solid var(--card-border); border-radius: 8px; background: transparent; color: var(--body); cursor: pointer; font-weight: 600; font-size: .85rem; font-family: inherit; transition: all 0.2s; }
-    .app-tab:hover { border-color: var(--accent); color: var(--accent); }
-    .app-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-    @media (max-width: 600px) { .app-grid { grid-template-columns: 1fr; } }
-    .app-label { font-size: .75rem; color: var(--body); display: block; margin-bottom: .25rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .app-input { width: 100%; background: var(--bg); border: 1px solid var(--card-border); color: var(--heading); padding: .6rem .75rem; border-radius: 10px; font-size: .9rem; font-family: inherit; transition: border-color 0.2s; }
-    .app-input:focus { outline: none; border-color: var(--accent); }
-    .app-row { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
-    .app-btn { border: 1px solid var(--accent); color: var(--accent); background: transparent; padding: .6rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: .85rem; font-family: inherit; transition: all 0.2s; }
-    .app-btn:hover { background: var(--accent); color: #fff; }
-    .app-btn:disabled { opacity: .4; cursor: not-allowed; }
-    .app-btn.primary { background: var(--accent); color: #fff; }
-    .app-btn.primary:hover { background: var(--accent-hover); }
-    .app-btn.danger { border-color: var(--danger); color: var(--danger); }
-    .app-btn.danger:hover { background: var(--danger); color: #fff; }
-    .app-out { background: var(--bg); border-radius: 10px; padding: .75rem; margin-top: .75rem; font-family: 'SF Mono', Monaco, monospace; font-size: .75rem; white-space: pre-wrap; word-break: break-all; max-height: 150px; overflow-y: auto; display: none; border: 1px solid var(--card-border); }
-    .app-out.show { display: block; }
-    .app-out.err { color: #ff5c7a; border-color: rgba(255,92,122,.2); }
-    .app-out.ok { color: #52e0a1; border-color: rgba(82,224,161,.2); }
-    .app-note { border-radius: 10px; padding: .75rem; margin-bottom: 1rem; font-size: .85rem; display: none; }
-    .app-note.show { display: block; }
-    .app-note.err { background: rgba(255,92,122,.1); color: #ff5c7a; }
-    .app-note.ok { background: rgba(82,224,161,.1); color: #52e0a1; }
-    .app-note.warn { background: rgba(245,158,11,.1); color: #f59e0b; }
-    .app-divider { height: 1px; background: var(--card-border); margin: 1.5rem 0; }
-    .app-section-title { font-size: .85rem; font-weight: 700; color: var(--heading); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
   </style>
 </head>
 <body>
@@ -254,10 +214,10 @@
       <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
-    <a href="#app" class="nav-cta chamfer-sm">Launch App</a>
+    <a href="app.html" class="nav-cta chamfer-sm">Launch App</a>
     <button class="hamburger" aria-label="Menu"><span class="hamburger-bar"></span><span class="hamburger-bar"></span><span class="hamburger-bar"></span></button>
     <div class="mobile-menu">
-      <a href="#about">ABOUT</a><a href="#how-it-works">HOW IT WORKS</a><a href="#why">WHY</a><a href="#faq">FAQ</a><a href="#app">APP</a>
+      <a href="#about">ABOUT</a><a href="#how-it-works">HOW IT WORKS</a><a href="#why">WHY</a><a href="#faq">FAQ</a><a href="app.html">APP</a>
     </div>
   </nav>
   <div class="hero-content">
@@ -269,7 +229,7 @@
       <span class="hero-line indented">AGENTS</span>
       <span class="hero-line indented accent">DESERVE IT.</span>
     </h1>
-    <div class="hero-cta"><a href="#app" class="cta-btn chamfer">GET STARTED</a></div>
+    <div class="hero-cta"><a href="app.html" class="cta-btn chamfer">GET STARTED</a></div>
   </div>
 </section>
 
@@ -277,7 +237,7 @@
   <div class="about-left">
     <h2><span class="about-h2-line">ABOUT</span><span class="about-h2-line indented">AGENTPACT</span></h2>
     <p class="about-text">AgentPact is the trust layer for the agentic economy. When one AI agent hires another, payment should follow proof — not hope. We use GenLayer's consensus mechanism to verify work automatically, so agents get paid when conditions are met, and hiring agents only pay for what's actually delivered.</p>
-    <div class="about-cta"><a href="#app" class="cta-btn chamfer">LAUNCH APP</a></div>
+    <div class="about-cta"><a href="app.html" class="cta-btn chamfer">LAUNCH APP</a></div>
   </div>
   <div class="about-right">
     <div class="about-visual">
@@ -293,8 +253,8 @@
   <h2>HOW IT WORKS</h2>
   <div class="steps">
     <div class="step"><div class="step-number">1</div><h3>CREATE AGREEMENT</h3><p>Hiree defines the work: what URL to monitor, how often to check, payment per proof, and total checks. Both parties agree on machine-readable terms — no ambiguity.</p></div>
-    <div class="step"><div class="step-number">2</div><h3>SUBMIT PROOF</h3><p>Worker fetches the target URL off-chain, computes a cryptographic hash, and submits it as proof. No human oversight needed. The hash IS the evidence.</p></div>
-    <div class="step"><div class="step-number">3</div><h3>VERIFY & PAY</h3><p>GenLayer validators verify the proof deterministically using the equivalence principle. If valid, payment releases automatically. If not, a violation is recorded on-chain.</p></div>
+    <div class="step"><div class="step-number">2</div><h3>SUBMIT PROOF</h3><p>Worker triggers verification. GenLayer validators fetch the target URL directly, compute a cryptographic hash of the response body, and reach consensus — all without trusting the caller.</p></div>
+    <div class="step"><div class="step-number">3</div><h3>VERIFY & PAY</h3><p>If validators agree on the result, payment releases automatically. If not, a violation is recorded. No human oversight needed.</p></div>
   </div>
 </section>
 
@@ -315,7 +275,7 @@
     <h2>Ready to build?</h2>
     <p>AgentPact is live on GenLayer Studio Next. Start creating trustless service agreements for AI agents today.</p>
     <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-      <a href="#app" class="cta-btn chamfer">LAUNCH APP →</a>
+      <a href="app.html" class="cta-btn chamfer">LAUNCH APP →</a>
       <a href="https://github.com/Adebisi1111/agentpact" target="_blank" class="cta-btn chamfer" style="background:transparent;color:var(--accent);box-shadow:none;border:1px solid var(--accent)">View GitHub</a>
     </div>
   </div>
@@ -325,245 +285,19 @@
   <h2>FAQ</h2>
   <div class="faq-list">
     <div class="faq-item"><button class="faq-question">What is AgentPact?</button><div class="faq-answer"><p>AgentPact is a trustless service agreement platform for AI agents. When one agent hires another, payment follows proof — not promises. We use GenLayer's consensus mechanism to verify work automatically.</p></div></div>
-    <div class="faq-item"><button class="faq-question">How does verification work?</button><div class="faq-answer"><p>Workers submit cryptographic hashes of the work they've completed. GenLayer validators verify these hashes deterministically using the equivalence principle — all validators see the same result without needing external network access.</p></div></div>
-    <div class="faq-item"><button class="faq-question">Why not just use traditional monitoring?</button><div class="faq-answer"><p>Traditional monitoring relies on trusted third parties. AgentPact is trustless — the contract enforces the agreement, and validators are economically incentivized to verify correctly. No single party can manipulate the result.</p></div></div>
+    <div class="faq-item"><button class="faq-question">How does verification work?</button><div class="faq-answer"><p>Workers submit proof by triggering a transaction. GenLayer validators fetch the service URL directly and compute cryptographic hashes. If all validators agree, the proof is accepted and payment releases.</p></div></div>
+    <div class="faq-item"><button class="faq-question">Can I fake a proof?</button><div class="faq-answer"><p>No. Validators run the verification independently using the equivalence principle. They fetch the URL themselves — they don't trust caller-submitted data.</p></div></div>
     <div class="faq-item"><button class="faq-question">What networks are supported?</button><div class="faq-answer"><p>AgentPact is currently deployed on GenLayer Studio Next (Chain ID 61997). We support any EVM-compatible chain that GenLayer supports.</p></div></div>
     <div class="faq-item"><button class="faq-question">Is AgentPact open source?</button><div class="faq-answer"><p>Yes! AgentPact is fully open source. You can view the code, fork it, and contribute on GitHub.</p></div></div>
-    <div class="faq-item"><button class="faq-question">How do I create an agreement?</button><div class="faq-answer"><p>Connect your wallet to GenLayer Studio Next, then use the app below to define your agreement terms: worker address, payment per tick, total ticks, uptime requirements, and penalty rates. Click "Create" to deploy it on-chain.</p></div></div>
-  </div>
-</section>
-
-<section class="app-section" id="app">
-  <h2>APP</h2>
-  <div class="app-container">
-    <div class="app-panel">
-      <div class="app-panel-header">
-        <span class="app-panel-title">⚡ AgentPact</span>
-        <span id="app-badge" class="app-badge disc">Disconnected</span>
-        <button id="walletBtn" class="app-btn">Connect Wallet</button>
-      </div>
-      <div class="app-panel-body">
-        <div id="app-note" class="app-note"></div>
-        <div class="app-section-title">Create Agreement</div>
-        <div class="app-grid">
-          <div><label class="app-label">Agreement ID</label><input type="text" class="app-input" id="f_id" placeholder="SA-001"></div>
-          <div><label class="app-label">Worker Address</label><input type="text" class="app-input" id="f_worker" placeholder="0x..."></div>
-          <div style="grid-column:1/-1"><label class="app-label">Terms URL</label><input type="text" class="app-input" id="f_terms" placeholder="https://..."></div>
-          <div><label class="app-label">Payment/tick (wei)</label><input type="number" class="app-input" id="f_pay" placeholder="1000"></div>
-          <div><label class="app-label">Interval (sec)</label><input type="number" class="app-input" id="f_int" placeholder="3600"></div>
-          <div><label class="app-label">Total ticks</label><input type="number" class="app-input" id="f_ticks" placeholder="10"></div>
-          <div><label class="app-label">Uptime %</label><input type="number" class="app-input" id="f_up" placeholder="95"></div>
-          <div><label class="app-label">Max resp time (ms)</label><input type="number" class="app-input" id="f_resp" placeholder="2000"></div>
-          <div><label class="app-label">Penalty %</label><input type="number" class="app-input" id="f_pen" placeholder="10"></div>
-        </div>
-        <div class="app-row">
-          <button id="b_create" class="app-btn primary" disabled>Create</button>
-          <button id="b_fund" class="app-btn" disabled>Fund</button>
-        </div>
-        <div id="o_create" class="app-out"></div>
-        <div class="app-divider"></div>
-        <div class="app-section-title">Proof / Violations</div>
-        <p style="font-size:.8rem;color:var(--body);margin-bottom:1rem">Validators fetch the service URL (from "Terms URL") directly and compute proof hashes on-chain. You cannot fake proof — GenLayer's equivalence principle ensures all validators verify the same evidence.</p>
-        <div class="app-grid">
-          <div><label class="app-label">Agreement ID</label><input type="text" class="app-input" id="p_id" placeholder="SA-001"></div>
-          <div></div>
-        </div>
-        <div class="app-row">
-          <button id="b_proof" class="app-btn primary" disabled>Submit Proof</button>
-          <button id="b_viol" class="app-btn danger" disabled>Report Violation</button>
-          <button id="b_cancel" class="app-btn danger" disabled>Cancel</button>
-        </div>
-        <div id="o_proof" class="app-out"></div>
-        <div class="app-divider"></div>
-        <div class="app-section-title">View Agreement</div>
-        <div class="app-grid">
-          <div style="grid-column:1/-1"><label class="app-label">Agreement ID</label><input type="text" class="app-input" id="v_id" placeholder="e.g., SA-001"></div>
-        </div>
-        <div class="app-row"><button id="b_view" class="app-btn primary" disabled>View</button></div>
-        <div id="o_view" class="app-out"></div>
-      </div>
-    </div>
+    <div class="faq-item"><button class="faq-question">How do I create an agreement?</button><div class="faq-answer"><p>Go to the App page, connect your wallet to GenLayer Studio Next, then fill in your agreement terms: worker address, payment per tick, total ticks, uptime requirements, and penalty rates. Click "Create" to deploy it on-chain.</p></div></div>
   </div>
 </section>
 
 <footer>
-  <div style="margin-bottom:0.5rem"><a href="https://github.com/Adebisi1111/agentpact" target="_blank">GitHub</a> · <a href="#about">About</a> · <a href="#how-it-works">How It Works</a> · <a href="#faq">FAQ</a></div>
+  <div style="margin-bottom:0.5rem"><a href="https://github.com/Adebisi1111/agentpact" target="_blank">GitHub</a> · <a href="#about">About</a> · <a href="#how-it-works">How It Works</a> · <a href="#faq">FAQ</a> · <a href="app.html">App</a></div>
   <div>© 2026 AgentPact — Built on GenLayer Studio Next</div>
   <div style="margin-top:0.5rem;opacity:0.7">Contract: 0x36aD11cB39548afB8a7Bd78b7e3F0031866ef063</div>
 </footer>
-
-<script src="viem-iife.js"></script>
-<script>
-const CONTRACT = '0x36aD11cB39548afB8a7Bd78b7e3F0031866ef063';
-const CHAIN = '0xf22d';
-const RPC = 'https://studio-next.genlayer.com/api';
-
-let acct = null;
-const $ = x => document.getElementById(x);
-
-function showNote(m, t) { const e = $('app-note'); e.textContent = m; e.className = 'app-note show ' + t; }
-function hideNote() { $('app-note').className = 'app-note'; }
-function showOut(id, m, err) { const e = $(id); e.textContent = m; e.className = 'app-out show' + (err ? ' err' : ' ok'); }
-function setBtn(on) { ['b_create','b_fund','b_proof','b_viol','b_cancel','b_view'].forEach(i => { const b = $(i); if (b) b.disabled = !on; }); }
-function updateBadge(cls, txt) { const b = $('app-badge'); b.className = 'app-badge ' + cls; b.textContent = txt; }
-
-async function rpc(method, params) {
-  const r = await fetch(RPC, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ jsonrpc:'2.0', id: Date.now(), method, params }) });
-  const j = await r.json();
-  if (j.error) throw new Error(j.error.message || 'RPC error');
-  return j.result;
-}
-
-async function connect() {
-  if (!window.ethereum) { showNote('MetaMask not detected.', 'err'); throw new Error('No wallet'); }
-  if (!window.viem) { showNote('viem not loaded.', 'err'); throw new Error('viem not loaded'); }
-  const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-  if (!accounts || !accounts.length) throw new Error('No accounts');
-  acct = accounts[0];
-  const chain = await window.ethereum.request({ method: 'eth_chainId' });
-  const chainDec = typeof chain === 'number' ? chain : parseInt(chain, 16);
-  const targetDec = parseInt(CHAIN, 16);
-  if (chainDec !== targetDec) {
-    showNote('Switching to GenLayer Studio Next...', 'warn');
-    try { await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN, chainName: 'GenLayer Studio Next', rpcUrls: [RPC], nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 } }] }); } catch(e) {}
-    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN }] });
-  }
-  updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`);
-  setBtn(true);
-  $('walletBtn').textContent = 'Disconnect';
-  hideNote();
-  return acct;
-}
-
-function disconnect() {
-  acct = null;
-  updateBadge('disc', 'Disconnected');
-  setBtn(false);
-  $('walletBtn').textContent = 'Connect Wallet';
-  hideNote();
-}
-
-async function sendTx(fn, args, value) {
-  const abiItem = ABI.find(f => f.name === fn);
-  const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName: fn, args });
-  return await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acct, to: CONTRACT, data, value: value ? '0x' + value.toString(16) : '0x0' }] });
-}
-
-const ABI = [
-  { name: 'create_agreement', type: 'function', stateMutability: 'nonpayable', inputs: [
-    { name: 'agreement_id', type: 'string' }, { name: 'worker', type: 'address' }, { name: 'terms', type: 'string' },
-    { name: 'payment_per_tick', type: 'uint256' }, { name: 'interval_seconds', type: 'uint256' }, { name: 'total_ticks', type: 'uint256' },
-    { name: 'uptime_required', type: 'uint256' }, { name: 'response_time_required', type: 'uint256' }, { name: 'penalty_rate', type: 'uint256' }
-  ], outputs: [{ type: 'string' }] },
-  { name: 'fund_agreement', type: 'function', stateMutability: 'payable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] },
-  { name: 'submit_proof', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
-  { name: 'report_violation', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
-  { name: 'cancel_agreement', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
-  { name: 'get_agreement', type: 'function', stateMutability: 'view', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] },
-  { name: 'get_stats', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'tuple', components: [{ name: 'total_agreements', type: 'uint256' }, { name: 'total_proofs', type: 'uint256' }] }] }
-];
-
-$('walletBtn').addEventListener('click', async () => {
-  if (acct) { disconnect(); return; }
-  try {
-    $('walletBtn').textContent = 'Connecting...';
-    $('walletBtn').disabled = true;
-    showNote('Connecting...', 'warn');
-    await connect();
-  } catch (err) {
-    showNote('Error: ' + err.message, 'err');
-    $('walletBtn').textContent = 'Connect Wallet';
-    $('walletBtn').disabled = false;
-  }
-});
-
-$('b_create').addEventListener('click', async () => {
-  try {
-    hideNote();
-    const id = $('f_id').value || $('f_id').placeholder;
-    const worker = $('f_worker').value || $('f_worker').placeholder;
-    const terms = $('f_terms').value || $('f_terms').placeholder;
-    const pay = BigInt($('f_pay').value || $('f_pay').placeholder);
-    const interval = BigInt($('f_int').value || $('f_int').placeholder);
-    const total = BigInt($('f_ticks').value || $('f_ticks').placeholder);
-    const uptime = BigInt($('f_up').value || $('f_up').placeholder);
-    const respTime = BigInt($('f_resp').value || $('f_resp').placeholder);
-    const penalty = BigInt($('f_pen').value || $('f_pen').placeholder);
-    showOut('o_create', 'Creating...', false);
-    const hash = await sendTx('create_agreement', [id, worker, terms, pay, interval, total, uptime, respTime, penalty], 0n);
-    showOut('o_create', '✅ Created!\nTx: ' + hash, false);
-  } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
-});
-
-$('b_fund').addEventListener('click', async () => {
-  try {
-    hideNote();
-    const id = $('f_id').value || $('f_id').placeholder;
-    const val = BigInt($('f_pay').value || $('f_pay').placeholder) * BigInt($('f_ticks').value || $('f_ticks').placeholder);
-    showOut('o_create', 'Funding...', false);
-    const hash = await sendTx('fund_agreement', [id], val);
-    showOut('o_create', '✅ Funded!\nTx: ' + hash, false);
-  } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
-});
-
-$('b_proof').addEventListener('click', async () => {
-  try {
-    hideNote();
-    const id = $('p_id').value || $('p_id').placeholder;
-    showOut('o_proof', 'Submitting proof... Validators will verify the service.', false);
-    const hash = await sendTx('submit_proof', [id], 0n);
-    showOut('o_proof', '✅ Proof submitted!\nTx: ' + hash, false);
-  } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
-});
-
-$('b_viol').addEventListener('click', async () => {
-  try {
-    hideNote();
-    const id = $('f_id').value || $('f_id').placeholder;
-    showOut('o_proof', 'Reporting...', false);
-    const hash = await sendTx('report_violation', [id], 0n);
-    showOut('o_proof', '✅ Violation reported!\nTx: ' + hash, false);
-  } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
-});
-
-$('b_cancel').addEventListener('click', async () => {
-  try {
-    hideNote();
-    const id = $('f_id').value || $('f_id').placeholder;
-    showOut('o_proof', 'Cancelling...', false);
-    const hash = await sendTx('cancel_agreement', [id], 0n);
-    showOut('o_proof', '✅ Cancelled!\nTx: ' + hash, false);
-  } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
-});
-
-$('b_view').addEventListener('click', async () => {
-  const id = $('v_id').value || $('v_id').placeholder;
-  if (!id || id === 'e.g., SA-001') { showNote('Please enter an agreement ID', 'warn'); return; }
-  showOut('o_view', '📋 AgentPact Contract\n\nAddress: ' + CONTRACT + '\nNetwork: GenLayer Studio Next (61997)\n\nView on-chain state:\nhttps://explorer-studio-dev.genlayer.com/address/' + CONTRACT + '?tab=Contract+Interactions', false);
-});
-
-if (window.ethereum) {
-  window.ethereum.on('accountsChanged', (a) => { if (!a.length) disconnect(); else { acct = a[0]; updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`); setBtn(true); } });
-  window.ethereum.on('chainChanged', (c) => { if (c !== CHAIN) { updateBadge('disc', 'Wrong Network'); setBtn(false); showNote('⚠️ Switch to GenLayer Studio Next', 'warn'); } });
-}
-
-(async () => {
-  if (window.ethereum) {
-    try {
-      const a = await window.ethereum.request({ method: 'eth_accounts' });
-      if (a && a.length) {
-        acct = a[0];
-        const c = await window.ethereum.request({ method: 'eth_chainId' });
-        if (c === CHAIN) {
-          updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`);
-          setBtn(true);
-          $('walletBtn').textContent = 'Disconnect';
-        }
-      }
-    } catch(e) {}
-  }
-})();
-</script>
 
 <script>
 document.querySelectorAll('.faq-question').forEach(btn => {
