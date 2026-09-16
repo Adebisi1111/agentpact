@@ -208,15 +208,7 @@ const ABI = [
   { name: 'submit_proof', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }, { name: 'proof_hash', type: 'string' }, { name: 'response_time', type: 'uint256' }], outputs: [{ type: 'bool' }] },
   { name: 'report_violation', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
   { name: 'cancel_agreement', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
-  { name: 'get_agreement', type: 'function', stateMutability: 'view', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'tuple', components: [
-    { name: 'id', type: 'string' }, { name: 'hiree', type: 'address' }, { name: 'worker', type: 'address' }, { name: 'terms', type: 'string' },
-    { name: 'payment_per_tick', type: 'uint256' }, { name: 'interval_seconds', type: 'uint256' }, { name: 'next_deadline', type: 'uint256' },
-    { name: 'total_ticks', type: 'uint256' }, { name: 'paid_ticks', type: 'uint256' }, { name: 'status', type: 'string' },
-    { name: 'violations', type: 'uint256' }, { name: 'last_proof_hash', type: 'string' }, { name: 'last_check_status', type: 'string' },
-    { name: 'last_response_time', type: 'uint256' }, { name: 'consecutive_failures', type: 'uint256' },
-    { name: 'uptime_required', type: 'uint256' }, { name: 'response_time_required', type: 'uint256' }, { name: 'penalty_rate', type: 'uint256' },
-    { name: 'total_deposited', type: 'uint256' }, { name: 'total_paid_out', type: 'uint256' }, { name: 'total_refunded', type: 'uint256' }, { name: 'total_penalties', type: 'uint256' }
-  ] }] },
+  { name: 'get_agreement', type: 'function', stateMutability: 'view', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] },
   { name: 'get_stats', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'tuple', components: [{ name: 'total_agreements', type: 'uint256' }, { name: 'total_proofs', type: 'uint256' }] }] }
 ];
 
@@ -305,12 +297,21 @@ $('b_view').addEventListener('click', async () => {
       return;
     }
     showOut('o_view', 'Fetching...', false);
-    const result = await callFn('get_agreement', [id]);
-    if (!result) {
-      showOut('o_view', 'Agreement "' + id + '" does not exist.\n\nCreate and fund it first.', true);
+    
+    // Manual calldata encoding: get_agreement(string) with id as argument
+    const selector = 'ff6f0fee';
+    const strHex = Array.from(id).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+    const offset = '0000000000000000000000000000000000000000000000000000000000000020';
+    const length = id.length.toString(16).padStart(64, '0');
+    const paddedStr = strHex.padEnd(64, '0');
+    const data = '0x' + selector + offset + length + paddedStr;
+    
+    const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
+    if (!result || result === '0x' || result.length <= 2) {
+      showOut('o_view', 'Agreement "' + id + '" does not exist.', true);
       return;
     }
-    showOut('o_view', '📋 Agreement: ' + id + '\n\n' + JSON.stringify(result, (k,v) => typeof v === 'bigint' ? v.toString() : v, 2), false);
+    showOut('o_view', '📋 ' + id + '\n\nRaw result:\n' + result, false);
   } catch (err) { showOut('o_view', 'Error: ' + err.message, true); }
 });
 
