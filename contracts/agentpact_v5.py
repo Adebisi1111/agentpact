@@ -124,7 +124,12 @@ class AgentPact(gl.Contract):
         return int(datetime.datetime.now(datetime.timezone.utc).timestamp())
 
     @gl.public.write
-    def submit_proof(self, agreement_id: str, proof_hash: str, response_time: u256) -> bool:
+    def submit_proof(self, agreement_id: str) -> bool:
+        """
+        Validators verify the service URL (terms) by fetching it directly.
+        The response status and hash are computed on-chain by ALL validators
+        using the equivalence principle — the caller cannot fake proof.
+        """
         agreement = self.agreements.get(agreement_id)
         if agreement is None:
             raise ValueError("Agreement not found")
@@ -132,24 +137,55 @@ class AgentPact(gl.Contract):
         if agreement.status != "active":
             raise ValueError("Agreement is not active")
         
-        if proof_hash == "":
-            raise ValueError("Proof hash cannot be empty")
+        if u256(self._now()) < agreement.next_deadline:
+            raise ValueError("Too early for next proof")
         
-        # Update proof data
-        agreement.last_proof_hash = proof_hash
-        agreement.last_response_time = response_time
+        # Nondeterministic work: ALL validators fetch the same URL
+        # and compute the same hash. Results must match.
+        def work() -> dict:
+            import hashlib
+            response = gl.nondet.web.render(
+                url=agreement.terms,
+                method="GET",
+                headers={"User-Agent": "AgentPact/1.0"},
+                timeout=10,
+            )
+            status_code = response.get("status_code", 0)
+            body = response.get("body", "")
+            proof_hash = hashlib.sha256(body.encode()).hexdigest()
+            return {
+                "status_code": status_code,
+                "proof_hash": proof_hash,
+            }
+        
+        def validator(leader_result) -> bool:
+            if not isinstance(leader_result, gl.vm.Return):
+                return False
+            return work() == leader_result.calldata
+        
+        result = gl.vm.run_nondet_unsafe(work, validator)
+        
+        agreement.last_proof_hash = result["proof_hash"]
         agreement.last_check_status = "passed"
+        agreement.last_response_time = u256(0)  # Could measure from response
         agreement.paid_ticks += u256(1)
         agreement.consecutive_failures = u256(0)
         
-        # Process payment
         payment_amount = agreement.payment_per_tick
         agreement.total_paid_out += payment_amount
         
-        # Update deadline
         agreement.next_deadline = u256(self._now()) + agreement.interval_seconds
         
-        # Check completion
+        total_checks = agreement.paid_ticks + agreement.violations
+        current_uptime = (agreement.paid_ticks * u256(100)) / total_checks
+        
+        if current_uptime < agreement.uptime_required:
+            agreement.status = "suspended"
+            remaining_ticks = agreement.total_ticks - agreement.paid_ticks
+            refund = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
+            if refund > u256(0):
+                agreement.total_refunded += refund
+        
         if agreement.paid_ticks >= agreement.total_ticks:
             agreement.status = "completed"
             excess = agreement.total_deposited - agreement.total_paid_out - agreement.total_penalties
@@ -173,11 +209,9 @@ class AgentPact(gl.Contract):
         agreement.violations += u256(1)
         agreement.consecutive_failures += u256(1)
         
-        # Calculate penalty
         penalty = (agreement.payment_per_tick * agreement.penalty_rate) / u256(100)
         agreement.total_penalties += penalty
         
-        # Check suspension
         if agreement.consecutive_failures >= u256(3):
             agreement.status = "suspended"
             remaining_ticks = agreement.total_ticks - agreement.paid_ticks

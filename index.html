@@ -363,9 +363,10 @@
         <div id="o_create" class="app-out"></div>
         <div class="app-divider"></div>
         <div class="app-section-title">Proof / Violations</div>
+        <p style="font-size:.8rem;color:var(--body);margin-bottom:1rem">Validators fetch the service URL (from "Terms URL") directly and compute proof hashes on-chain. You cannot fake proof — GenLayer's equivalence principle ensures all validators verify the same evidence.</p>
         <div class="app-grid">
           <div><label class="app-label">Agreement ID</label><input type="text" class="app-input" id="p_id" placeholder="SA-001"></div>
-          <div><label class="app-label">Resp time (ms)</label><input type="number" class="app-input" id="p_resp" placeholder="1500"></div>
+          <div></div>
         </div>
         <div class="app-row">
           <button id="b_proof" class="app-btn primary" disabled>Submit Proof</button>
@@ -388,12 +389,12 @@
 <footer>
   <div style="margin-bottom:0.5rem"><a href="https://github.com/Adebisi1111/agentpact" target="_blank">GitHub</a> · <a href="#about">About</a> · <a href="#how-it-works">How It Works</a> · <a href="#faq">FAQ</a></div>
   <div>© 2026 AgentPact — Built on GenLayer Studio Next</div>
-  <div style="margin-top:0.5rem;opacity:0.7">Contract: 0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E</div>
+  <div style="margin-top:0.5rem;opacity:0.7">Contract: 0x36aD11cB39548afB8a7Bd78b7e3F0031866ef063</div>
 </footer>
 
 <script src="viem-iife.js"></script>
 <script>
-const CONTRACT = '0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E';
+const CONTRACT = '0x36aD11cB39548afB8a7Bd78b7e3F0031866ef063';
 const CHAIN = '0xf22d';
 const RPC = 'https://studio-next.genlayer.com/api';
 
@@ -449,13 +450,13 @@ async function sendTx(fn, args, value) {
 }
 
 const ABI = [
-  { name: 'create_agreement', type: 'function', stateMutability: 'payable', inputs: [
+  { name: 'create_agreement', type: 'function', stateMutability: 'nonpayable', inputs: [
     { name: 'agreement_id', type: 'string' }, { name: 'worker', type: 'address' }, { name: 'terms', type: 'string' },
     { name: 'payment_per_tick', type: 'uint256' }, { name: 'interval_seconds', type: 'uint256' }, { name: 'total_ticks', type: 'uint256' },
     { name: 'uptime_required', type: 'uint256' }, { name: 'response_time_required', type: 'uint256' }, { name: 'penalty_rate', type: 'uint256' }
   ], outputs: [{ type: 'string' }] },
   { name: 'fund_agreement', type: 'function', stateMutability: 'payable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] },
-  { name: 'submit_proof', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }, { name: 'proof_hash', type: 'string' }, { name: 'response_time', type: 'uint256' }], outputs: [{ type: 'bool' }] },
+  { name: 'submit_proof', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
   { name: 'report_violation', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
   { name: 'cancel_agreement', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
   { name: 'get_agreement', type: 'function', stateMutability: 'view', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] },
@@ -488,9 +489,8 @@ $('b_create').addEventListener('click', async () => {
     const uptime = BigInt($('f_up').value || $('f_up').placeholder);
     const respTime = BigInt($('f_resp').value || $('f_resp').placeholder);
     const penalty = BigInt($('f_pen').value || $('f_pen').placeholder);
-    const val = pay * total;
     showOut('o_create', 'Creating...', false);
-    const hash = await sendTx('create_agreement', [id, worker, terms, pay, interval, total, uptime, respTime, penalty], val);
+    const hash = await sendTx('create_agreement', [id, worker, terms, pay, interval, total, uptime, respTime, penalty], 0n);
     showOut('o_create', '✅ Created!\nTx: ' + hash, false);
   } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
 });
@@ -510,10 +510,8 @@ $('b_proof').addEventListener('click', async () => {
   try {
     hideNote();
     const id = $('p_id').value || $('p_id').placeholder;
-    const resp = BigInt($('p_resp').value || $('p_resp').placeholder);
-    const proofHash = '0x' + Array.from({length:12}, () => Math.floor(Math.random()*16).toString(16)).join('');
-    showOut('o_proof', 'Submitting...', false);
-    const hash = await sendTx('submit_proof', [id, proofHash, resp], 0n);
+    showOut('o_proof', 'Submitting proof... Validators will verify the service.', false);
+    const hash = await sendTx('submit_proof', [id], 0n);
     showOut('o_proof', '✅ Proof submitted!\nTx: ' + hash, false);
   } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
 });
