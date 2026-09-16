@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>AgentPact</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cg transform='rotate(-30 12 12)'%3E%3Ccircle cx='7.3' cy='3.2' r='1.45'/%3E%3Crect x='5.5' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Crect x='14.9' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Ccircle cx='16.7' cy='20.8' r='1.45'/%3E%3C/g%3E%3C/svg%3E">
-  <script src="https://cdn.jsdelivr.net/npm/viem@2.38.6/dist/iife/index.min.js"></script>
+  <script src="viem.bundle.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--accent:#15BCDF;--accent-glow:rgba(21,188,223,.35);--bg:#06080f;--surface:#0c1220;--surface2:#131b2e;--text:#d6e4f0;--muted:#7d8ba6;--danger:#ff5c7a;--success:#52e0a1;--yellow:#f59e0b;--radius:10px}
@@ -144,7 +144,7 @@ function showOutput(id, msg, isError) { const el = $(id); el.textContent = msg; 
 function updateStatus(status, text) { const badge = $('statusBadge'); badge.className = 'status-badge ' + status; badge.textContent = text; }
 
 function setButtonsEnabled(enabled) {
-  ['createBtn','fundBtn','proofBtn','violationBtn','cancelBtn','viewBtn'].forEach(id => { const b = $(id); if (b) b.bdisabled = !enabled; });
+  ['createBtn','fundBtn','proofBtn','violationBtn','cancelBtn','viewBtn'].forEach(id => { const b = $(id); if (b) b.disabled = !enabled; });
 }
 
 async function connectWallet() {
