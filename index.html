@@ -239,20 +239,9 @@ $('b_cancel').addEventListener('click', async () => {
 });
 
 $('b_view').addEventListener('click', async () => {
-  try {
-    hideNote();
-    const id = $('v_id').value || $('v_id').placeholder;
-    if (!id || id === 'e.g., SA-001') { showNote('Please enter an agreement ID', 'warn'); return; }
-    showOut('o_view', 'Fetching...', false);
-    const statsResult = await rpc('eth_call', [{ to: CONTRACT, data: '0x3a462524' }, 'latest']);
-    const existsData = 'ff6f0fee000000000000000000000000000000000000000000000000000000000000020' + id.length.toString(16).padStart(64, '0') + Array.from(id).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('').padEnd(64, '0');
-    const existsResult = await rpc('eth_call', [{ to: CONTRACT, data: '0x' + existsData }, 'latest']);
-    const exists = existsResult && existsResult.length > 2 && parseInt(existsResult.slice(2), 16) > 0;
-    const h = statsResult && statsResult.length >= 130 ? statsResult.slice(2) : '';
-    const totalAgreements = h ? parseInt(h.slice(0, 64), 16) : 0;
-    const totalProofs = h ? parseInt(h.slice(64, 128), 16) : 0;
-    showOut('o_view', '📋 AgentPact Stats\n\nTotal Agreements: ' + totalAgreements + '\nTotal Proofs Submitted: ' + totalProofs + '\n\nAgreement "' + id + '": ' + (exists ? '✅ Exists' : '❌ Not Found') + '\n\nExplorer: https://explorer-studio-dev.genlayer.com/address/' + CONTRACT, false);
-  } catch (err) { showOut('o_view', 'Error: ' + err.message, true); }
+  const id = $('v_id').value || $('v_id').placeholder;
+  if (!id || id === 'e.g., SA-001') { showNote('Please enter an agreement ID', 'warn'); return; }
+  showOut('o_view', '📋 AgentPact Contract\n\n' + CONTRACT + '\n\nView on GenLayer Explorer:\nhttps://explorer-studio-dev.genlayer.com/address/' + CONTRACT + '?tab=Contract+Interactions', false);
 });
 
 if (window.ethereum) {
