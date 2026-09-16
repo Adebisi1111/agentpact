@@ -161,7 +161,41 @@ async function callFn(fn, args) {
   const abiItem = ABI.find(f => f.name === fn);
   const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName: fn, args });
   const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
-  return window.viem.decodeFunctionResult({ abi: [abiItem], functionName: fn, data: result });
+  if (!result || result === '0x' || result.length <= 2) return null;
+  if (fn === 'get_agreement') return parseGetAgreement(result);
+  try { return window.viem.decodeFunctionResult({ abi: [abiItem], functionName: fn, data: result }); }
+  catch(e) { return result; }
+}
+
+function parseGetAgreement(hex) {
+  const h = hex.slice(2);
+  const fields = [];
+  let pos = 0;
+  const readUint = () => { const v = parseInt(h.slice(pos, pos + 64), 16); pos += 64; return v; };
+  const readAddr = () => { const v = '0x' + h.slice(pos + 24, pos + 64); pos += 64; return v; };
+  const readStringAt = (offset) => { const abs = offset * 2; const len = parseInt(h.slice(abs, abs + 64), 16); return h.slice(abs + 64, abs + 64 + len * 2).match(/.{2}/g).map(b => String.fromCharCode(parseInt(b, 16))).join(''); };
+  pos = 64;
+  const idOff = readUint(); fields.push(readStringAt(idOff));
+  fields.push(readAddr());
+  fields.push(readAddr());
+  const termsOff = readUint(); fields.push(readStringAt(termsOff));
+  fields.push(readUint()); fields.push(readUint()); fields.push(readUint());
+  fields.push(readUint()); fields.push(readUint());
+  const statusOff = readUint(); fields.push(readStringAt(statusOff));
+  fields.push(readUint());
+  const proofHashOff = readUint(); fields.push(readStringAt(proofHashOff));
+  const checkStatusOff = readUint(); fields.push(readStringAt(checkStatusOff));
+  fields.push(readUint()); fields.push(readUint()); fields.push(readUint());
+  fields.push(readUint()); fields.push(readUint()); fields.push(readUint());
+  fields.push(readUint()); fields.push(readUint()); fields.push(readUint());
+  const keys = ['id', 'hiree', 'worker', 'terms', 'payment_per_tick', 'interval_seconds',
+    'next_deadline', 'total_ticks', 'paid_ticks', 'status', 'violations',
+    'last_proof_hash', 'last_check_status', 'last_response_time', 'consecutive_failures',
+    'uptime_required', 'response_time_required', 'penalty_rate', 'total_deposited',
+    'total_paid_out', 'total_refunded', 'total_penalties'];
+  const obj = {};
+  keys.forEach((k, i) => { obj[k] = fields[i]; });
+  return obj;
 }
 
 const ABI = [
@@ -263,12 +297,21 @@ $('b_cancel').addEventListener('click', async () => {
 });
 
 $('b_view').addEventListener('click', async () => {
-  const id = $('v_id').value || $('v_id').placeholder;
-  if (!id || id === 'e.g., SA-001') {
-    showNote('Please enter an agreement ID', 'warn');
-    return;
-  }
-  showOut('o_view', '📋 Agreement: ' + id + '\n\nExplorer: https://explorer-studio-dev.genlayer.com/address/' + CONTRACT, false);
+  try {
+    hideNote();
+    const id = $('v_id').value || $('v_id').placeholder;
+    if (!id || id === 'e.g., SA-001') {
+      showNote('Please enter an agreement ID', 'warn');
+      return;
+    }
+    showOut('o_view', 'Fetching...', false);
+    const result = await callFn('get_agreement', [id]);
+    if (!result) {
+      showOut('o_view', 'Agreement "' + id + '" does not exist.\n\nCreate and fund it first.', true);
+      return;
+    }
+    showOut('o_view', '📋 Agreement: ' + id + '\n\n' + JSON.stringify(result, (k,v) => typeof v === 'bigint' ? v.toString() : v, 2), false);
+  } catch (err) { showOut('o_view', 'Error: ' + err.message, true); }
 });
 
 if (window.ethereum) {
