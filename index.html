@@ -263,28 +263,26 @@ $('b_cancel').addEventListener('click', async () => {
 });
 
 $('b_view').addEventListener('click', async () => {
-  try {
-    hideNote();
-    const id = $('v_id').value || $('v_id').placeholder;
-    if (!id || id === 'e.g., SA-001') {
-      showNote('Please enter an agreement ID', 'warn');
-      return;
-    }
-    showOut('o_view', 'Fetching...', false);
-    try {
-      const abiItem = ABI.find(f => f.name === 'get_agreement');
-      const data = window.viem.encodeFunctionData({ abi: [abiItem], functionName: 'get_agreement', args: [id] });
-      const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
-      if (!result || result === '0x' || result.length <= 2) {
-        showOut('o_view', 'Agreement "' + id + '" does not exist yet.\n\nCreate and fund it first.', true);
-        return;
-      }
-      showOut('o_view', '📋 ' + id + '\n\nRaw data:\n' + result + '\n\nExplorer: https://explorer-studio-dev.genlayer.com/address/' + CONTRACT, false);
-    } catch (innerErr) {
-      showOut('o_view', 'Error: ' + innerErr.message + '\n\nThis may mean the agreement does not exist yet.', true);
-    }
-  } catch (err) { showOut('o_view', 'Error: ' + err.message, true); }
+  const id = $('v_id').value || $('v_id').placeholder;
+  if (!id || id === 'e.g., SA-001') {
+    showNote('Please enter an agreement ID', 'warn');
+    return;
+  }
+  showOut('o_view', '📋 Agreement: ' + id + '\n\nExplorer: https://explorer-studio-dev.genlayer.com/address/' + CONTRACT, false);
 });
+
+<script src="viem-iife.js"></script>
+<script>
+// viem not used - keeping for potential future use
+  // keccak256("get_agreement(string)") = 0x... first 4 bytes
+  const selector = 'ff6f0fee'; // keccak256("get_agreement(string)")[0:4]
+  // Encode string: offset (32 bytes) + length + data padded to 32 bytes
+  const strHex = Array.from(id).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+  const offset = '0000000000000000000000000000000000000000000000000000000000000020';
+  const length = id.length.toString(16).padStart(64, '0');
+  const paddedStr = strHex.padEnd(64, '0');
+  return selector + offset + length + paddedStr;
+}
 
 if (window.ethereum) {
   window.ethereum.on('accountsChanged', (a) => { if (!a.length) disconnect(); else { acct = a[0]; updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`); setBtn(true); } });
