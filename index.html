@@ -110,7 +110,7 @@
 <script src="viem-bundle.js"></script>
 <script>
 const CONTRACT = '0x9bC45B33FCaa6CEdFE4edA477EB10A4F31Ddee9E';
-const CHAIN = '0x1194D'; // 72013 - actual Studio Next chain ID returned by RPC
+const CHAIN = '0xf22d'; // 61997 - Studio Next chain ID
 const RPC = 'https://studio-next.genlayer.com/api';
 
 let acct = null;
@@ -142,33 +142,57 @@ async function connect() {
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   if (!accounts || !accounts.length) throw new Error('No accounts');
   acct = accounts[0];
-  const chain = await window.ethereum.request({ method: 'eth_chainId' });
-  console.log('Current chain:', chain, 'Target:', CHAIN);
+  let chain = await window.ethereum.request({ method: 'eth_chainId' });
   
-  if (chain !== CHAIN) {
-    showNote('Switching network...', 'warn');
+  // Handle both hex and decimal chain IDs
+  const chainDec = typeof chain === 'number' ? chain : parseInt(chain, 16);
+  const targetDec = parseInt(CHAIN, 16);
+  
+  console.log('Wallet chain:', chain, '(', chainDec, ') Target:', CHAIN, '(', targetDec, ')');
+  
+  if (chainDec !== targetDec) {
+    showNote('Switching from chain ' + chainDec + ' to GenLayer Studio Next (' + targetDec + ')...', 'warn');
+    
     // Try to switch first - works if user already has the chain added
     try {
       await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN }] });
+      // Re-check chain after switch
+      chain = await window.ethereum.request({ method: 'eth_chainId' });
+      const newChainDec = typeof chain === 'number' ? chain : parseInt(chain, 16);
+      if (newChainDec !== targetDec) {
+        throw new Error('Switch did not work');
+      }
     } catch(switchErr) {
+      console.log('Switch failed:', switchErr.code, switchErr.message);
       // If switch fails because chain not found (4902), try adding it
-      if (switchErr.code === 4902) {
+      if (switchErr.code === 4902 || switchErr.message?.includes('wallet_addEthereumChain')) {
+        // Chain not found - try to add it
         try {
           await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN, chainName: 'GenLayer Studio Next', rpcUrls: [RPC], nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 }, blockExplorerUrls: ['https://explorer-studio-dev.genlayer.com/'] }] });
+          // Re-check chain after adding
+          chain = await window.ethereum.request({ method: 'eth_chainId' });
+          const newChainDec = typeof chain === 'number' ? chain : parseInt(chain, 16);
+          if (newChainDec !== targetDec) {
+            // Try switching again after adding
+            await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN }] });
+          }
         } catch(addErr) {
-          showNote('Could not add network. Please manually switch to GenLayer Studio Next.', 'err');
-          throw new Error('Network not available');
+          // addEthereumChain failed - likely because a network with this name already exists
+          // but with a different chain ID
+          showNote('⚠️ A network named "Studio Next" already exists with wrong chain ID. In Rabby: Settings → Networks → delete "Studio Next" → refresh this page.', 'err');
+          throw new Error('Wrong network already exists');
         }
       } else {
         console.log('Switch error:', switchErr);
-        showNote('Please manually switch wallet to GenLayer Studio Next.', 'err');
+        showNote('❌ Chain mismatch! Wallet on ' + chainDec + ', need ' + targetDec + '. Please manually switch in wallet.', 'err');
         throw new Error('Please switch to GenLayer Studio Next');
       }
     }
   }
-  updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`);
+  updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)} (chain ${targetDec})`);
   setBtn(true);
   $('walletBtn').textContent = 'Disconnect';
+  hideNote();
   return acct;
 }
 
