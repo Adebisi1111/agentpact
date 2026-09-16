@@ -206,12 +206,12 @@
 <footer>
   <div style="margin-bottom:0.5rem"><a href="https://github.com/Adebisi1111/agentpact" target="_blank">GitHub</a> · <a href="index.html">Home</a> · <a href="index.html#about">About</a> · <a href="index.html#faq">FAQ</a></div>
   <div>© 2026 AgentPact — Built on GenLayer Studio Next</div>
-  <div style="margin-top:0.5rem;opacity:0.7">Contract: 0x36aD11cB39548afB8a7Bd78b7e3F0031866ef063</div>
+  <div style="margin-top:0.5rem;opacity:0.7">Contract: 0x36ff8b7f0d59a0C73c7B05DB048386fcC8418344</div>
 </footer>
 
 <script src="viem-iife.js"></script>
 <script>
-const CONTRACT = '0x36aD11cB39548afB8a7Bd78b7e3F0031866ef063';
+const CONTRACT = '0x36ff8b7f0d59a0C73c7B05DB048386fcC8418344';
 const CHAIN = '0xf22d';
 const RPC = 'https://studio-next.genlayer.com/api';
 
@@ -276,6 +276,8 @@ const ABI = [
   { name: 'submit_proof', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
   { name: 'report_violation', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
   { name: 'cancel_agreement', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
+  { name: 'agreement_exists', type: 'function', stateMutability: 'view', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
+  { name: 'get_agreement_status', type: 'function', stateMutability: 'view', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] },
   { name: 'get_agreement', type: 'function', stateMutability: 'view', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] },
   { name: 'get_stats', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'tuple', components: [{ name: 'total_agreements', type: 'uint256' }, { name: 'total_proofs', type: 'uint256' }] }] }
 ];
@@ -353,32 +355,51 @@ $('b_cancel').addEventListener('click', async () => {
   } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
 });
 
-// FIXED: View button now checks if agreement exists on-chain
+// FIXED: View button uses agreement_exists and get_agreement_status (simple return types)
 $('b_view').addEventListener('click', async () => {
   const id = $('v_id').value || $('v_id').placeholder;
   if (!id || id === 'e.g., SA-001') { showNote('Please enter an agreement ID', 'warn'); return; }
   showOut('o_view', 'Checking on-chain...', false);
   try {
-    // Encode get_agreement(string) call manually
-    const selector = 'ff6f0fee';
+    // Step 1: Check if agreement exists
+    const existsSelector = '164abaa5';
     const strHex = Array.from(id).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
     const offset = '0000000000000000000000000000000000000000000000000000000000000020';
     const length = id.length.toString(16).padStart(64, '0');
     const paddedStr = strHex.padEnd(64, '0');
-    const data = '0x' + selector + offset + length + paddedStr;
+    const existsData = '0x' + existsSelector + offset + length + paddedStr;
     
-    const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
+    const existsResult = await rpc('eth_call', [{ to: CONTRACT, data: existsData }, 'latest']);
+    const exists = existsResult && existsResult.length > 2 && parseInt(existsResult.slice(2), 16) === 1;
     
-    // If result is empty or all zeros, agreement doesn't exist
-    if (!result || result === '0x' || result.length <= 2 || /^0x0+$/.test(result)) {
+    if (!exists) {
       showOut('o_view', '❌ Agreement "' + id + '" does not exist on-chain.\n\nCreate it first using the form above.', true);
       return;
     }
     
-    // Agreement exists — show details with explorer link
-    showOut('o_view', '✅ Agreement "' + id + '" exists on-chain.\n\nView full details on GenLayer Explorer:\nhttps://explorer-studio-dev.genlayer.com/address/' + CONTRACT + '?tab=Contract+Interactions', false);
+    // Step 2: Get agreement status
+    const statusSelector = 'e26dc477';
+    const statusData = '0x' + statusSelector + offset + length + paddedStr;
+    const statusResult = await rpc('eth_call', [{ to: CONTRACT, data: statusData }, 'latest']);
+    
+    // Decode string result
+    const h = statusResult.slice(2);
+    const strLength = parseInt(h.slice(64, 128), 16);
+    const strHex2 = h.slice(128, 128 + strLength * 2);
+    const status = Array.from({length: strLength}, (_, i) => 
+      String.fromCharCode(parseInt(strHex2.slice(i*2, i*2+2), 16))
+    ).join('');
+    
+    const statusEmoji = {
+      'pending': '🟡',
+      'active': '🟢',
+      'completed': '✅',
+      'cancelled': '🔴',
+      'suspended': '🟠'
+    }[status] || '⚪';
+    
+    showOut('o_view', `📋 Agreement: ${id}\n\nStatus: ${statusEmoji} ${status}\n\nView on Explorer:\nhttps://explorer-studio-dev.genlayer.com/address/${CONTRACT}?tab=Contract+Interactions`, false);
   } catch (err) {
-    // If call fails, agreement likely doesn't exist
     showOut('o_view', '❌ Agreement "' + id + '" does not exist on-chain.\n\nError: ' + err.message, true);
   }
 });
