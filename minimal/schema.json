@@ -1,0 +1,16 @@
+{
+  "name": "MinimalContract",
+  "functions": [
+    {
+      "name": "set_value",
+      "inputs": [{ "name": "value", "type": "int" }],
+      "outputs": []
+    },
+    {
+      "name": "get_value",
+      "inputs": [],
+      "outputs": [{ "type": "int" }]
+    }
+  ],
+  "events": []
+}

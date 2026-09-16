@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+.vercel/
+
+# Vercel
+.vercel
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Secrets
+*.pem
+.env
+.env.local
+.env.production
+!frontend/.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Submodules
+boilerplate-fresh/
+
+# Testing artifacts
+tests/__pycache__/
+.pytest_cache/
+test_*.py
+test_*.js
+test_*.mjs
+check_*.js
+check_*.mjs
+deploy_*.mjs
+deploy_*.js
+*_test.py
+*_test.js
+
+# Temporary
+tmp/
+tmp-*
