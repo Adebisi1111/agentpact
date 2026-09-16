@@ -246,7 +246,7 @@ class AgentPact(gl.Contract):
     def get_agreement_status(self, agreement_id: str) -> str:
         agreement = self.agreements.get(agreement_id)
         if agreement is None:
-            return ""
+            return "NONEXISTENT"
         return agreement.status
     
     @gl.public.view

@@ -206,12 +206,12 @@
 <footer>
   <div style="margin-bottom:0.5rem"><a href="https://github.com/Adebisi1111/agentpact" target="_blank">GitHub</a> · <a href="index.html">Home</a> · <a href="index.html#about">About</a> · <a href="index.html#faq">FAQ</a></div>
   <div>© 2026 AgentPact — Built on GenLayer Studio Next</div>
-  <div style="margin-top:0.5rem;opacity:0.7">Contract: 0x36ff8b7f0d59a0C73c7B05DB048386fcC8418344</div>
+  <div style="margin-top:0.5rem;opacity:0.7">Contract: 0x474B24670435036D9e48AAFc3A6DA6eD8D0dE5A4</div>
 </footer>
 
 <script src="viem-iife.js"></script>
 <script>
-const CONTRACT = '0x36ff8b7f0d59a0C73c7B05DB048386fcC8418344';
+const CONTRACT = '0x474B24670435036D9e48AAFc3A6DA6eD8D0dE5A4';
 const CHAIN = '0xf22d';
 const RPC = 'https://studio-next.genlayer.com/api';
 
@@ -401,8 +401,8 @@ $('b_view').addEventListener('click', async () => {
     
     console.log('Decoded status:', status);
     
-    if (!status || status.length === 0) {
-      showOut('o_view', '❌ Agreement "' + id + '" does not exist on-chain.\n\nIf you just created it, wait 2-3 minutes for GenLayer consensus finalization.', true);
+    if (status === 'NONEXISTENT' || !status || status.length === 0) {
+      showOut('o_view', '❌ Agreement "' + id + '" does not exist on-chain.\n\nCreate it first using the form above.', true);
       return;
     }
     
