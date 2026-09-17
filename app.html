@@ -12,38 +12,31 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --accent: #15BCDF; --accent-hover: #3fd0ef; --accent-border: #0fa3c2;
-      --danger: #ff5c7a; --bg: #F2F1F0; --bg-alt: #F7F6F8;
-      --heading: #2b3033; --nav: #3a3a3a; --body: #6b6f72; --dark: #1a1c1e;
-      --card-bg: rgba(255,255,255,0.03); --card-border: rgba(255,255,255,0.06);
+      --danger: #ff5c7a; --bg: #F2F1F0; --heading: #2b3033; --body: #6b6f72; --card-bg: rgba(255,255,255,0.03); --card-border: rgba(255,255,255,0.06);
     }
-    [data-theme="dark"] { --bg: #0a0a0a; --bg-alt: #141414; --heading: #ffffff; --nav: #a0a0a0; --body: #888888; --dark: #0a0a0a; --card-bg: rgba(255,255,255,0.05); --card-border: rgba(255,255,255,0.1); }
+    [data-theme="dark"] { --bg: #0a0a0a; --heading: #ffffff; --body: #888888; --card-bg: rgba(255,255,255,0.05); --card-border: rgba(255,255,255,0.1); }
     body { font-family: 'Quantico', 'Arial Narrow', sans-serif; background: var(--bg); color: var(--body); line-height: 1.6; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
-    a { color: var(--nav); text-decoration: none; transition: color 0.2s; }
-    a:hover { color: var(--accent); }
-    .navbar { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; padding: 1rem clamp(20px, 4vw, 48px); background: var(--bg); border-bottom: 1px solid var(--card-border); }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-hover); }
+    .navbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 1rem; padding: 1rem clamp(20px, 4vw, 48px); background: var(--bg); border-bottom: 1px solid var(--card-border); }
     .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
     .nav-logo-text { font-size: 1.4rem; font-weight: 700; color: var(--heading); text-transform: lowercase; }
     .nav-links { display: flex; gap: 34px; align-items: center; margin-left: auto; }
-    .nav-links a { font-weight: 700; font-size: .9rem; letter-spacing: 0.06em; color: var(--nav); text-transform: uppercase; }
-    .theme-toggle { background: none; border: none; cursor: pointer; padding: 8px; color: var(--nav); }
+    .nav-links a { font-weight: 700; font-size: .9rem; letter-spacing: .06em; color: var(--heading); text-transform: uppercase; }
+    .theme-toggle { background: none; border: none; cursor: pointer; padding: 8px; color: var(--heading); }
     .theme-toggle:hover { color: var(--accent); }
-    .theme-icon-light { width: 20px; height: 20px; display: block; }
-    .theme-icon-dark { width: 20px; height: 20px; display: none; }
-    [data-theme="dark"] .theme-icon-light { display: none; }
-    [data-theme="dark"] .theme-icon-dark { display: block; }
     .container { max-width: 900px; margin: 0 auto; padding: 2rem clamp(20px, 4vw, 48px); }
     .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; }
-    h1 { font-size: 2rem; font-weight: 700; color: var(--heading); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.01em; }
+    h1 { font-size: 2rem; font-weight: 700; color: var(--heading); text-transform: uppercase; letter-spacing: .01em; margin-bottom: 1.5rem; }
     h3 { color: var(--accent); margin-bottom: 1rem; font-size: 1.1rem; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
     @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
-    label { font-size: .75rem; color: var(--body); display: block; margin-bottom: .25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    label { font-size: .75rem; color: var(--body); display: block; margin-bottom: .25rem; text-transform: uppercase; letter-spacing: .05em; }
     input { width: 100%; background: var(--bg); border: 1px solid var(--card-border); color: var(--heading); padding: .6rem .75rem; border-radius: 10px; font-size: .9rem; font-family: inherit; }
     input:focus { outline: none; border-color: var(--accent); }
     .row { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
-    .btn { border: 1px solid var(--accent); color: var(--accent); background: transparent; padding: .6rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: .85rem; font-family: inherit; transition: all 0.2s; }
+    .btn { border: 1px solid var(--accent); color: var(--accent); background: transparent; padding: .6rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: .8rem; font-family: inherit; transition: all 0.2s; }
     .btn:hover { background: var(--accent); color: #fff; }
-    .btn:disabled { opacity: .4; cursor: not-allowed; }
     .btn-p { background: var(--accent); color: #fff; }
     .btn-p:hover { background: var(--accent-hover); }
     .btn-d { border-color: var(--danger); color: var(--danger); }
@@ -56,68 +49,56 @@
     .note.show { display: block; }
     .note.err { background: rgba(255,92,122,.1); color: #ff5c7a; }
     .note.ok { background: rgba(82,224,161,.1); color: #52e0a1; }
-    .note.warn { background: rgba(245,158,11,.1); color: #f59e0b; }
+    footer { border-top: 1px solid var(--card-border); padding: 2rem; text-align: center; font-size: .75rem; color: var(--body); }
     .badge { padding: .3rem .8rem; border-radius: 20px; font-size: .75rem; font-weight: 700; }
     .badge.conn { background: rgba(82,224,161,.15); color: #52e0a1; }
     .badge.disc { background: rgba(255,92,122,.15); color: #ff5c7a; }
-    .divider { height: 1px; background: var(--card-border); margin: 1.5rem 0; }
-    footer { border-top: 1px solid rgba(0,0,0,0.08); padding: 2rem; text-align: center; font-size: 0.75rem; color: var(--body); }
-    [data-theme="dark"] footer { border-top-color: rgba(255,255,255,0.08); }
   </style>
 </head>
 <body>
-
 <nav class="navbar">
   <a href="index.html" class="nav-logo">
     <img src="assets/logo-small.png" alt="AgentPact" style="width:32px;height:32px;border-radius:6px">
-    <span class="nav-logo-text">agentpact<span style="font-weight:400;opacity:.5">.ai</span></span>
+    <span class="nav-logo-text">agentpact<span style="opacity:.5">.ai</span></span>
   </a>
-  <div class="nav-links">
-    <a href="index.html#about">ABOUT</a>
-    <a href="index.html#faq">FAQ</a>
-  </div>
+  <div class="nav-links"><a href="index.html#about">ABOUT</a><a href="index.html#faq">FAQ</a></div>
   <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
     <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
     <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
   </button>
-  <button id="walletBtn" class="btn" style="margin-left:auto">Connect Wallet</button>
+  <button id="walletBtn" class="btn">Connect Wallet</button>
 </nav>
 
 <div class="container">
-  <h1>AgentPact App</h1>
+  <h1>AgentPact</h1>
   
   <div class="card">
-    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
       <span style="font-size:1.2rem;font-weight:700;color:var(--heading)">⚡ AgentPact</span>
       <span id="app-badge" class="badge disc">Disconnected</span>
     </div>
     <div id="app-note" class="note"></div>
     
     <h3>Create Agreement</h3>
-    <p style="font-size:.85rem;color:var(--body);margin-bottom:1rem">Define the service agreement. No funds are locked yet — you fund it after creation.</p>
+    <p style="font-size:.85rem;color:var(--body);margin-bottom:1rem">Define terms. Fund after creation.</p>
     <div class="grid">
       <div><label>Agreement ID</label><input type="text" id="f_id" placeholder="SA-001"></div>
-      <div><label>Worker Address</label><input type="text" id="f_worker" placeholder="0x..."></div>
-      <div style="grid-column:1/-1"><label>Terms URL</label><input type="text" id="f_terms" placeholder="https://example.com"></div>
+      <div><label>Worker</label><input type="text" id="f_worker" placeholder="0x..."></div>
+      <div style="grid-column:1/-1"><label>Terms URL</label><input type="text" id="f_terms" placeholder="https://..."></div>
       <div><label>Payment/tick (wei)</label><input type="number" id="f_pay" placeholder="1000"></div>
-      <div><label>Interval (sec)</label><input type="number" id="f_int" placeholder="3600"></div>
-      <div><label>Total ticks</label><input type="number" id="f_ticks" placeholder="10"></div>
-      <div><label>Uptime %</label><input type="number" id="f_up" placeholder="95"></div>
-      <div><label>Max resp time (ms)</label><input type="number" id="f_resp" placeholder="2000"></div>
-      <div><label>Penalty %</label><input type="number" id="f_pen" placeholder="10"></div>
+      <div><label>Interval (s)</label><input type="number" id="f_int" placeholder="3600"></div>
+      <div><label>Ticks</label><input type="number" id="f_ticks" placeholder="10"></div>
     </div>
-    <div class="row">
-      <button id="b_create" class="btn btn-p" disabled>Create</button>
-      <button id="b_fund" class="btn" disabled>Fund</button>
-    </div>
+    <div class="row"><button id="b_create" class="btn btn-p" disabled>Create</button><button id="b_fund" class="btn" disabled>Fund</button></div>
     <div id="o_create" class="out"></div>
   </div>
   
   <div class="card">
     <h3>Proof / Violations</h3>
-    <p style="font-size:.85rem;color:var(--body);margin-bottom:1rem">Validators fetch the Terms URL directly and verify the service. You cannot fake proof.</p>
+    <p style="font-size:.85rem;color:var(--body);margin-bottom:1rem">Submit proof hash. Validators verify deterministically.</p>
     <div class="grid">
       <div><label>Agreement ID</label><input type="text" id="p_id" placeholder="SA-001"></div>
+      <div><label>Proof Hash</label><input type="text" id="p_hash" placeholder="sha256:..."></div>
     </div>
     <div class="row">
       <button id="b_proof" class="btn btn-p" disabled>Submit Proof</button>
@@ -139,15 +120,14 @@
 
 <footer>
   <div><a href="https://github.com/Adebisi1111/agentpact" target="_blank">GitHub</a> · <a href="index.html">Home</a></div>
-  <div style="margin-top:0.5rem">© 2026 AgentPact · Contract: 0x474B24670435036D9e48AAFc3A6DA6eD8D0dE5A4</div>
+  <div style="margin-top:.5rem">© 2026 AgentPact · Contract: 0x00D8BB74f519e2302513608AF731F41Fc30159c8</div>
 </footer>
 
 <script src="viem-iife.js"></script>
 <script>
-const CONTRACT = '0x95B525e1BB5Ed762C2A63769537BaEc080d14049';
+const CONTRACT = '0x00D8BB74f519e2302513608AF731F41Fc30159c8';
 const CHAIN = '0xf22d';
 const RPC = 'https://studio-next.genlayer.com/api';
-
 let acct = null;
 const $ = x => document.getElementById(x);
 
@@ -155,7 +135,7 @@ function showNote(m, t) { const e = $('app-note'); e.textContent = m; e.classNam
 function hideNote() { $('app-note').className = 'note'; }
 function showOut(id, m, err) { const e = $(id); e.textContent = m; e.className = 'out show' + (err ? ' err' : ' ok'); }
 function setBtn(on) { ['b_create','b_fund','b_proof','b_viol','b_cancel','b_view'].forEach(i => { const b = $(i); if (b) b.disabled = !on; }); }
-function updateBadge(cls, txt) { const b = $('app-badge'); b.className = 'badge ' + cls; b.textContent = txt; }
+function updateBadge(cls, txt) { $('app-badge').className = 'badge ' + cls; $('app-badge').textContent = txt; }
 
 async function rpc(method, params) {
   const r = await fetch(RPC, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ jsonrpc:'2.0', id: Date.now(), method, params }) });
@@ -172,7 +152,7 @@ async function connect() {
   acct = accounts[0];
   const chain = await window.ethereum.request({ method: 'eth_chainId' });
   if (parseInt(chain, 16) !== 61997) {
-    showNote('Switch to GenLayer Studio Next (61997)...', 'warn');
+    showNote('Switch to Studio Next...', 'warn');
     try { await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN, chainName: 'GenLayer Studio Next', rpcUrls: [RPC], nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 } }] }); } catch(e) {}
     await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN }] });
   }
@@ -194,73 +174,34 @@ async function sendTx(fn, args, value) {
 const ABI = [
   { name: 'create_agreement', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }, { name: 'worker', type: 'address' }, { name: 'terms', type: 'string' }, { name: 'payment_per_tick', type: 'uint256' }, { name: 'interval_seconds', type: 'uint256' }, { name: 'total_ticks', type: 'uint256' }, { name: 'uptime_required', type: 'uint256' }, { name: 'response_time_required', type: 'uint256' }, { name: 'penalty_rate', type: 'uint256' }], outputs: [{ type: 'string' }] },
   { name: 'fund_agreement', type: 'function', stateMutability: 'payable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] },
-  { name: 'submit_proof', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
+  { name: 'submit_proof', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }, { name: 'proof_hash', type: 'string' }], outputs: [{ type: 'bool' }] },
   { name: 'report_violation', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
   { name: 'cancel_agreement', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
-  { name: 'get_agreement_status', type: 'function', stateMutability: 'view', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] },
-  { name: 'get_stats', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'tuple', components: [{ name: 'total_agreements', type: 'uint256' }, { name: 'total_proofs', type: 'uint256' }] }] }
+  { name: 'agreement_exists', type: 'function', stateMutability: 'view', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'bool' }] },
+  { name: 'get_agreement', type: 'function', stateMutability: 'view', inputs: [{ name: 'agreement_id', type: 'string' }], outputs: [{ type: 'string' }] }
 ];
 
-$('walletBtn').addEventListener('click', async () => {
-  if (acct) { disconnect(); return; }
-  try { $('walletBtn').textContent = 'Connecting...'; $('walletBtn').disabled = true; showNote('Connecting...', 'warn'); await connect(); }
-  catch (err) { showNote('Error: ' + err.message, 'err'); $('walletBtn').textContent = 'Connect Wallet'; $('walletBtn').disabled = false; }
-});
+$('walletBtn').addEventListener('click', async () => { if (acct) { disconnect(); return; } try { $('walletBtn').textContent = 'Connecting...'; $('walletBtn').disabled = true; showNote('Connecting...', 'warn'); await connect(); } catch (err) { showNote('Error: ' + err.message, 'err'); $('walletBtn').textContent = 'Connect Wallet'; $('walletBtn').disabled = false; } });
 
 $('b_create').addEventListener('click', async () => {
-  try {
-    hideNote();
-    const id = $('f_id').value || $('f_id').placeholder;
-    const worker = $('f_worker').value || $('f_worker').placeholder;
-    const terms = $('f_terms').value || $('f_terms').placeholder;
-    const pay = BigInt($('f_pay').value || $('f_pay').placeholder);
-    const interval = BigInt($('f_int').value || $('f_int').placeholder);
-    const total = BigInt($('f_ticks').value || $('f_ticks').placeholder);
-    const uptime = BigInt($('f_up').value || $('f_up').placeholder);
-    const respTime = BigInt($('f_resp').value || $('f_resp').placeholder);
-    const penalty = BigInt($('f_pen').value || $('f_pen').placeholder);
-    showOut('o_create', 'Creating...', false);
-    const hash = await sendTx('create_agreement', [id, worker, terms, pay, interval, total, uptime, respTime, penalty], 0n);
-    showOut('o_create', `✅ Created!\nTx: ${hash}\n\nWait 2-3 min for finalization before funding.`, false);
-  } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
+  try { hideNote(); const id = $('f_id').value || $('f_id').placeholder; const worker = $('f_worker').value || $('f_worker').placeholder; const terms = $('f_terms').value || $('f_terms').placeholder; const pay = BigInt($('f_pay').value || $('f_pay').placeholder); const interval = BigInt($('f_int').value || $('f_int').placeholder); const total = BigInt($('f_ticks').value || $('f_ticks').placeholder); const uptime = BigInt($('f_up')?.value || $('f_up')?.placeholder || 95); const respTime = BigInt($('f_resp')?.value || $('f_resp')?.placeholder || 2000); const penalty = BigInt($('f_pen')?.value || $('f_pen')?.placeholder || 10); showOut('o_create', 'Creating...', false); const hash = await sendTx('create_agreement', [id, worker, terms, pay, interval, total, uptime, respTime, penalty], 0n); showOut('o_create', `✅ Created!\nTx: ${hash}`, false); }
+  catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
 });
 
 $('b_fund').addEventListener('click', async () => {
-  try {
-    hideNote();
-    const id = $('f_id').value || $('f_id').placeholder;
-    const pay = BigInt($('f_pay').value || $('f_pay').placeholder);
-    const total = BigInt($('f_ticks').value || $('f_ticks').placeholder);
-    const val = pay * total;
-    const balance = await rpc('eth_getBalance', [acct, 'latest']);
-    if (BigInt(balance) < val) { showOut('o_create', `❌ Insufficient GEN!\nBalance: ${Number(balance)/1e18} GEN\nNeed: ${Number(val)/1e18} GEN\n\nGet test GEN: https://faucet.genlayer.com/`, true); return; }
-    showOut('o_create', `Funding ${Number(val)/1e18} GEN...`, false);
-    const hash = await sendTx('fund_agreement', [id], val);
-    showOut('o_create', `✅ Funded!\nAmount: ${Number(val)/1e18} GEN locked\nTx: ${hash}`, false);
-  } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
+  try { hideNote(); const id = $('f_id').value || $('f_id').placeholder; const pay = BigInt($('f_pay').value || $('f_pay').placeholder); const total = BigInt($('f_ticks').value || $('f_ticks').placeholder); const val = pay * total; const balance = await rpc('eth_getBalance', [acct, 'latest']); if (BigInt(balance) < val) { showOut('o_create', `❌ Insufficient GEN!\nBalance: ${Number(balance)/1e18} GEN`, true); return; } showOut('o_create', `Funding ${Number(val)/1e18} GEN...`, false); const hash = await sendTx('fund_agreement', [id], val); showOut('o_create', `✅ Funded!\nTx: ${hash}`, false); }
+  catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
 });
 
 $('b_proof').addEventListener('click', async () => {
-  try {
-    hideNote();
-    const id = $('p_id').value || $('p_id').placeholder;
-    showOut('o_proof', 'Submitting... Validators will fetch the URL and verify.', false);
-    const hash = await sendTx('submit_proof', [id], 0n);
-    showOut('o_proof', `✅ Proof submitted!\nTx: ${hash}\n\nWait 2-3 min for finalization.`, false);
-  } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
-});
-
-$('b_viol').addEventListener('click', async () => {
-  try { hideNote(); const id = $('f_id').value || $('f_id').placeholder; showOut('o_proof', 'Reporting...', false); const hash = await sendTx('report_violation', [id], 0n); showOut('o_proof', `✅ Violation reported!\nTx: ${hash}`, false); }
+  try { hideNote(); const id = $('p_id').value || $('p_id').placeholder; const hash = $('p_hash').value || $(p_hash)?.placeholder || 'demo-proof-hash-123'; showOut('o_proof', 'Submitting...', false); const tx = await sendTx('submit_proof', [id, hash], 0n); showOut('o_proof', `✅ Submitted!\nTx: ${tx}`, false); }
   catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
 });
 
-$('b_cancel').addEventListener('click', async () => {
-  try { hideNote(); const id = $('f_id').value || $('f_id').placeholder; showOut('o_proof', 'Cancelling...', false); const hash = await sendTx('cancel_agreement', [id], 0n); showOut('o_proof', `✅ Cancelled!\nTx: ${hash}`, false); }
-  catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
-});
+$('b_viol').addEventListener('click', async () => { try { hideNote(); const id = $('f_id').value || $('f_id').placeholder; showOut('o_proof', 'Reporting...', false); const hash = await sendTx('report_violation', [id], 0n); showOut('o_proof', `✅ Violation reported!\nTx: ${hash}`, false); } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); } });
 
-// View button - simple and direct using agreement_exists
+$('b_cancel').addEventListener('click', async () => { try { hideNote(); const id = $('f_id').value || $('f_id').placeholder; showOut('o_proof', 'Cancelling...', false); const hash = await sendTx('cancel_agreement', [id], 0n); showOut('o_proof', `✅ Cancelled!\nTx: ${hash}`, false); } catch (err) { showOut('o_proof', 'Error: ' + err.message, true); } });
+
 $('b_view').addEventListener('click', async () => {
   const id = $('v_id').value || $('v_id').placeholder;
   if (!id || id === 'e.g., SA-001') { showNote('Please enter an agreement ID', 'warn'); return; }
@@ -273,39 +214,20 @@ $('b_view').addEventListener('click', async () => {
     const paddedStr = strHex.padEnd(64, '0');
     const data = '0x' + selector + offset + length + paddedStr;
     const result = await rpc('eth_call', [{ to: CONTRACT, data }, 'latest']);
-    
-    // bool return: 0x000...0 = false, 0x000...1 = true
     const exists = result && result.length > 2 && parseInt(result.slice(2), 16) === 1;
-    
-    if (!exists) {
-      showOut('o_view', `❌ Agreement "${id}" does not exist on-chain.\n\nCreate it first.`, true);
-    } else {
-      showOut('o_view', `📋 Agreement "${id}" exists!\n\nExplorer: https://explorer-studio-dev.genlayer.com/address/${CONTRACT}?tab=Contract+Interactions`, false);
-    }
-  } catch (err) {
-    showOut('o_view', `❌ Agreement "${id}" does not exist on-chain.`, true);
-  }
+    if (!exists) showOut('o_view', `❌ Agreement "${id}" does not exist on-chain.`, true);
+    else showOut('o_view', `📋 Agreement: ${id}\n\nExplorer: https://explorer-studio-dev.genlayer.com/address/${CONTRACT}?tab=Contract+Interactions`, false);
+  } catch (err) { showOut('o_view', `❌ Agreement "${id}" does not exist on-chain.`, true); }
 });
 
 if (window.ethereum) {
   window.ethereum.on('accountsChanged', (a) => { if (!a.length) disconnect(); else { acct = a[0]; updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`); setBtn(true); } });
-  window.ethereum.on('chainChanged', (c) => { if (parseInt(c,16) !== 61997) { updateBadge('disc', 'Wrong Network'); setBtn(false); showNote('⚠️ Switch to GenLayer Studio Next', 'warn'); } });
+  window.ethereum.on('chainChanged', (c) => { if (parseInt(c,16) !== 61997) { updateBadge('disc', 'Wrong Network'); setBtn(false); showNote('⚠️ Switch to Studio Next', 'warn'); } });
 }
+(async () => { if (window.ethereum) { try { const a = await window.ethereum.request({ method: 'eth_accounts' }); if (a && a.length) { acct = a[0]; const c = await window.ethereum.request({ method: 'eth_chainId' }); if (parseInt(c,16) === 61997) { updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`); setBtn(true); $('walletBtn').textContent = 'Disconnect'; } } } catch(e) {} } })();
 
-(async () => {
-  if (window.ethereum) {
-    try {
-      const a = await window.ethereum.request({ method: 'eth_accounts' });
-      if (a && a.length) { acct = a[0]; const c = await window.ethereum.request({ method: 'eth_chainId' }); if (parseInt(c,16) === 61997) { updateBadge('conn', `✓ ${acct.slice(0,6)}...${acct.slice(-4)}`); setBtn(true); $('walletBtn').textContent = 'Disconnect'; } }
-    } catch(e) {}
-  }
-})();
-</script>
-<script>
-function toggleTheme() { const h = document.documentElement; h.setAttribute('data-theme', h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); localStorage.setItem('theme', document.documentElement.getAttribute('data-theme')); }
-const t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t);
-else if (window.matchSelector && window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.setAttribute('data-theme', 'dark');
-document.querySelector('.hamburger')?.addEventListener('click', () => document.querySelector('.mobile-menu').classList.toggle('open'));
+function toggleTheme() { const h = document.documentElement; h.setAttribute('data-theme', h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); localStorage.setItem('theme', h.getAttribute('data-theme')); }
+const t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.setAttribute('data-theme', 'dark');
 </script>
 </body>
 </html>

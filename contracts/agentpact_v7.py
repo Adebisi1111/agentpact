@@ -135,7 +135,7 @@ class AgentPact(gl.Contract):
         if u256(self._now()) < agreement.next_deadline:
             raise ValueError("Too early for next proof")
         
-        def work() -> dict:
+        def work() -> str:
             import hashlib
             response = gl.nondet.web.render(
                 url=agreement.terms,
@@ -143,47 +143,27 @@ class AgentPact(gl.Contract):
                 headers={"User-Agent": "AgentPact/1.0"},
                 timeout=10,
             )
-            status_code = response.get("status_code", 0)
             body = response.get("body", "")
-            proof_hash = hashlib.sha256(body.encode()).hexdigest()
-            return {
-                "status_code": status_code,
-                "proof_hash": proof_hash,
-            }
+            return hashlib.sha256(body.encode()).hexdigest()
         
         def validator(leader_result) -> bool:
             if not isinstance(leader_result, gl.vm.Return):
                 return False
-            return work() == leader_result.calldata
+            leader_hash = leader_result.calldata
+            my_hash = work()
+            return my_hash == leader_hash
         
         result = gl.vm.run_nondet_unsafe(work, validator)
         
-        agreement.last_proof_hash = result["proof_hash"]
+        agreement.last_proof_hash = result
         agreement.last_check_status = "passed"
-        agreement.last_response_time = u256(0)
         agreement.paid_ticks += u256(1)
         agreement.consecutive_failures = u256(0)
-        
-        payment_amount = agreement.payment_per_tick
-        agreement.total_paid_out += payment_amount
-        
+        agreement.total_paid_out += agreement.payment_per_tick
         agreement.next_deadline = u256(self._now()) + agreement.interval_seconds
-        
-        total_checks = agreement.paid_ticks + agreement.violations
-        current_uptime = (agreement.paid_ticks * u256(100)) / total_checks
-        
-        if current_uptime < agreement.uptime_required:
-            agreement.status = "suspended"
-            remaining_ticks = agreement.total_ticks - agreement.paid_ticks
-            refund = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
-            if refund > u256(0):
-                agreement.total_refunded += refund
         
         if agreement.paid_ticks >= agreement.total_ticks:
             agreement.status = "completed"
-            excess = agreement.total_deposited - agreement.total_paid_out - agreement.total_penalties
-            if excess > u256(0):
-                agreement.total_refunded += excess
         
         self.agreements[agreement_id] = agreement
         self.proof_counter += u256(1)
