@@ -84,10 +84,13 @@
     <div class="grid">
       <div><label>Agreement ID</label><input type="text" id="f_id" placeholder="SA-001"></div>
       <div><label>Worker</label><input type="text" id="f_worker" placeholder="0x..."></div>
-      <div style="grid-column:1/-1"><label>Terms URL</label><input type="text" id="f_terms" placeholder="https://..."></div>
-      <div><label>Payment/tick (wei)</label><input type="number" id="f_pay" placeholder="1000"></div>
-      <div><label>Interval (s)</label><input type="number" id="f_int" placeholder="3600"></div>
-      <div><label>Ticks</label><input type="number" id="f_ticks" placeholder="10"></div>
+      <div style="grid-column:1/-1"><label>Terms URL</label><input type="text" id="f_terms" placeholder="https://httpbin.org/get"></div>
+      <div><label>Payment/tick (wei)</label><input type="number" id="f_pay" placeholder="1000000000"></div>
+      <div><label>Interval (s)</label><input type="number" id="f_int" placeholder="60"></div>
+      <div><label>Ticks</label><input type="number" id="f_ticks" placeholder="3"></div>
+      <div><label>Uptime %</label><input type="number" id="f_up" placeholder="95"></div>
+      <div><label>Max RT (ms)</label><input type="number" id="f_resp" placeholder="5000"></div>
+      <div><label>Violation Pen.</label><input type="number" id="f_pen" placeholder="10"></div>
     </div>
     <div class="row"><button id="b_create" class="btn btn-p" disabled>Create</button><button id="b_fund" class="btn" disabled>Fund</button></div>
     <div id="o_create" class="out"></div>
@@ -98,7 +101,7 @@
     <p style="font-size:.85rem;color:var(--body);margin-bottom:1rem">Submit proof hash. Validators verify deterministically.</p>
     <div class="grid">
       <div><label>Agreement ID</label><input type="text" id="p_id" placeholder="SA-001"></div>
-      <div><label>Proof Hash</label><input type="text" id="p_hash" placeholder="sha256:..."></div>
+      <div><label>Proof Hash</label><input type="text" id="p_hash" placeholder="demo-proof"></div>
     </div>
     <div class="row">
       <button id="b_proof" class="btn btn-p" disabled>Submit Proof</button>
@@ -120,12 +123,12 @@
 
 <footer>
   <div><a href="https://github.com/Adebisi1111/agentpact" target="_blank">GitHub</a> · <a href="index.html">Home</a></div>
-  <div style="margin-top:.5rem">© 2026 AgentPact · Contract: 0x00D8BB74f519e2302513608AF731F41Fc30159c8</div>
+  <div style="margin-top:.5rem">© 2026 AgentPact · Contract: 0xb2b150cCD1c6f8284450626a82085E03D6277bD0</div>
 </footer>
 
 <script src="viem-iife.js"></script>
 <script>
-const CONTRACT = '0x00D8BB74f519e2302513608AF731F41Fc30159c8';
+const CONTRACT = '0xb2b150cCD1c6f8284450626a82085E03D6277bD0';
 const CHAIN = '0xf22d';
 const RPC = 'https://studio-next.genlayer.com/api';
 let acct = null;
@@ -184,8 +187,21 @@ const ABI = [
 $('walletBtn').addEventListener('click', async () => { if (acct) { disconnect(); return; } try { $('walletBtn').textContent = 'Connecting...'; $('walletBtn').disabled = true; showNote('Connecting...', 'warn'); await connect(); } catch (err) { showNote('Error: ' + err.message, 'err'); $('walletBtn').textContent = 'Connect Wallet'; $('walletBtn').disabled = false; } });
 
 $('b_create').addEventListener('click', async () => {
-  try { hideNote(); const id = $('f_id').value || $('f_id').placeholder; const worker = $('f_worker').value || $('f_worker').placeholder; const terms = $('f_terms').value || $('f_terms').placeholder; const pay = BigInt($('f_pay').value || $('f_pay').placeholder); const interval = BigInt($('f_int').value || $('f_int').placeholder); const total = BigInt($('f_ticks').value || $('f_ticks').placeholder); const uptime = BigInt($('f_up')?.value || $('f_up')?.placeholder || 95); const respTime = BigInt($('f_resp')?.value || $('f_resp')?.placeholder || 2000); const penalty = BigInt($('f_pen')?.value || $('f_pen')?.placeholder || 10); showOut('o_create', 'Creating...', false); const hash = await sendTx('create_agreement', [id, worker, terms, pay, interval, total, uptime, respTime, penalty], 0n); showOut('o_create', `✅ Created!\nTx: ${hash}`, false); }
-  catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
+  try {
+    hideNote();
+    const id = $('f_id').value || $('f_id').placeholder;
+    const worker = $('f_worker').value || $('f_worker').placeholder;
+    const terms = $('f_terms').value || $('f_terms').placeholder;
+    const pay = BigInt($('f_pay').value || $('f_pay').placeholder);
+    const interval = BigInt($('f_int').value || $('f_int').placeholder);
+    const total = BigInt($('f_ticks').value || $('f_ticks').placeholder);
+    const uptime = BigInt($('f_up')?.value || $('f_up')?.placeholder || '95');
+    const respTime = BigInt($('f_resp')?.value || $('f_resp')?.placeholder || '2000');
+    const penalty = BigInt($('f_pen')?.value || $('f_pen')?.placeholder || '10');
+    showOut('o_create', 'Creating...', false);
+    const hash = await sendTx('create_agreement', [id, worker, terms, pay, interval, total, uptime, respTime, penalty], 0n);
+    showOut('o_create', `✅ Created!\nTx: ${hash}`, false);
+  } catch (err) { showOut('o_create', 'Error: ' + err.message, true); }
 });
 
 $('b_fund').addEventListener('click', async () => {
@@ -194,7 +210,7 @@ $('b_fund').addEventListener('click', async () => {
 });
 
 $('b_proof').addEventListener('click', async () => {
-  try { hideNote(); const id = $('p_id').value || $('p_id').placeholder; const hash = $('p_hash').value || $(p_hash)?.placeholder || 'demo-proof-hash-123'; showOut('o_proof', 'Submitting...', false); const tx = await sendTx('submit_proof', [id, hash], 0n); showOut('o_proof', `✅ Submitted!\nTx: ${tx}`, false); }
+  try { hideNote(); const id = $('p_id').value || $('p_id').placeholder; const hash = $('p_hash').value || $('p_hash').placeholder || 'demo-proof'; showOut('o_proof', 'Submitting...', false); const tx = await sendTx('submit_proof', [id, hash], 0n); showOut('o_proof', `✅ Submitted!\nTx: ${tx}`, false); }
   catch (err) { showOut('o_proof', 'Error: ' + err.message, true); }
 });
 
