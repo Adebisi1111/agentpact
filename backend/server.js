@@ -3,7 +3,7 @@
 
 import express from "express";
 import cors from "cors";
-import { createClient, testnetBradbury } from "genlayer-js";
+import { createClient, chains } from "genlayer-js";
 import { privateKeyToAccount } from "viem/accounts";
 
 const app = express();
@@ -24,7 +24,7 @@ if (!PRIVATE_KEY) {
 const account = privateKeyToAccount(PRIVATE_KEY);
 
 const client = createClient({
-  chain: testnetBradbury,
+  chain: chains.testnetBradbury,
   account,
 });
 
