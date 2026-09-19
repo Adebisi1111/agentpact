@@ -3,8 +3,7 @@
 
 import express from "express";
 import cors from "cors";
-import { createClient } from "genlayer-js";
-import { studionet } from "genlayer-js/chains";
+import { createClient, testnetBradbury } from "genlayer-js";
 import { privateKeyToAccount } from "viem/accounts";
 
 const app = express();
@@ -25,7 +24,7 @@ if (!PRIVATE_KEY) {
 const account = privateKeyToAccount(PRIVATE_KEY);
 
 const client = createClient({
-  chain: studionet,
+  chain: testnetBradbury,
   account,
 });
 
@@ -37,6 +36,10 @@ console.log("Contract:", AGENTPACT_ADDR);
 
 // Health check
 app.get("/health", (req, res) => {
+  res.json({ status: "ok", account: account.address, contract: AGENTPACT_ADDR });
+});
+
+app.get("/api/health", (req, res) => {
   res.json({ status: "ok", account: account.address, contract: AGENTPACT_ADDR });
 });
 
@@ -68,6 +71,7 @@ app.post("/create-agreement", async (req, res) => {
       address: AGENTPACT_ADDR,
       functionName: "create_agreement",
       args: [agreementId, worker, terms, BigInt(paymentPerTick), BigInt(intervalSeconds), BigInt(totalPayments), BigInt(uptimeRequired), BigInt(responseTimeRequired), BigInt(penaltyRate)],
+      gasLimit: 5000000n,
     });
 
     res.json({ success: true, txHash });
@@ -80,16 +84,17 @@ app.post("/create-agreement", async (req, res) => {
 // Submit proof
 app.post("/submit-proof", async (req, res) => {
   try {
-    const { agreementId, proofUrl, nonce } = req.body;
+    const { agreementId, proofHash, responseTime } = req.body;
 
-    if (!agreementId || !proofUrl || !nonce) {
+    if (!agreementId || !proofHash) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     const txHash = await client.writeContract({
       address: AGENTPACT_ADDR,
       functionName: "submit_proof",
-      args: [agreementId, proofUrl, BigInt(nonce)],
+      args: [agreementId, proofHash, BigInt(responseTime || 0)],
+      gasLimit: 5000000n,
     });
 
     res.json({ success: true, txHash });
@@ -152,6 +157,9 @@ app.get("/nonce/:id", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+// Serve static files
+app.use(express.static("."));
 
 // ─── Start Server ───────────────────────────────────────────────
 const PORT = process.env.PORT || 3001;
