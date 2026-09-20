@@ -50,13 +50,10 @@ class AgentPactV11(gl.Contract):
     ) -> str:
         if self.agreements.get(agreement_id) is not None:
             raise ValueError("Agreement ID already exists")
-        
         if payment_per_tick <= 0:
             raise ValueError("Payment per tick must be positive")
-        
         if Address(worker).as_hex == gl.message.sender_address.as_hex:
             raise ValueError("Worker cannot be the same as hiree")
-        
         agreement = ServiceAgreement(
             id=agreement_id,
             hiree=gl.message.sender_address.as_hex,
@@ -89,11 +86,9 @@ class AgentPactV11(gl.Contract):
             raise ValueError("Agreement not found")
         if agreement.status != "pending":
             raise ValueError("Can only fund pending")
-        
         total = agreement.payment_per_tick * agreement.total_ticks
         if gl.message.value < total:
             raise ValueError("Insufficient escrow")
-        
         agreement.total_deposited = u256(gl.message.value)
         agreement.status = "active"
         agreement.next_deadline = u256(self._now()) + agreement.interval_seconds
@@ -106,18 +101,11 @@ class AgentPactV11(gl.Contract):
 
     @gl.public.write
     def submit_proof(self, agreement_id: str) -> bool:
-        """
-        Validators independently fetch the terms URL and verify it returns 200.
-        The caller cannot fake proof — all validators execute the same web fetch
-        and compare results via the equivalence principle.
-        """
         agreement = self.agreements.get(agreement_id)
         if agreement is None or agreement.status != "active":
             raise ValueError("Not active")
         if u256(self._now()) < agreement.next_deadline:
             raise ValueError("Too early")
-
-        # Leader: fetch the terms URL and compute proof
         def get_proof() -> dict:
             import hashlib
             response = gl.nondet.web.render(
@@ -129,12 +117,7 @@ class AgentPactV11(gl.Contract):
             status_code = response.get("status_code", 0)
             body = response.get("body", "")
             proof_hash = hashlib.sha256(body.encode()).hexdigest()
-            return {
-                "status_code": status_code,
-                "proof_hash": proof_hash,
-            }
-
-        # Validator: proof must be a dict with status_code and proof_hash
+            return {"status_code": status_code, "proof_hash": proof_hash}
         def validate_proof(result) -> bool:
             if not isinstance(result, gl.vm.Return):
                 return False
@@ -147,21 +130,15 @@ class AgentPactV11(gl.Contract):
                 and isinstance(calldata["proof_hash"], str)
                 and len(calldata["proof_hash"]) == 64
             )
-
-        # Run with equivalence principle — validators verify the fetch
         result = gl.vm.run_nondet_unsafe(get_proof, validate_proof)
-
-        # Record the verified proof
         agreement.last_proof_hash = result["proof_hash"]
         agreement.last_response_time = u256(0)
         agreement.paid_ticks += u256(1)
         agreement.consecutive_failures = u256(0)
         agreement.total_paid_out += agreement.payment_per_tick
         agreement.next_deadline = u256(self._now()) + agreement.interval_seconds
-
         if agreement.paid_ticks >= agreement.total_ticks:
             agreement.status = "completed"
-
         self.agreements[agreement_id] = agreement
         self.proof_counter += u256(1)
         return True
@@ -171,15 +148,11 @@ class AgentPactV11(gl.Contract):
         agreement = self.agreements.get(agreement_id)
         if agreement is None or agreement.status != "active":
             raise ValueError("Not active")
-        
         agreement.violations += u256(1)
         agreement.consecutive_failures += u256(1)
-        
         penalty = (agreement.payment_per_tick * agreement.penalty_rate) / u256(100)
-        
         if agreement.consecutive_failures >= u256(3):
             agreement.status = "suspended"
-        
         self.agreements[agreement_id] = agreement
         return True
 
