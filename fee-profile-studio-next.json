@@ -8,5 +8,12 @@
     "executionBudgetPerRound": "25000000000000000",
     "totalMessageFees": "0",
     "rotationsPerRound": "1"
+  },
+  "write": {
+    "leaderTimeunitsAllocation": "100",
+    "validatorTimeunitsAllocation": "200",
+    "executionBudgetPerRound": "94630500000000",
+    "totalMessageFees": "0",
+    "rotations": ["3"]
   }
 }

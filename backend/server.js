@@ -1,9 +1,9 @@
 // backend/server.js - GenLayer Backend Relay Server for AgentPact
-// Signs transactions with private key and routes through Consensus Main Contract
+// Signs transactions with private key and routes through Studio Next Consensus
 
 import express from "express";
 import cors from "cors";
-import { createClient, chains } from "genlayer-js";
+import { createClient } from "genlayer-js";
 import { privateKeyToAccount } from "viem/accounts";
 
 const app = express();
@@ -13,7 +13,6 @@ app.use(express.json());
 // ─── Configuration ──────────────────────────────────────────────
 const AGENTPACT_ADDR = process.env.AGENTPACT_ADDR || "0x9F38f3Bf675aD1ACD23881509b6533eBD7F05F77";
 const PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY;
-const RPC_URL = process.env.GENLAYER_RPC || "https://rpc-bradbury.genlayer.com";
 
 if (!PRIVATE_KEY) {
   console.error("SERVER_PRIVATE_KEY environment variable is required");
@@ -23,10 +22,22 @@ if (!PRIVATE_KEY) {
 // ─── GenLayer Client (signs with private key) ───────────────────
 const account = privateKeyToAccount(PRIVATE_KEY);
 
-const client = createClient({
-  chain: chains.testnetBradbury,
-  account,
-});
+// Studio Next custom chain config
+const studioNext = {
+  id: 61997,
+  name: "Studio Next",
+  rpcUrls: { default: { http: ["https://studio-next.genlayer.com/api"] } },
+  nativeCurrency: { name: "GEN", symbol: "GEN", decimals: 18 },
+  testnet: true,
+  consensusMainContract: {
+    address: "0x0112Bf6e83497965A5fdD6Dad1E447a6E004271D",
+    abi: [],
+  },
+  defaultNumberOfInitialValidators: 5,
+  defaultConsensusMaxRotations: 3,
+};
+
+const client = createClient({ chain: studioNext, account });
 
 console.log("AgentPact Backend Relay Server");
 console.log("Account:", account.address);
@@ -81,25 +92,72 @@ app.post("/create-agreement", async (req, res) => {
   }
 });
 
-// Submit proof
+// Submit proof (v11: only takes agreement_id - validators fetch URL themselves)
 app.post("/submit-proof", async (req, res) => {
   try {
-    const { agreementId, proofHash, responseTime } = req.body;
+    const { agreementId } = req.body;
 
-    if (!agreementId || !proofHash) {
-      return res.status(400).json({ error: "Missing required fields" });
+    if (!agreementId) {
+      return res.status(400).json({ error: "Missing agreementId" });
     }
 
     const txHash = await client.writeContract({
       address: AGENTPACT_ADDR,
       functionName: "submit_proof",
-      args: [agreementId, proofHash, BigInt(responseTime || 0)],
+      args: [agreementId],
       gasLimit: 5000000n,
     });
 
     res.json({ success: true, txHash });
   } catch (e) {
     console.error("Submit proof error:", e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Fund agreement
+app.post("/fund-agreement", async (req, res) => {
+  try {
+    const { agreementId, value } = req.body;
+
+    if (!agreementId) {
+      return res.status(400).json({ error: "Missing agreementId" });
+    }
+
+    const txHash = await client.writeContract({
+      address: AGENTPACT_ADDR,
+      functionName: "fund_agreement",
+      args: [agreementId],
+      value: BigInt(value || 0),
+      gasLimit: 5000000n,
+    });
+
+    res.json({ success: true, txHash });
+  } catch (e) {
+    console.error("Fund agreement error:", e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Report violation
+app.post("/report-violation", async (req, res) => {
+  try {
+    const { agreementId } = req.body;
+
+    if (!agreementId) {
+      return res.status(400).json({ error: "Missing agreementId" });
+    }
+
+    const txHash = await client.writeContract({
+      address: AGENTPACT_ADDR,
+      functionName: "report_violation",
+      args: [agreementId],
+      gasLimit: 5000000n,
+    });
+
+    res.json({ success: true, txHash });
+  } catch (e) {
+    console.error("Report violation error:", e);
     res.status(500).json({ error: e.message });
   }
 });
