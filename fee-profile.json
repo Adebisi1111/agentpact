@@ -1,12 +1,12 @@
 {
-  "network": "studio-dev",
-  "chainId": 61997,
-  "version": 1,
   "deploy": {
-    "leaderTimeunitsAllocation": "125",
-    "validatorTimeunitsAllocation": "250",
-    "executionBudgetPerRound": "786434",
-    "totalMessageFees": "0",
-    "rotationsPerRound": "1"
+    "feeValue": "94642800002588",
+    "distribution": {
+      "leaderTimeunitsAllocation": "100",
+      "validatorTimeunitsAllocation": "200",
+      "rotations": ["0"]
+    },
+    "executionBudgetPerRound": "94642800000000",
+    "totalMessageFees": "0"
   }
 }
