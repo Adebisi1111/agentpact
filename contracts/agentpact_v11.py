@@ -1,7 +1,6 @@
 # v0.3.0
 # { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
 
-import json
 import genlayer as gl
 from genlayer.types import *
 
@@ -39,22 +38,17 @@ class AgentPact(gl.contract.Contract):
     proof_counter: gl.u256
 
     def __init__(self):
-        self.agreements = gl.storage.TreeMap[str, ServiceAgreement]()
-        self.nonces = gl.storage.TreeMap[str, gl.u256]()
-        self.agreement_counter = gl.u256(0)
-        self.proof_counter = gl.u256(0)
+        pass
 
     def _now(self) -> int:
         import datetime
         return int(datetime.datetime.now(datetime.timezone.utc).timestamp())
 
     def _check_proof(self, terms: str) -> dict:
-        """Validator: independently fetch URL and compute hash via consensus"""
         def get_proof() -> str:
             import hashlib
             web_data = gl.nondet.web.render(terms, mode="text")
             return hashlib.sha256(web_data.encode()).hexdigest()
-
         proof_hash = gl.eq_principle.strict_eq(get_proof)
         return {"proof_hash": proof_hash}
 
@@ -75,10 +69,6 @@ class AgentPact(gl.contract.Contract):
             raise ValueError("Agreement ID already exists")
         if payment_per_tick <= 0:
             raise ValueError("Payment per tick must be positive")
-        if interval_seconds <= 0:
-            raise ValueError("Interval must be positive")
-        if total_ticks <= 0:
-            raise ValueError("Total ticks must be positive")
         if gl.Address(worker).as_hex == gl.message.sender_address.as_hex:
             raise ValueError("Worker cannot be the same as hiree")
         agreement = ServiceAgreement()
@@ -114,11 +104,9 @@ class AgentPact(gl.contract.Contract):
         if agreement is None:
             raise ValueError("Agreement not found")
         if agreement.status != "pending":
-            raise ValueError("Can only fund pending agreements")
-        total_escrow = agreement.payment_per_tick * agreement.total_ticks
-        if gl.message.value <= 0:
-            raise ValueError("Must send GEN to fund agreement")
-        if gl.message.value < total_escrow:
+            raise ValueError("Can only fund pending")
+        total = agreement.payment_per_tick * agreement.total_ticks
+        if gl.message.value < total:
             raise ValueError("Insufficient escrow")
         agreement.total_deposited = gl.u256(gl.message.value)
         agreement.status = "active"
@@ -128,19 +116,15 @@ class AgentPact(gl.contract.Contract):
 
     @gl.public.write
     def submit_proof(self, agreement_id: str) -> bool:
-        """Validators independently fetch URL and verify content via consensus"""
         agreement = self.agreements.get(agreement_id)
         if agreement is None:
-            raise ValueError("Agreement not found")
+            raise ValueError("Not found")
         if agreement.status != "active":
-            raise ValueError("Agreement is not active")
+            raise ValueError("Not active")
         if gl.u256(self._now()) < agreement.next_deadline:
             raise ValueError("Too early")
-
-        # Validators fetch URL and compute hash via consensus
         result = self._check_proof(agreement.terms)
         agreement.last_proof_hash = result["proof_hash"]
-        agreement.last_response_time = gl.u256(0)
         agreement.last_check_status = "passed"
         agreement.paid_ticks += gl.u256(1)
         agreement.consecutive_failures = gl.u256(0)
@@ -159,9 +143,9 @@ class AgentPact(gl.contract.Contract):
     def report_violation(self, agreement_id: str) -> bool:
         agreement = self.agreements.get(agreement_id)
         if agreement is None:
-            raise ValueError("Agreement not found")
+            raise ValueError("Not found")
         if agreement.status != "active":
-            raise ValueError("Agreement is not active")
+            raise ValueError("Not active")
         agreement.last_check_status = "failed"
         agreement.violations += gl.u256(1)
         agreement.consecutive_failures += gl.u256(1)
@@ -169,10 +153,6 @@ class AgentPact(gl.contract.Contract):
         agreement.total_penalties += penalty
         if agreement.consecutive_failures >= gl.u256(3):
             agreement.status = "suspended"
-            remaining_ticks = agreement.total_ticks - agreement.paid_ticks
-            refund = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
-            if refund > gl.u256(0):
-                agreement.total_refunded += refund
         agreement.next_deadline = gl.u256(self._now()) + agreement.interval_seconds
         self.agreements[agreement_id] = agreement
         return True
@@ -181,15 +161,10 @@ class AgentPact(gl.contract.Contract):
     def cancel_agreement(self, agreement_id: str) -> bool:
         agreement = self.agreements.get(agreement_id)
         if agreement is None:
-            raise ValueError("Agreement not found")
+            raise ValueError("Not found")
         if str(gl.message.sender_address) != agreement.hiree:
-            raise ValueError("Only hiree can cancel")
-        if agreement.status != "active":
-            raise ValueError("Can only cancel active agreements")
-        remaining_ticks = agreement.total_ticks - agreement.paid_ticks
-        refund_amount = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
+            raise ValueError("Only hiree")
         agreement.status = "cancelled"
-        agreement.total_refunded += refund_amount
         self.agreements[agreement_id] = agreement
         return True
 
