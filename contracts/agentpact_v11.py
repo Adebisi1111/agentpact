@@ -44,14 +44,6 @@ class AgentPact(gl.contract.Contract):
         import datetime
         return int(datetime.datetime.now(datetime.timezone.utc).timestamp())
 
-    def _check_proof(self, terms: str) -> dict:
-        def get_proof() -> str:
-            import hashlib
-            web_data = gl.nondet.web.render(terms, mode="text")
-            return hashlib.sha256(web_data.encode()).hexdigest()
-        proof_hash = gl.eq_principle.strict_eq(get_proof)
-        return {"proof_hash": proof_hash}
-
     @gl.public.write
     def create_agreement(
         self,
@@ -123,7 +115,31 @@ class AgentPact(gl.contract.Contract):
             raise ValueError("Not active")
         if gl.u256(self._now()) < agreement.next_deadline:
             raise ValueError("Too early")
-        result = self._check_proof(agreement.terms)
+
+        def get_proof() -> dict:
+            import hashlib
+            response = gl.nondet.web.render(
+                url=agreement.terms,
+                method="GET",
+                headers={"User-Agent": "AgentPact/1.0"},
+                timeout=10,
+            )
+            body = response.get("body", "")
+            proof_hash = hashlib.sha256(body.encode()).hexdigest()
+            return {"proof_hash": proof_hash}
+
+        def validate_proof(result) -> bool:
+            if not isinstance(result, gl.vm.Return):
+                return False
+            calldata = result.calldata
+            return (
+                isinstance(calldata, dict)
+                and "proof_hash" in calldata
+                and isinstance(calldata["proof_hash"], str)
+                and len(calldata["proof_hash"]) == 64
+            )
+
+        result = gl.vm.run_nondet_unsafe(get_proof, validate_proof)
         agreement.last_proof_hash = result["proof_hash"]
         agreement.last_check_status = "passed"
         agreement.paid_ticks += gl.u256(1)
