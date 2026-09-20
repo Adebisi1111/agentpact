@@ -1,0 +1,8 @@
+{
+  "defaultNetwork": "studio-next",
+  "studio-next": {
+    "type": "custom",
+    "base": "studio-dev",
+    "rpc": "https://studio-next.genlayer.com/api"
+  }
+}
