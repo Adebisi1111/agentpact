@@ -3,12 +3,9 @@
 import json
 from genlayer import *
 from genlayer.py.types import Address
-from dataclasses import dataclass
 
 
-@allow_storage
-@dataclass
-class ServiceAgreement:
+class ServiceAgreement(gl.Contract):
     id: str
     hiree: str
     worker: str
@@ -29,11 +26,49 @@ class ServiceAgreement:
     total_deposited: u256
     total_paid_out: u256
 
+    def __init__(
+        self,
+        id: str,
+        hiree: str,
+        worker: str,
+        terms: str,
+        payment_per_tick: u256,
+        interval_seconds: u256,
+        total_ticks: u256,
+        uptime_required: u256 = u256(99),
+        response_time_required: u256 = u256(500),
+        penalty_rate: u256 = u256(10),
+    ):
+        self.id = id
+        self.hiree = hiree
+        self.worker = worker
+        self.terms = terms
+        self.payment_per_tick = payment_per_tick
+        self.interval_seconds = interval_seconds
+        self.next_deadline = u256(0)
+        self.total_ticks = total_ticks
+        self.paid_ticks = u256(0)
+        self.status = "pending"
+        self.violations = u256(0)
+        self.last_proof_hash = ""
+        self.last_response_time = u256(0)
+        self.consecutive_failures = u256(0)
+        self.uptime_required = uptime_required
+        self.response_time_required = response_time_required
+        self.penalty_rate = penalty_rate
+        self.total_deposited = u256(0)
+        self.total_paid_out = u256(0)
 
-class AgentPactV11(gl.Contract):
+
+class AgentPact(gl.Contract):
     agreements: TreeMap[str, ServiceAgreement]
     agreement_counter: u256
     proof_counter: u256
+
+    def __init__(self):
+        self.agreements = TreeMap[str, ServiceAgreement]()
+        self.agreement_counter = u256(0)
+        self.proof_counter = u256(0)
 
     @gl.public.write
     def create_agreement(
@@ -61,19 +96,10 @@ class AgentPactV11(gl.Contract):
             terms=terms,
             payment_per_tick=payment_per_tick,
             interval_seconds=interval_seconds,
-            next_deadline=u256(0),
             total_ticks=total_ticks,
-            paid_ticks=u256(0),
-            status="pending",
-            violations=u256(0),
-            last_proof_hash="",
-            last_response_time=u256(0),
-            consecutive_failures=u256(0),
             uptime_required=uptime_required,
             response_time_required=response_time_required,
             penalty_rate=penalty_rate,
-            total_deposited=u256(0),
-            total_paid_out=u256(0),
         )
         self.agreements[agreement_id] = agreement
         self.agreement_counter += u256(1)
@@ -102,7 +128,9 @@ class AgentPactV11(gl.Contract):
     @gl.public.write
     def submit_proof(self, agreement_id: str) -> bool:
         agreement = self.agreements.get(agreement_id)
-        if agreement is None or agreement.status != "active":
+        if agreement is None:
+            raise ValueError("Not found")
+        if agreement.status != "active":
             raise ValueError("Not active")
         if u256(self._now()) < agreement.next_deadline:
             raise ValueError("Too early")
@@ -114,25 +142,21 @@ class AgentPactV11(gl.Contract):
                 headers={"User-Agent": "AgentPact/1.0"},
                 timeout=10,
             )
-            status_code = response.get("status_code", 0)
             body = response.get("body", "")
             proof_hash = hashlib.sha256(body.encode()).hexdigest()
-            return {"status_code": status_code, "proof_hash": proof_hash}
+            return {"proof_hash": proof_hash}
         def validate_proof(result) -> bool:
             if not isinstance(result, gl.vm.Return):
                 return False
             calldata = result.calldata
             return (
                 isinstance(calldata, dict)
-                and "status_code" in calldata
                 and "proof_hash" in calldata
-                and isinstance(calldata["status_code"], int)
                 and isinstance(calldata["proof_hash"], str)
                 and len(calldata["proof_hash"]) == 64
             )
         result = gl.vm.run_nondet_unsafe(get_proof, validate_proof)
         agreement.last_proof_hash = result["proof_hash"]
-        agreement.last_response_time = u256(0)
         agreement.paid_ticks += u256(1)
         agreement.consecutive_failures = u256(0)
         agreement.total_paid_out += agreement.payment_per_tick
@@ -146,11 +170,12 @@ class AgentPactV11(gl.Contract):
     @gl.public.write
     def report_violation(self, agreement_id: str) -> bool:
         agreement = self.agreements.get(agreement_id)
-        if agreement is None or agreement.status != "active":
+        if agreement is None:
+            raise ValueError("Not found")
+        if agreement.status != "active":
             raise ValueError("Not active")
         agreement.violations += u256(1)
         agreement.consecutive_failures += u256(1)
-        penalty = (agreement.payment_per_tick * agreement.penalty_rate) / u256(100)
         if agreement.consecutive_failures >= u256(3):
             agreement.status = "suspended"
         self.agreements[agreement_id] = agreement
@@ -159,7 +184,9 @@ class AgentPactV11(gl.Contract):
     @gl.public.write
     def cancel_agreement(self, agreement_id: str) -> bool:
         agreement = self.agreements.get(agreement_id)
-        if agreement is None or str(gl.message.sender_address) != agreement.hiree:
+        if agreement is None:
+            raise ValueError("Not found")
+        if str(gl.message.sender_address) != agreement.hiree:
             raise ValueError("Only hiree")
         agreement.status = "cancelled"
         self.agreements[agreement_id] = agreement
@@ -175,18 +202,18 @@ class AgentPactV11(gl.Contract):
             "hiree": agreement.hiree,
             "worker": agreement.worker,
             "terms": agreement.terms,
-            "payment_per_tick": str(agreement.payment_per_tick),
-            "total_ticks": str(agreement.total_ticks),
-            "paid_ticks": str(agreement.paid_ticks),
+            "payment_per_tick": str(int(agreement.payment_per_tick)),
+            "total_ticks": str(int(agreement.total_ticks)),
+            "paid_ticks": str(int(agreement.paid_ticks)),
             "status": agreement.status,
-            "violations": str(agreement.violations),
+            "violations": str(int(agreement.violations)),
             "last_proof_hash": agreement.last_proof_hash,
-            "consecutive_failures": str(agreement.consecutive_failures),
+            "consecutive_failures": str(int(agreement.consecutive_failures)),
         })
 
     @gl.public.view
     def get_stats(self) -> str:
         return json.dumps({
-            "total_agreements": str(self.agreement_counter),
-            "total_proofs": str(self.proof_counter),
+            "total_agreements": str(int(self.agreement_counter)),
+            "total_proofs": str(int(self.proof_counter)),
         })
