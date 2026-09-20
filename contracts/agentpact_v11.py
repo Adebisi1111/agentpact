@@ -1,11 +1,14 @@
 # v0.3.0
 # { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
 
+import json
+from dataclasses import dataclass
 import genlayer as gl
-from genlayer.types import *
+from genlayer.storage import allow as allow_storage
 
 
-@gl.storage.allow
+@allow_storage
+@dataclass
 class ServiceAgreement:
     id: str
     hiree: str
@@ -44,6 +47,14 @@ class AgentPact(gl.contract.Contract):
         import datetime
         return int(datetime.datetime.now(datetime.timezone.utc).timestamp())
 
+    def _check_proof(self, terms: str) -> dict:
+        def get_proof() -> str:
+            import hashlib
+            web_data = gl.nondet.web.render(terms, mode="text")
+            return hashlib.sha256(web_data.encode()).hexdigest()
+        proof_hash = gl.eq_principle.strict_eq(get_proof)
+        return {"proof_hash": proof_hash}
+
     @gl.public.write
     def create_agreement(
         self,
@@ -63,29 +74,30 @@ class AgentPact(gl.contract.Contract):
             raise ValueError("Payment per tick must be positive")
         if gl.Address(worker).as_hex == gl.message.sender_address.as_hex:
             raise ValueError("Worker cannot be the same as hiree")
-        agreement = ServiceAgreement()
-        agreement.id = agreement_id
-        agreement.hiree = gl.message.sender_address.as_hex
-        agreement.worker = gl.Address(worker).as_hex
-        agreement.terms = terms
-        agreement.payment_per_tick = payment_per_tick
-        agreement.interval_seconds = interval_seconds
-        agreement.next_deadline = gl.u256(0)
-        agreement.total_ticks = total_ticks
-        agreement.paid_ticks = gl.u256(0)
-        agreement.status = "pending"
-        agreement.violations = gl.u256(0)
-        agreement.last_proof_hash = ""
-        agreement.last_check_status = ""
-        agreement.last_response_time = gl.u256(0)
-        agreement.consecutive_failures = gl.u256(0)
-        agreement.uptime_required = uptime_required
-        agreement.response_time_required = response_time_required
-        agreement.penalty_rate = penalty_rate
-        agreement.total_deposited = gl.u256(0)
-        agreement.total_paid_out = gl.u256(0)
-        agreement.total_refunded = gl.u256(0)
-        agreement.total_penalties = gl.u256(0)
+        agreement = ServiceAgreement(
+            id=agreement_id,
+            hiree=gl.message.sender_address.as_hex,
+            worker=gl.Address(worker).as_hex,
+            terms=terms,
+            payment_per_tick=payment_per_tick,
+            interval_seconds=interval_seconds,
+            next_deadline=gl.u256(0),
+            total_ticks=total_ticks,
+            paid_ticks=gl.u256(0),
+            status="pending",
+            violations=gl.u256(0),
+            last_proof_hash="",
+            last_check_status="",
+            last_response_time=gl.u256(0),
+            consecutive_failures=gl.u256(0),
+            uptime_required=uptime_required,
+            response_time_required=response_time_required,
+            penalty_rate=penalty_rate,
+            total_deposited=gl.u256(0),
+            total_paid_out=gl.u256(0),
+            total_refunded=gl.u256(0),
+            total_penalties=gl.u256(0),
+        )
         self.agreements[agreement_id] = agreement
         self.agreement_counter += gl.u256(1)
         return agreement_id
@@ -115,31 +127,7 @@ class AgentPact(gl.contract.Contract):
             raise ValueError("Not active")
         if gl.u256(self._now()) < agreement.next_deadline:
             raise ValueError("Too early")
-
-        def get_proof() -> dict:
-            import hashlib
-            response = gl.nondet.web.render(
-                url=agreement.terms,
-                method="GET",
-                headers={"User-Agent": "AgentPact/1.0"},
-                timeout=10,
-            )
-            body = response.get("body", "")
-            proof_hash = hashlib.sha256(body.encode()).hexdigest()
-            return {"proof_hash": proof_hash}
-
-        def validate_proof(result) -> bool:
-            if not isinstance(result, gl.vm.Return):
-                return False
-            calldata = result.calldata
-            return (
-                isinstance(calldata, dict)
-                and "proof_hash" in calldata
-                and isinstance(calldata["proof_hash"], str)
-                and len(calldata["proof_hash"]) == 64
-            )
-
-        result = gl.vm.run_nondet_unsafe(get_proof, validate_proof)
+        result = self._check_proof(agreement.terms)
         agreement.last_proof_hash = result["proof_hash"]
         agreement.last_check_status = "passed"
         agreement.paid_ticks += gl.u256(1)
