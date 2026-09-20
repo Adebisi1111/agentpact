@@ -1,3 +1,4 @@
+# v0.3.0
 # { "Depends": "py-genlayer:9b8kjyda2ycxyq4ea6g4yfpnydxhd52gqba5rb8dw7krkh5mn9p0" }
 
 import json
@@ -101,12 +102,12 @@ class AgentPact(gl.Contract):
         if gl.message.value <= 0:
             raise ValueError("Must send GEN to fund agreement")
         if gl.message.value < total_escrow:
-            raise ValueError(f"Insufficient escrow. Need {total_escrow}, got {gl.message.value}")
+            raise ValueError("Insufficient escrow")
         agreement.total_deposited = gl.u256(gl.message.value)
         agreement.status = "active"
         agreement.next_deadline = gl.u256(self._now()) + agreement.interval_seconds
         self.agreements[agreement_id] = agreement
-        return f"Funded with {gl.message.value} GEN"
+        return "Funded"
 
     def _now(self) -> int:
         import datetime
@@ -130,7 +131,6 @@ class AgentPact(gl.Contract):
         validator_hash = gl.eq_principle.strict_eq(get_proof_hash)
 
         agreement.last_proof_hash = validator_hash
-        agreement.last_response_time = gl.u256(0)
         agreement.last_check_status = "passed"
         agreement.paid_ticks += gl.u256(1)
         agreement.consecutive_failures = gl.u256(0)
@@ -159,10 +159,6 @@ class AgentPact(gl.Contract):
         agreement.total_penalties += penalty
         if agreement.consecutive_failures >= gl.u256(3):
             agreement.status = "suspended"
-            remaining_ticks = agreement.total_ticks - agreement.paid_ticks
-            refund = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
-            if refund > gl.u256(0):
-                agreement.total_refunded += refund
         agreement.next_deadline = gl.u256(self._now()) + agreement.interval_seconds
         self.agreements[agreement_id] = agreement
         return True
@@ -174,17 +170,12 @@ class AgentPact(gl.Contract):
             raise ValueError("Agreement not found")
         if str(gl.message.sender_address) != agreement.hiree:
             raise ValueError("Only hiree can cancel")
-        if agreement.status != "active":
-            raise ValueError("Can only cancel active agreements")
-        remaining_ticks = agreement.total_ticks - agreement.paid_ticks
-        refund_amount = (remaining_ticks * agreement.payment_per_tick) - agreement.total_penalties
         agreement.status = "cancelled"
-        agreement.total_refunded += refund_amount
         self.agreements[agreement_id] = agreement
         return True
 
     @gl.public.view
-    def get_agreement(self, agreement_id: str) -> Optional[ServiceAgreement]:
+    def get_agreement(self, agreement_id: str) -> ServiceAgreement:
         return self.agreements.get(agreement_id)
 
     @gl.public.view
