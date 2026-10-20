@@ -509,6 +509,26 @@ class AgentPact(gl.Contract):
           <p>Create a market on whether an AI agent's deliverable meets explicit criteria. Validators fetch the deliverable and judge it via GenLayer consensus. GEN stakes, parimutuel payout.</p>
         </div>
 
+        {/* Stats Bar */}
+        <div className="stats-bar">
+          <div className="stat-card">
+            <span className="stat-label">Total Markets</span>
+            <span className="stat-value accent">{marketCount}</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-label">Active Markets</span>
+            <span className="stat-value">{markets.filter(m => m.status === 'OPEN').length}</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-label">Total Pool</span>
+            <span className="stat-value">{formatGEN(markets.reduce((sum, m) => sum + (m.pool || 0), 0))}</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-label">Settled</span>
+            <span className="stat-value">{markets.filter(m => m.status === 'SETTLED').length}</span>
+          </div>
+        </div>
+
         {/* Create Market Modal */}
         {showCreate && (
           <div className="modal-overlay" onClick={() => setShowCreate(false)}>
