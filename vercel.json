@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/dist/**/*",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend/dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "frontend/dist/$1"
+    }
+  ],
+  "env": {
+    "BRADBURY_RPC": "https://rpc-bradbury.genlayer.com",
+    "GENLAYER_RPC": "https://rpc-bradbury.genlayer.com",
+    "CONSENSUS_CONTRACT": "0xb7278A61aa25c888815aFC32Ad3cC52fF24fE575",
+    "AGENTPACT_CONTRACT": "0x1e3BB7F5B6489bC2071D77Edf38C6469EE9B4B04"
+  }
+}
