@@ -34,9 +34,6 @@ __pycache__/
 *.log
 npm-debug.log*
 
-# Submodules
-boilerplate-fresh/
-
 # Testing artifacts
 tests/__pycache__/
 .pytest_cache/
