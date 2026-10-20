@@ -15,6 +15,7 @@ function App() {
   const [criteria, setCriteria] = useState('');
   const [marketCount, setMarketCount] = useState(0);
   const [marketDetail, setMarketDetail] = useState(null);
+  const isConnected = !!address;
   
   // Ref for toast timeout
   const toastTimeout = useRef(null);
