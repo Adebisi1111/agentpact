@@ -480,7 +480,9 @@ class AgentPact(gl.Contract):
     <div className="app">
       <div className="topbar">
         <a href="/" className="logo">
-          <div className="logo-icon">🎯</div>
+          <div className="logo-icon">
+            <img src="/logo.svg" alt="AgentPact" />
+          </div>
           AgentPact
         </a>
         <div className="topbar-right">
