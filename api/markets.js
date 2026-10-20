@@ -1,6 +1,6 @@
 // Vercel serverless function: list markets from AgentPact contract
 const BRADBURY_RPC = process.env.BRADBURY_RPC || 'https://rpc-bradbury.genlayer.com';
-const AGENTPACT_CONTRACT = process.env.AGENTPACT_CONTRACT || '0x1e3BB7F5B6489bC2071D77Eef38C6469EE9B4B04';
+const AGENTPACT_CONTRACT = process.env.AGENTPACT_CONTRACT || '0x1e3BB7F5B6489bC2071D77Edf38C6469EE9B4B04';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -44,8 +44,8 @@ function formatGEN(value) {
 }
 
 const ABIs = [
-  { type: 'function', name: 'getConfig', stateMutability: ['view'], inputs: [], outputs: [{ type: 'uint256' }] },
-  { type: 'function', name: 'listMarkets', stateMutability: ['view'], inputs: [
+  { type: 'function', name: 'getConfig', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint256' }] },
+  { type: 'function', name: 'listMarkets', stateMutability: 'view', inputs: [
     { type: 'uint256', name: 'offset' },
     { type: 'uint256', name: 'limit' }
   ], outputs: [{ type: 'tuple', components: [

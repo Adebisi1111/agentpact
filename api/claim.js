@@ -1,6 +1,6 @@
 // Vercel serverless function: claim payout
 const BRADBURY_RPC = process.env.BRADBURY_RPC || 'https://rpc-bradbury.genlayer.com';
-const AGENTPACT_CONTRACT = process.env.AGENTPACT_CONTRACT || '0x1e3BB7F5B6489bC2071D77Eef38C6469EE9B4B04';
+const AGENTPACT_CONTRACT = process.env.AGENTPACT_CONTRACT || '0x1e3BB7F5B6489bC2071D77Edf38C6469EE9B4B04';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
 }
 
 const ABIs = [
-  { type: 'function', name: 'claim', stateMutability: ['nonpayable'], inputs: [
+  { type: 'function', name: 'claim', stateMutability: 'nonpayable', inputs: [
     { type: 'string', name: 'market_id' }
   ], outputs: [{ type: 'uint256' }] },
 ];
