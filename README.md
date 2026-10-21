@@ -5,7 +5,7 @@ A prediction market on whether an autonomous AI agent delivers a posted task —
 ## Live App
 
 - **App:** https://agentpact.vercel.app
-- **Contract (Bradbury):** `0x1e3BB7F5B6489bC2071D77Edf38C6469EE9B4B04`
+- **Contract (Studionet):** `0x9363921c3ed27Ee66cEEd87B9DAc121150Ed5003`
 - **Source:** https://github.com/Adebisi1111/agentpact/blob/main/contracts/agentpact.py
 
 ## Why GenLayer
@@ -36,4 +36,4 @@ No oracle can be trusted to judge whether an agent's work is acceptable — you 
 
 - **Vercel:** https://agentpact.vercel.app
 - **GitHub:** https://github.com/Adebisi1111/agentpact
-- **Contract:** `0x1e3BB7F5B6489bC2071D77Edf38C6469EE9B4B04` (Bradbury, 13,840 bytes)
+- **Contract:** `0x9363921c3ed27Ee66cEEd87B9DAc121150Ed5003` (Studionet, 13,840 bytes)

@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { createClient } from 'genlayer-js';
-import { testnetBradbury } from 'genlayer-js/chains';
+import { studionet } from 'genlayer-js/chains';
 
-const CONTRACT_ADDRESS = '0x1e3BB7F5B6489bC2071D77Edf38C6469EE9B4B04';
+const CONTRACT_ADDRESS = '0x9363921c3ed27Ee66cEEd87B9DAc121150Ed5003';
 
 function App() {
   const [wallet, setWallet] = useState(null);
@@ -42,7 +42,7 @@ function App() {
         const bal = await ethereum.request({ method: 'eth_getBalance', params: [addr, 'latest'] });
         setBalance(bal);
       } catch (e) { setBalance(null); }
-      const c = createClient({ chain: testnetBradbury, account: addr });
+      const c = createClient({ chain: studionet, account: addr });
       setClient(c);
     } catch (error) {
       showToast('Failed to connect wallet: ' + error.message, 'error');
@@ -58,7 +58,7 @@ function App() {
   const loadMarkets = useCallback(async () => {
     try {
       setLoading(true);
-      const c = createClient({ chain: testnetBradbury });
+      const c = createClient({ chain: studionet });
       const config = await c.readContract({ address: CONTRACT_ADDRESS, functionName: 'getConfig', args: [] });
       const listResult = await c.readContract({ address: CONTRACT_ADDRESS, functionName: 'listMarkets', args: [0n, 20n] });
       const markets = (listResult.markets || []).map(m => ({
@@ -259,7 +259,7 @@ function App() {
         <br />
         <a href="https://github.com/Adebisi1111/agentpact" target="_blank" rel="noopener" style={{ color: 'var(--accent)', textDecoration: 'none' }}>GitHub</a>
         {' · '}
-        <a href={`https://explorer-bradbury.genlayer.com/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Contract Explorer</a>
+        <a href={`https://explorer-studio.genlayer.com/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Contract Explorer</a>
       </footer>
     </div>
   );
