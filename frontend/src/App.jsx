@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { createClient } from 'genlayer-js';
 import { studionet } from 'genlayer-js/chains';
 
-const CONTRACT_ADDRESS = '0x9363921c3ed27Ee66cEEd87B9DAc121150Ed5003';
+const CONTRACT_ADDRESS = '0x405CF4619e4692849b20273cd68657618fB01d99';
 
 function App() {
   const [wallet, setWallet] = useState(null);

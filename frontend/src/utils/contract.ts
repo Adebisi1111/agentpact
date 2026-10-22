@@ -6,7 +6,7 @@ import { publicActions } from 'viem/chains';
 import { useEffect, useState, createContext, useContext, ReactNode } from 'react';
 
 // GenLayer network config
-export const AGENTPACT_CONTRACT = '0x9363921c3ed27Ee66cEEd87B9DAc121150Ed5003';
+export const AGENTPACT_CONTRACT = '0x405CF4619e4692849b20273cd68657618fB01d99';
 
 // GenLayer JS client setup (Bradbury testnet)
 const BRADBURY_RPC = 'https://rpc-bradbury.genlayer.com';
